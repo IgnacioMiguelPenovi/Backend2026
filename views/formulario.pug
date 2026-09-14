@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  h2= libro ? 'Editar libro' : 'Nuevo libro'
+  form(action=libro ? `/libros/${libro.id}` : '/libros' method="POST")
+    label(for="titulo") Título
+    input(type="text" id="titulo" name="titulo" value=libro ? libro.titulo : '' required)
+
+    label(for="autor") Autor
+    input(type="text" id="autor" name="autor" value=libro ? libro.autor : '' required)
+
+    label(for="categoria") Categoría
+    input(type="text" id="categoria" name="categoria" value=libro ? libro.categoria : '' required)
+
+    label(for="anio") Año
+    input(type="number" id="anio" name="anio" value=libro ? libro.anio : '' required)
+
+    button(type="submit")= libro ? 'Guardar cambios' : 'Crear libro'
+  a(href="/libros") Cancelar
