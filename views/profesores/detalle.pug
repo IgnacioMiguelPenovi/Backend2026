@@ -1,0 +1,19 @@
+extends ../layout
+
+block content
+  h2= `${profesor.nombre} ${profesor.apellido}`
+  ul.detalle
+    li
+      strong Sucursal:
+      |  #{profesor.sucursal}
+    li
+      strong Días:
+      |  #{profesor.dias.join(', ')}
+    li
+      strong Horarios:
+      |  #{profesor.horarios.join(', ')}
+
+  a.boton(href=`/profesores/${profesor.id}/editar`) Editar
+  form(action=`/profesores/${profesor.id}/eliminar` method="POST")
+    button(type="submit") Eliminar
+  a(href="/profesores") Volver al listado

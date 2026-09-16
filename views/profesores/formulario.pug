@@ -1,0 +1,32 @@
+extends ../layout
+
+block content
+  h2= profesor ? 'Editar profesor' : 'Inscribir profesor'
+  form(action=profesor ? `/profesores/${profesor.id}` : '/profesores' method="POST")
+    label(for="nombre") Nombre
+    input(type="text" id="nombre" name="nombre" value=profesor ? profesor.nombre : '' required)
+
+    label(for="apellido") Apellido
+    input(type="text" id="apellido" name="apellido" value=profesor ? profesor.apellido : '' required)
+
+    label(for="sucursal") Sucursal
+    select(id="sucursal" name="sucursal" required)
+      each sucursal in sucursales
+        option(value=sucursal selected=(profesor && profesor.sucursal === sucursal))= sucursal
+
+    label Días
+    .checkboxes
+      each dia in dias
+        label.checkbox
+          input(type="checkbox" name="dias" value=dia checked=(profesor && profesor.dias.includes(dia)))
+          |  #{dia}
+
+    label Horarios
+    .checkboxes
+      each horario in horarios
+        label.checkbox
+          input(type="checkbox" name="horarios" value=horario checked=(profesor && profesor.horarios.includes(horario)))
+          |  #{horario}
+
+    button(type="submit")= profesor ? 'Guardar cambios' : 'Inscribir profesor'
+  a(href="/profesores") Cancelar

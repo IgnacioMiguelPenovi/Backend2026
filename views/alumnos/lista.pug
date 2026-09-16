@@ -1,0 +1,29 @@
+extends ../layout
+
+block content
+  h2 Alumnos inscriptos
+  a.boton(href="/alumnos/nuevo") + Inscribir alumno
+
+  if alumnos.length === 0
+    p No hay alumnos inscriptos.
+  else
+    table
+      thead
+        tr
+          th Nombre
+          th Apellido
+          th Sucursal
+          th Turno
+          th
+      tbody
+        each alumno in alumnos
+          tr
+            td= alumno.nombre
+            td= alumno.apellido
+            td= alumno.sucursal
+            td= `${alumno.turnoDia} - ${alumno.turnoHorario}`
+            td
+              a(href=`/alumnos/${alumno.id}`) Ver
+              |
+              a(href=`/alumnos/${alumno.id}/editar`) Editar
+  a(href="/") Volver al inicio

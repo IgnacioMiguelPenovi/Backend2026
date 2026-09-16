@@ -4,8 +4,10 @@ const morgan = require('morgan');
 const logger = require('./middlewares/logger');
 
 const indexRouter = require('./routes/index');
-const librosRouter = require('./routes/libros');
-const librosApiRouter = require('./routes/api/libros');
+const alumnosRouter = require('./routes/alumnos');
+const profesoresRouter = require('./routes/profesores');
+const alumnosApiRouter = require('./routes/api/alumnos');
+const profesoresApiRouter = require('./routes/api/profesores');
 
 const app = express();
 
@@ -19,8 +21,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.use('/', indexRouter);
-app.use('/libros', librosRouter);
-app.use('/api/libros', librosApiRouter);
+app.use('/alumnos', alumnosRouter);
+app.use('/profesores', profesoresRouter);
+app.use('/api/alumnos', alumnosApiRouter);
+app.use('/api/profesores', profesoresApiRouter);
 
 app.use((req, res) => {
   res.status(404).render('404');

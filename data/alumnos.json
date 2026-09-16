@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "nombre": "Lucía",
+    "apellido": "Fernández",
+    "sucursal": "Caballito",
+    "turnoDia": "Lunes",
+    "turnoHorario": "10.00"
+  },
+  {
+    "id": 2,
+    "nombre": "Martín",
+    "apellido": "Gómez",
+    "sucursal": "Palermo",
+    "turnoDia": "Miércoles",
+    "turnoHorario": "18.00"
+  }
+]

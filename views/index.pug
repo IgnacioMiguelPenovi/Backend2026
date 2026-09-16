@@ -1,33 +1,10 @@
 extends layout
 
 block content
-  h2 Listado de libros
-  form(action="/libros" method="GET" class="filtro")
-    input(type="text" name="categoria" placeholder="Filtrar por categoría" value=categoria)
-    button(type="submit") Filtrar
-    a(href="/libros") Limpiar
-
-  a.boton(href="/libros/nuevo") + Nuevo libro
-
-  if libros.length === 0
-    p No hay libros cargados.
-  else
-    table
-      thead
-        tr
-          th Título
-          th Autor
-          th Categoría
-          th Año
-          th
-      tbody
-        each libro in libros
-          tr
-            td= libro.titulo
-            td= libro.autor
-            td= libro.categoria
-            td= libro.anio
-            td
-              a(href=`/libros/${libro.id}`) Ver
-              |
-              a(href=`/libros/${libro.id}/editar`) Editar
+  h2 ¿Qué querés hacer?
+  .acciones
+    a.boton.grande(href="/alumnos/nuevo") Inscribir alumno
+    a.boton.grande(href="/profesores/nuevo") Inscribir profesor
+  .enlaces
+    a(href="/alumnos") Ver alumnos
+    a(href="/profesores") Ver profesores

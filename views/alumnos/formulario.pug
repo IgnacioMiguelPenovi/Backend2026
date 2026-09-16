@@ -1,0 +1,28 @@
+extends ../layout
+
+block content
+  h2= alumno ? 'Editar alumno' : 'Inscribir alumno'
+  form(action=alumno ? `/alumnos/${alumno.id}` : '/alumnos' method="POST")
+    label(for="nombre") Nombre
+    input(type="text" id="nombre" name="nombre" value=alumno ? alumno.nombre : '' required)
+
+    label(for="apellido") Apellido
+    input(type="text" id="apellido" name="apellido" value=alumno ? alumno.apellido : '' required)
+
+    label(for="sucursal") Sucursal
+    select(id="sucursal" name="sucursal" required)
+      each sucursal in sucursales
+        option(value=sucursal selected=(alumno && alumno.sucursal === sucursal))= sucursal
+
+    label(for="turnoDia") Día del turno
+    select(id="turnoDia" name="turnoDia" required)
+      each dia in dias
+        option(value=dia selected=(alumno && alumno.turnoDia === dia))= dia
+
+    label(for="turnoHorario") Horario del turno
+    select(id="turnoHorario" name="turnoHorario" required)
+      each horario in horarios
+        option(value=horario selected=(alumno && alumno.turnoHorario === horario))= horario
+
+    button(type="submit")= alumno ? 'Guardar cambios' : 'Inscribir alumno'
+  a(href="/alumnos") Cancelar

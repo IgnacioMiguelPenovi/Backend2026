@@ -1,0 +1,16 @@
+extends ../layout
+
+block content
+  h2= `${alumno.nombre} ${alumno.apellido}`
+  ul.detalle
+    li
+      strong Sucursal:
+      |  #{alumno.sucursal}
+    li
+      strong Turno:
+      |  #{alumno.turnoDia} - #{alumno.turnoHorario}
+
+  a.boton(href=`/alumnos/${alumno.id}/editar`) Editar
+  form(action=`/alumnos/${alumno.id}/eliminar` method="POST")
+    button(type="submit") Eliminar
+  a(href="/alumnos") Volver al listado

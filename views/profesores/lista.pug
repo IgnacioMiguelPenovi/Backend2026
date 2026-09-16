@@ -1,0 +1,31 @@
+extends ../layout
+
+block content
+  h2 Profesores inscriptos
+  a.boton(href="/profesores/nuevo") + Inscribir profesor
+
+  if profesores.length === 0
+    p No hay profesores inscriptos.
+  else
+    table
+      thead
+        tr
+          th Nombre
+          th Apellido
+          th Sucursal
+          th Días
+          th Horarios
+          th
+      tbody
+        each profesor in profesores
+          tr
+            td= profesor.nombre
+            td= profesor.apellido
+            td= profesor.sucursal
+            td= profesor.dias.join(', ')
+            td= profesor.horarios.join(', ')
+            td
+              a(href=`/profesores/${profesor.id}`) Ver
+              |
+              a(href=`/profesores/${profesor.id}/editar`) Editar
+  a(href="/") Volver al inicio

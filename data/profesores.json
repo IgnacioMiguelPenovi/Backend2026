@@ -1,0 +1,59 @@
+[
+  {
+    "id": 1,
+    "nombre": "Carla",
+    "apellido": "Suárez",
+    "sucursal": "Palermo",
+    "dias": [
+      "Lunes",
+      "Miércoles"
+    ],
+    "horarios": [
+      "9.00",
+      "14.00"
+    ]
+  },
+  {
+    "id": 2,
+    "nombre": "Diego",
+    "apellido": "Romero",
+    "sucursal": "Belgrano",
+    "dias": [
+      "Martes",
+      "Jueves",
+      "Viernes"
+    ],
+    "horarios": [
+      "19.00"
+    ]
+  },
+  {
+    "id": 3,
+    "nombre": "Marco",
+    "apellido": "Aurelio",
+    "sucursal": "Belgrano",
+    "dias": [
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado"
+    ],
+    "horarios": [
+      "8.00",
+      "9.00",
+      "10.00",
+      "11.00",
+      "12.00",
+      "13.00",
+      "14.00",
+      "15.00",
+      "16.00",
+      "17.00",
+      "18.00",
+      "19.00",
+      "20.00"
+    ]
+  }
+]
