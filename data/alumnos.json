@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "nombre": "Lucía",
+    "nombre": "María",
     "apellido": "Fernández",
     "sucursal": "Caballito",
     "turnoDia": "Lunes",
@@ -14,5 +14,13 @@
     "sucursal": "Palermo",
     "turnoDia": "Miércoles",
     "turnoHorario": "18.00"
+  },
+  {
+    "id": 3,
+    "nombre": "Juan",
+    "apellido": "Carlos",
+    "sucursal": "Palermo",
+    "turnoDia": "Sábado",
+    "turnoHorario": "17.00"
   }
 ]
