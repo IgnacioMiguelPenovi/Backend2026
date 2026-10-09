@@ -10,7 +10,7 @@ block content
       strong Turno:
       |  #{alumno.turnoDia} - #{alumno.turnoHorario}
 
-  a.boton(href=`/alumnos/${alumno.id}/editar`) Editar
-  form(action=`/alumnos/${alumno.id}/eliminar` method="POST")
+  a.boton(href=`/alumnos/${alumno._id}/editar`) Editar
+  form(action=`/alumnos/${alumno._id}/eliminar` method="POST")
     button(type="submit") Eliminar
   a(href="/alumnos") Volver al listado
