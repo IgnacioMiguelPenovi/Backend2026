@@ -2,7 +2,7 @@ extends ../layout
 
 block content
   h2= alumno ? 'Editar alumno' : 'Inscribir alumno'
-  form(action=alumno ? `/alumnos/${alumno.id}` : '/alumnos' method="POST")
+  form(action=alumno ? `/alumnos/${alumno._id}` : '/alumnos' method="POST")
     label(for="nombre") Nombre
     input(type="text" id="nombre" name="nombre" value=alumno ? alumno.nombre : '' required)
 
