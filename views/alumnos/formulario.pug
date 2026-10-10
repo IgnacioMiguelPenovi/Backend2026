@@ -24,5 +24,6 @@ block content
       each horario in horarios
         option(value=horario selected=(alumno && alumno.turnoHorario === horario))= horario
 
-    button(type="submit")= alumno ? 'Guardar cambios' : 'Inscribir alumno'
-  a(href="/alumnos") Cancelar
+    .acciones
+     button(type="submit")= alumno ? 'Guardar cambios' : 'Inscribir alumno'
+     a.boton.grande.cancelar(href="/alumnos") Cancelar

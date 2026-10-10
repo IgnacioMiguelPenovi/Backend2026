@@ -54,6 +54,11 @@ a.boton, button,
   border-radius: 4px;
   text-decoration: none;
   cursor: pointer;
+  font-size: 1rem;
+}
+
+a.boton.cancelar {
+  background-color: #c0392b;
 }
 
 .enlaces a {
@@ -61,17 +66,24 @@ a.boton, button,
   background-color: #3f5974;
 }
 
+form {
+  display: block;
+  width: 500px;
+  margin: 0 auto;
+  padding-top: 1rem;
+}
+
 form.filtro {
   display: flex;
   gap: 0.5rem;
-  align-items: center;
+  align-items: center;  
   margin-bottom: 1rem;
 }
 
 form label {
   display: block;
   margin-top: 1rem;
-  font-weight: bold;
+  font-weight: bold;  
 }
 
 form input {
@@ -97,11 +109,12 @@ ul.detalle {
 }
 
 a.boton.grande {
+  display: flex;
+  width: 8rem;
   font-size: 1.1rem;
   padding: 1rem 1.5rem;
+  justify-content: center; 
 }
-
-
 
 .checkboxes {
   display: flex;
@@ -126,6 +139,7 @@ label.checkbox input {
   width: auto;
   margin-top: 0;
 }
+
 
 .login {
   max-width: 360px;
@@ -159,4 +173,15 @@ label.checkbox input {
 .login .error {
   color: #c0392b;
   text-align: center;
+}
+
+#sucursal,
+#turnoDia,
+#nombre,
+#apellido,
+#turnoHorario {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  margin-top: 2px;
 }
