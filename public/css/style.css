@@ -110,7 +110,7 @@ ul.detalle {
 
 a.boton.grande {
   display: flex;
-  width: 8rem;
+  width: max-content;
   font-size: 1.1rem;
   padding: 1rem 1.5rem;
   justify-content: center; 
@@ -142,7 +142,7 @@ label.checkbox input {
 
 
 .login {
-  max-width: 360px;
+  max-width: 800px;
   margin: 3rem auto;
   padding: 2rem;
   background: #fff;
