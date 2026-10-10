@@ -10,6 +10,7 @@ const alumnosRouter = require('./routes/alumnos');
 const profesoresRouter = require('./routes/profesores');
 const alumnosApiRouter = require('./routes/api/alumnos');
 const profesoresApiRouter = require('./routes/api/profesores');
+const loginRouter = require('./routes/login')
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use('/alumnos', alumnosRouter);
 app.use('/profesores', profesoresRouter);
 app.use('/api/alumnos', alumnosApiRouter);
 app.use('/api/profesores', profesoresApiRouter);
+app.use('/login', loginRouter);
 
 app.use((req, res) => {
   res.status(404).render('404');
