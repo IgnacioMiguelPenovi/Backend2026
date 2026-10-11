@@ -1,24 +1,32 @@
-const Alumno = require('./AlumnoModel');
+const mongoose = require('mongoose');
+const Usuario = require('./UsuarioModel');
 
 class AlumnoRepository {
   obtenerTodos() {
-    return Alumno.find().lean();
+    return Usuario.find({ rol: 'alumno'}).lean();
   }
 
   obtenerPorId(id) {
-    return Alumno.findById(id).lean();
+    if (!mongoose.isValidObjectId(id)) return null;  
+    return Usuario.findOne({ _id: id, rol: 'alumno'}).lean();
   }
 
   crear(datos) {
-    return Alumno.create(datos);
+    return Usuario.create({ ...datos, rol: 'alumno'});
   }
 
-  actualizar(id, datos) {
-    return Alumno.findByIdAndUpdate(id, datos, { new: true, runValidators: true }).lean();
+  async actualizar(id, datos) {
+    if (!mongoose.isValidObjectId(id)) return null;
+    const alumno = await Usuario.findOne({ _id: id, rol: 'alumno' });
+    if (!alumno) return null;
+    alumno.set(datos);
+    await alumno.save();
+    return alumno.toObject();
   }
 
   async eliminar(id) {
-    const eliminado = await Alumno.findByIdAndDelete(id);
+    if (!mongoose.isValidObjectId(id)) return false;
+    const eliminado = await Usuario.findOneAndDelete({_id: id, rol: 'alumno'});
     return eliminado !== null;
   }
 }

@@ -1,8 +1,7 @@
 extends ../layout
 
 block content
-  h2 Alumnos inscriptos
-  a.boton(href="/alumnos/nuevo") + Inscribir alumno
+  h2 Alumnos Inscriptos 
 
   if alumnos.length === 0
     p No hay alumnos inscriptos.
@@ -23,7 +22,10 @@ block content
             td= alumno.sucursal
             td= `${alumno.turnoDia} - ${alumno.turnoHorario}`
             td
-              a(href=`/alumnos/${alumno._id}`) Ver
-              | | ;
-              a(href=`/alumnos/${alumno._id}/editar`) Editar
-  a(href="/") Volver al inicio
+
+              a.boton(href=`/alumnos/${alumno._id}`) Ver              
+              a.boton(href=`/alumnos/${alumno._id}/editar`) Editar
+
+    .enlaces
+      a.boton.grande(href="/index") Volver al Inicio
+      a.boton.grande(href="/alumnos/nuevo") + Inscribir alumno

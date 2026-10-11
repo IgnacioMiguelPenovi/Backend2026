@@ -1,19 +1,7 @@
-const path = require('path');
-const Repository = require('./Repository');
-const Profesor = require('./Profesor');
+const mongoose = require('mongoose');
+const Usuario = require('./UsuarioModel');
 
-const RUTA_ARCHIVO = path.join(__dirname, '..', 'data', 'profesores.json');
-
-class ProfesorRepository extends Repository {
-  constructor() {
-    super(RUTA_ARCHIVO);
-  }
-
-  #siguienteId(profesores) {
-    if (profesores.length === 0) return 1;
-    return Math.max(...profesores.map((profesor) => profesor.id)) + 1;
-  }
-
+class ProfesorRepository {
   #normalizarLista(valor) {
     if (Array.isArray(valor)) return valor;
     if (!valor) return [];
@@ -21,45 +9,40 @@ class ProfesorRepository extends Repository {
   }
 
   obtenerTodos() {
-    return this.leerTodos();
+    return Usuario.find({ rol: 'profesor' }).lean();
+  }
+
+  obtenerPorId(id) {
+    if (!mongoose.isValidObjectId(id)) return null;
+    return Usuario.findOne({ _id: id, rol: 'profesor' }).lean();
   }
 
   crear(datos) {
-    const profesores = this.leerTodos();
-    const nuevoProfesor = new Profesor(
-      this.#siguienteId(profesores),
-      datos.nombre,
-      datos.apellido,
-      datos.sucursal,
-      this.#normalizarLista(datos.dias),
-      this.#normalizarLista(datos.horarios)
-    );
-    profesores.push(nuevoProfesor.toJSON());
-    this.guardarTodos(profesores);
-    return nuevoProfesor.toJSON();
+    return Usuario.create({
+      ...datos,
+      rol: 'profesor',
+      dias: this.#normalizarLista(datos.dias),
+      horarios: this.#normalizarLista(datos.horarios)
+    });
   }
 
-  actualizar(id, datos) {
-    const profesores = this.leerTodos();
-    const indice = profesores.findIndex((profesor) => profesor.id === Number(id));
-    if (indice === -1) return null;
-    profesores[indice] = {
-      ...profesores[indice],
+  async actualizar(id, datos) {
+    if (!mongoose.isValidObjectId(id)) return null;
+    const profesor = await Usuario.findOne({ _id: id, rol: 'profesor' });
+    if (!profesor) return null;
+    profesor.set({
       ...datos,
       dias: this.#normalizarLista(datos.dias),
-      horarios: this.#normalizarLista(datos.horarios),
-      id: Number(id)
-    };
-    this.guardarTodos(profesores);
-    return profesores[indice];
+      horarios: this.#normalizarLista(datos.horarios)
+    });
+    await profesor.save();
+    return profesor.toObject();
   }
 
-  eliminar(id) {
-    const profesores = this.leerTodos();
-    const existe = profesores.some((profesor) => profesor.id === Number(id));
-    if (!existe) return false;
-    this.guardarTodos(profesores.filter((profesor) => profesor.id !== Number(id)));
-    return true;
+  async eliminar(id) {
+    if (!mongoose.isValidObjectId(id)) return false;
+    const eliminado = await Usuario.findOneAndDelete({ _id: id, rol: 'profesor' });
+    return eliminado !== null;
   }
 }
 
