@@ -2,7 +2,7 @@ extends ../layout
 
 block content
   h2= profesor ? 'Editar profesor' : 'Inscribir Profesor'
-  form(action=profesor ? `/profesores/${profesor.id}` : '/profesores' method="POST")
+  form(action=profesor ? `/profesores/${profesor._id}` : '/profesores' method="POST")
     label(for="nombre") Nombre
     input(type="text" id="nombre" name="nombre" value=profesor ? profesor.nombre : '' required)
 
