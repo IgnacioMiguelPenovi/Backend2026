@@ -25,8 +25,7 @@ block content
             td= profesor.dias.join(', ')
             td= profesor.horarios.join(', ')
             td
-              a(href=`/profesores/${profesor.id}`) Ver
-              |  | 
+              a.boton(href=`/profesores/${profesor._id}`) Ver
+              |  | ;
               a(href=`/profesores/${profesor.id}/editar`) Editar
-br              
- a(href="/index") Volver al inicio
+  a(href="/index") Volver al inicio

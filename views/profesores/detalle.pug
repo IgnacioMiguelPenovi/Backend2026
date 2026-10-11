@@ -13,7 +13,7 @@ block content
       strong Horarios:
       |  #{profesor.horarios.join(', ')}
 
-  a.boton(href=`/profesores/${profesor.id}/editar`) Editar
-  form(action=`/profesores/${profesor.id}/eliminar` method="POST")
+  a.boton(href=`/profesores/${profesor._id}/editar`) Editar
+  form(action=`/profesores/${profesor._id}/eliminar` method="POST")
     button(type="submit") Eliminar
   a(href="/profesores") Volver al listado
