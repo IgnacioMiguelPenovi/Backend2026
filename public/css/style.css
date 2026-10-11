@@ -10,8 +10,11 @@ body {
 }
 
 header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30px;
   background-color: #2c3e50;
-  padding: 1rem 2rem;
 }
 
 header a {
@@ -184,4 +187,18 @@ label.checkbox input {
   padding: 0.5rem;
   border: 1px solid #ccc;
   margin-top: 2px;
+}
+
+.boton-salir {
+  color: #ffffff;
+  text-decoration:underline;
+  font-weight:lighter;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  font-size: 0.9rem;
+}
+
+.boton-salir:hover {
+  color: #f43b3b; /* Efecto al pasar el mouse */
 }
