@@ -1,0 +1,15 @@
+extends layout
+
+block content
+    .login
+        h2 Iniciar sesión
+        if error
+            p.error= error
+        form(action="/login" method="POST")
+            label(for="user") Usuario
+            input#user(type="text" name="user" required)
+
+            label(for="password") Contraseña
+            input#password(type="password" name="password" required)
+
+            button.boton(type="submit") Ingresar

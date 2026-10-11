@@ -1,53 +1,25 @@
-const path = require('path');
-const Repository = require('./Repository');
-const Alumno = require('./Alumno');
+const Alumno = require('./AlumnoModel');
 
-const RUTA_ARCHIVO = path.join(__dirname, '..', 'data', 'alumnos.json');
-
-class AlumnoRepository extends Repository {
-  constructor() {
-    super(RUTA_ARCHIVO);
-  }
-
-  #siguienteId(alumnos) {
-    if (alumnos.length === 0) return 1;
-    return Math.max(...alumnos.map((alumno) => alumno.id)) + 1;
-  }
-
+class AlumnoRepository {
   obtenerTodos() {
-    return this.leerTodos();
+    return Alumno.find().lean();
+  }
+
+  obtenerPorId(id) {
+    return Alumno.findById(id).lean();
   }
 
   crear(datos) {
-    const alumnos = this.leerTodos();
-    const nuevoAlumno = new Alumno(
-      this.#siguienteId(alumnos),
-      datos.nombre,
-      datos.apellido,
-      datos.sucursal,
-      datos.turnoDia,
-      datos.turnoHorario
-    );
-    alumnos.push(nuevoAlumno.toJSON());
-    this.guardarTodos(alumnos);
-    return nuevoAlumno.toJSON();
+    return Alumno.create(datos);
   }
 
   actualizar(id, datos) {
-    const alumnos = this.leerTodos();
-    const indice = alumnos.findIndex((alumno) => alumno.id === Number(id));
-    if (indice === -1) return null;
-    alumnos[indice] = { ...alumnos[indice], ...datos, id: Number(id) };
-    this.guardarTodos(alumnos);
-    return alumnos[indice];
+    return Alumno.findByIdAndUpdate(id, datos, { new: true, runValidators: true }).lean();
   }
 
-  eliminar(id) {
-    const alumnos = this.leerTodos();
-    const existe = alumnos.some((alumno) => alumno.id === Number(id));
-    if (!existe) return false;
-    this.guardarTodos(alumnos.filter((alumno) => alumno.id !== Number(id)));
-    return true;
+  async eliminar(id) {
+    const eliminado = await Alumno.findByIdAndDelete(id);
+    return eliminado !== null;
   }
 }
 

@@ -54,5 +54,19 @@
       "18.00",
       "19.00"
     ]
+  },
+  {
+    "id": 4,
+    "nombre": "Francisco",
+    "apellido": "Sanz",
+    "sucursal": "Palermo",
+    "dias": [
+      "Jueves"
+    ],
+    "horarios": [
+      "8.00",
+      "9.00",
+      "10.00"
+    ]
   }
 ]

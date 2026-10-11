@@ -1,3 +1,5 @@
+require('dotenv').config();
+const conectarDB = require('./config/db');
 const express = require('express');
 const path = require('path');
 const morgan = require('morgan');
@@ -8,6 +10,7 @@ const alumnosRouter = require('./routes/alumnos');
 const profesoresRouter = require('./routes/profesores');
 const alumnosApiRouter = require('./routes/api/alumnos');
 const profesoresApiRouter = require('./routes/api/profesores');
+const loginRouter = require('./routes/login')
 
 const app = express();
 
@@ -25,6 +28,7 @@ app.use('/alumnos', alumnosRouter);
 app.use('/profesores', profesoresRouter);
 app.use('/api/alumnos', alumnosApiRouter);
 app.use('/api/profesores', profesoresApiRouter);
+app.use('/login', loginRouter);
 
 app.use((req, res) => {
   res.status(404).render('404');
@@ -37,6 +41,8 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`Servidor funcionando en http://localhost:${PORT}`);
+conectarDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Servidor funcionando en http://localhost:${PORT}`);
+  });
 });
