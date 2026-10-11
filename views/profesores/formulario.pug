@@ -1,7 +1,7 @@
 extends ../layout
 
 block content
-  h2= profesor ? 'Editar profesor' : 'Inscribir profesor'
+  h2= profesor ? 'Editar profesor' : 'Inscribir Profesor'
   form(action=profesor ? `/profesores/${profesor.id}` : '/profesores' method="POST")
     label(for="nombre") Nombre
     input(type="text" id="nombre" name="nombre" value=profesor ? profesor.nombre : '' required)
@@ -27,6 +27,6 @@ block content
         label.checkbox
           input(type="checkbox" name="horarios" value=horario checked=(profesor && profesor.horarios.includes(horario)))
           |  #{horario}
-
-    button(type="submit")= profesor ? 'Guardar cambios' : 'Inscribir profesor'
-  a(href="/profesores") Cancelar
+    .enlaces
+      button(type="submit")= profesor ? 'Guardar cambios' : 'Inscribir profesor'
+      a.boton.cancelar(href="/profesores") Cancelar
