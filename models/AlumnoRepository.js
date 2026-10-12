@@ -24,10 +24,13 @@ class AlumnoRepository {
     return alumno.toObject();
   }
 
-  async eliminar(id) {
+  async cambiarEstado(id, activo) {
     if (!mongoose.isValidObjectId(id)) return false;
-    const eliminado = await Usuario.findOneAndDelete({_id: id, rol: 'alumno'});
-    return eliminado !== null;
+    const resultado = await Usuario.findOneAndUpdate(
+      { _id: id, rol: 'alumno' },
+      { activo }
+    );
+    return resultado !== null;
   }
 }
 

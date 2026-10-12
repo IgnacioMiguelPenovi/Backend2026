@@ -70,9 +70,18 @@ router.post('/:id', async (req, res, next) => {
   }
 });
 
-router.post('/:id/eliminar', async (req, res, next) => {
+router.post('/:id/desactivar', async (req, res, next) => {
   try {
-    await alumnoRepository.eliminar(req.params.id);
+    await alumnoRepository.cambiarEstado(req.params.id, false);
+    res.redirect('/alumnos');
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/:id/activar', async (req, res, next) => {
+  try {
+    await alumnoRepository.cambiarEstado(req.params.id, true);
     res.redirect('/alumnos');
   } catch (error) {
     next(error);

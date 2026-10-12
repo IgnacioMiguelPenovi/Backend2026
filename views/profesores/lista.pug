@@ -14,15 +14,18 @@ block content
           th Sucursal
           th Días
           th Horarios
+          th Estado
           th
       tbody
         each profesor in profesores
+         - const activo = profesor.activo !== false
           tr
             td= profesor.nombre
             td= profesor.apellido
             td= profesor.sucursal
             td= profesor.dias.join(', ')
             td= profesor.horarios.join(', ')
+            td= activo ? 'Activo' : 'Inactivo'
             td
               a.boton(href=`/profesores/${profesor._id}`) Ver
               a.boton(href=`/profesores/${profesor._id}/editar`) Editar
