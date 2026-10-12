@@ -6,6 +6,9 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+  req.session.usuario = {
+    nombre: req.body.user || 'Invitado'
+  };
   res.redirect('/index');
 })
 

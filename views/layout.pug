@@ -9,5 +9,8 @@ html(lang="es")
     header
       h1
         a(href="/") TurnoFlex
+        if usuario
+          form.logout(method="POST" action="/logout")
+            button.salir(type="submit") Cerrar Sesión
     main
       block content
