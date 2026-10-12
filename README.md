@@ -4,6 +4,8 @@
 > **1° Entrega de Proyecto** — 2° Cuatrimestre 2026  
 > **Cátedra:** Lic. García Ontiveros, Emir Eliezer  
 > **Equipo / Empresa:** Código Base (Comisión B — Grupo N° 5)
+> **Caso 1:** Plataforma de Gestión de Turnos y Atención "TurnoFlex"
+
 
 ---
 
@@ -24,7 +26,7 @@ El sistema resuelve la gestión de reservas por sucursal (*Palermo*, *Belgrano*,
 * **Paradigma:** Programación Orientada a Objetos (POO) con herencia y campos privados (`#`).
 * **Arquitectura:** Modelo-Vista-Controlador (MVC) + API REST.
 * **Middlewares:** `morgan`, `express.json()`, `express.urlencoded()`, logger de consola.
-* **Herramientas de Desarrollo y Pruebas:** `nodemon`, Thunder Client / Postman.
+* **Herramientas de Desarrollo y Pruebas:** `nodemon`, Thunder Client.
 
 ---
 
@@ -140,6 +142,12 @@ Accedé a la aplicación en tu navegador en: `http://localhost:3000`
 * **Miguel Penovi, Ignacio**
 * **Moguilevsky, Eliana Sarah**
 * **Mosquera, Ester**
+```
+---
+
+## 📁 Carpeta de drive: 
+
+https://drive.google.com/drive/folders/1ssO7dckoUUDJs87NzrH7b0CRgLEA_MRF?usp=drive_link
 ```
 
 ---

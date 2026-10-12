@@ -2,7 +2,6 @@ extends ../layout
 
 block content
   h2 Profesores inscriptos
-  a.boton(href="/profesores/nuevo") + Inscribir profesor
 
   if profesores.length === 0
     p No hay profesores inscriptos.
@@ -26,6 +25,9 @@ block content
             td= profesor.horarios.join(', ')
             td
               a.boton(href=`/profesores/${profesor._id}`) Ver
-              |  | ;
-              a(href=`/profesores/${profesor.id}/editar`) Editar
-  a(href="/index") Volver al inicio
+              a.boton(href=`/profesores/${profesor._id}/editar`) Editar
+
+  .enlaces
+    a.boton.grande(href="/profesores/nuevo") Inscribir profesor
+    a.boton.grande(href="/index") Volver al Inicio
+
