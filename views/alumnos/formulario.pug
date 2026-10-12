@@ -4,26 +4,73 @@ block content
   h2= alumno ? 'Editar alumno' : 'Inscribir Alumno'
   form(action=alumno ? `/alumnos/${alumno._id}` : '/alumnos' method="POST")
     label(for="nombre") Nombre
-    input(type="text" id="nombre" name="nombre" value=alumno ? alumno.nombre : '' required)
+    input(
+      type="text" 
+      id="nombre" 
+      name="nombre" 
+      value=alumno ? alumno.nombre : '' 
+      required 
+      minlength="2" 
+      maxlength="50"
+      oninvalid="this.setCustomValidity('El nombre debe tener al menos 2 caracteres')" 
+      oninput="this.setCustomValidity('')"
+    )
 
     label(for="apellido") Apellido
-    input(type="text" id="apellido" name="apellido" value=alumno ? alumno.apellido : '' required)
+    input(
+      type="text" 
+      id="apellido" 
+      name="apellido" 
+      value=alumno ? alumno.apellido : '' 
+      required 
+      minlength="2" 
+      maxlength="50"
+      oninvalid="this.setCustomValidity('El apellido debe tener al menos 2 caracteres')" 
+      oninput="this.setCustomValidity('')"
+    )
 
     label(for="sucursal") Sucursal
     select(id="sucursal" name="sucursal" required)
+      option(value="" disabled selected=(!alumno || !alumno.sucursal)) Seleccione una sucursal
       each sucursal in sucursales
         option(value=sucursal selected=(alumno && alumno.sucursal === sucursal))= sucursal
 
-    label(for="turnoDia") Día del turno
-    select(id="turnoDia" name="turnoDia" required)
-      each dia in dias
-        option(value=dia selected=(alumno && alumno.turnoDia === dia))= dia
+    label(for="fechaCalendario") Fecha del turno
+    input#fechaCalendario(type="date" required)
+
+    //- Campo oculto que enviará el día al backend
+    input#turnoDia(type="hidden" name="turnoDia" value=alumno ? alumno.turnoDia : '')
 
     label(for="turnoHorario") Horario del turno
     select(id="turnoHorario" name="turnoHorario" required)
+      option(value="" disabled selected=(!alumno || !alumno.turnoHorario)) Seleccione una hora
       each horario in horarios
         option(value=horario selected=(alumno && alumno.turnoHorario === horario))= horario
 
     .acciones
-     button(type="submit")= alumno ? 'Guardar cambios' : 'Inscribir alumno'
-     a.boton.grande.cancelar(href="/index") Cancelar
+      button(type="submit")= alumno ? 'Guardar cambios' : 'Inscribir alumno'
+      a.boton.grande.cancelar(href="/index") Cancelar
+
+    script.
+      const inputFecha = document.getElementById('fechaCalendario');
+      const inputTurnoDia = document.getElementById('turnoDia');
+      const nombreDias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+      inputFecha.addEventListener('change', function() {
+        if (!this.value) {
+          inputTurnoDia.value = '';
+          return;
+        }
+        const [anio, mes, dia] = this.value.split('-').map(Number);
+        const fecha = new Date(anio, mes - 1, dia);
+        const nombreDia = nombreDias[fecha.getDay()];
+
+        if (nombreDia === 'Domingo') {
+          alert('Los domingos no hay turnos. Por favor elegí una fecha de lunes a sábado.');
+          this.value = '';
+          inputTurnoDia.value = '';
+          return;
+        }
+
+        inputTurnoDia.value = nombreDia;
+      });

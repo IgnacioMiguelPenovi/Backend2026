@@ -4,10 +4,10 @@ block content
   h2= profesor ? 'Editar profesor' : 'Inscribir Profesor'
   form(action=profesor ? `/profesores/${profesor._id}` : '/profesores' method="POST")
     label(for="nombre") Nombre
-    input(type="text" id="nombre" name="nombre" value=profesor ? profesor.nombre : '' required)
+    input(type="text" id="nombre" name="nombre" value=profesor ? profesor.nombre : '' required minlength="2" maxlength="50")
 
     label(for="apellido") Apellido
-    input(type="text" id="apellido" name="apellido" value=profesor ? profesor.apellido : '' required)
+    input(type="text" id="apellido" name="apellido" value=profesor ? profesor.apellido : '' required minlength="2" maxlength="50")
 
     label(for="sucursal") Sucursal
     select(id="sucursal" name="sucursal" required)
