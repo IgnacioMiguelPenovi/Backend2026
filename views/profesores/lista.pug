@@ -25,10 +25,9 @@ block content
             td= profesor.horarios.join(', ')
             td
               a.boton(href=`/profesores/${profesor._id}`) Ver
-              |
-              a.boton(href=`/profesores/${profesor.id}/editar`) Editar
+              a.boton(href=`/profesores/${profesor._id}/editar`) Editar
 
-    .enlaces
-      a.boton.grande(href="/profesores/nuevo") Inscribir profesor
-      a.boton.grande(href="/index") Volver al Inicio
+  .enlaces
+    a.boton.grande(href="/profesores/nuevo") Inscribir profesor
+    a.boton.grande(href="/index") Volver al Inicio
 

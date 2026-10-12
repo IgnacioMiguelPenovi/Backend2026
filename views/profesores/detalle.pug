@@ -13,7 +13,10 @@ block content
       strong Horarios:
       |  #{profesor.horarios.join(', ')}
 
-  a.boton(href=`/profesores/${profesor._id}/editar`) Editar
-  form(action=`/profesores/${profesor._id}/eliminar` method="POST")
-    button(type="submit") Eliminar
-  a(href="/profesores") Volver al listado
+  .acciones
+    a.boton(href=`/profesores/${profesor._id}/editar`) Editar
+    form(action=`/profesores/${profesor._id}/eliminar` method="POST" onsubmit="return confirm('¿Seguro que querés eliminar a este profesor? Esta acción no se puede deshacer.')")
+      button.eliminar(type="submit") Eliminar
+
+  .volver 
+   a(href="/profesores") Volver al listado

@@ -64,6 +64,10 @@ a.boton.cancelar {
   background-color: #c0392b;
 }
 
+a.boton.cancelar:hover {
+  background-color: #a93226;
+}
+
 .enlaces a {
   padding: 1rem 1.5rem;
   background-color: #3f5974;
@@ -204,4 +208,23 @@ label.checkbox input {
 
 .boton-salir:hover {
   color: #f43b3b; /* Efecto al pasar el mouse */
+}
+
+.acciones form {
+  width: auto;
+  margin: 0;
+  padding-top: 0;
+}
+
+.volver {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+button.eliminar {
+  background-color: #c0392b;
+}
+
+button.eliminar:hover {
+  background-color: #a93226;
 }

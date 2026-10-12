@@ -10,7 +10,12 @@ block content
       strong Turno:
       |  #{alumno.turnoDia} - #{alumno.turnoHorario}
 
-  a.boton(href=`/alumnos/${alumno._id}/editar`) Editar
-  form(action=`/alumnos/${alumno._id}/eliminar` method="POST")
-    button(type="submit") Eliminar
-  a(href="/alumnos") Volver al listado
+
+
+  .acciones
+    a.boton(href=`/alumnos/${alumno._id}/editar`) Editar
+    form(action=`/alumnos/${alumno._id}/eliminar` method="POST" onsubmit="return confirm('¿Seguro que querés eliminar a este alumno? Esta acción no se puede deshacer.')")
+      button.eliminar(type="submit") Eliminar
+
+  .volver 
+   a(href="/alumnos") Volver al listado
