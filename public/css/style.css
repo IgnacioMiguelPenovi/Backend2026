@@ -221,10 +221,10 @@ label.checkbox input {
   margin-top: 1rem;
 }
 
-button.eliminar {
+button.desactivar {
   background-color: #c0392b;
 }
 
-button.eliminar:hover {
+button.desactivar:hover {
   background-color: #a93226;
 }

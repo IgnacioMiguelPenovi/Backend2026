@@ -13,14 +13,17 @@ block content
           th Apellido
           th Sucursal
           th Turno
+          th Estado
           th
       tbody
         each alumno in alumnos
+          - const activo = alumno.activo !== false
           tr
             td= alumno.nombre
             td= alumno.apellido
             td= alumno.sucursal
             td= `${alumno.turnoDia} - ${alumno.turnoHorario}`
+            td= activo ? 'Activo' : 'Inactivo'
             td
 
               a.boton(href=`/alumnos/${alumno._id}`) Ver              

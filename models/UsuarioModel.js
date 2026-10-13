@@ -11,6 +11,7 @@ const usuarioSchema = new mongoose.Schema({
   nombre: { type: String, required: true, trim: true },
   apellido: { type: String, required: true, trim: true },
   rol: { type: String, required: true, enum: ROLES },
+  activo: { type: Boolean, default: true },
   sucursal: { type: String, enum: SUCURSALES, required: tieneSucursal },
 
   // solo alumnos

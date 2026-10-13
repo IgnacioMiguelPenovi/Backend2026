@@ -1,8 +1,12 @@
 extends ../layout
 
 block content
+  - const activo = alumno.activo !== false
   h2= `${alumno.nombre} ${alumno.apellido}`
   ul.detalle
+    li
+      strong Estado:
+      | #{activo ? 'Activo' : 'Inactivo'}
     li
       strong Sucursal:
       |  #{alumno.sucursal}
@@ -14,8 +18,12 @@ block content
 
   .acciones
     a.boton(href=`/alumnos/${alumno._id}/editar`) Editar
-    form(action=`/alumnos/${alumno._id}/eliminar` method="POST" onsubmit="return confirm('¿Seguro que querés eliminar a este alumno? Esta acción no se puede deshacer.')")
-      button.eliminar(type="submit") Eliminar
+    if activo
+      form(action=`/alumnos/${alumno._id}/desactivar` method="POST" onsubmit="return confirm('¿Seguro que querés desactivar a este alumno?')")
+        button.desactivar(type="submit") Desactivar
+    else
+      form(action=`/alumnos/${alumno._id}/activar` method="POST")
+        button(type="submit") Activar
 
   .volver 
    a(href="/alumnos") Volver al listado
