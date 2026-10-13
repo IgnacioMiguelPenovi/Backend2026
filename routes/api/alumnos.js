@@ -30,12 +30,16 @@ router.put('/:id', validarAlumno, (req, res) => {
   res.json(alumnoActualizado);
 });
 
-router.delete('/:id', (req, res) => {
-  const eliminado = alumnoRepository.eliminar(req.params.id);
-  if (!eliminado) {
-    return res.status(404).json({ error: 'Alumno no encontrado' });
+router.delete('/:id', async (req, res, next) => {
+  try {
+    const desactivado = await alumnoRepository.cambiarEstado(req.params.id, false);
+    if (!desactivado) {
+      return res.status(404).json({ error: 'Alumno no encontrado' });
+    }
+    res.status(204).send();
+  } catch (error) {
+    next(error);
   }
-  res.status(204).send();
 });
 
 module.exports = router;

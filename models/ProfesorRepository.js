@@ -39,11 +39,15 @@ class ProfesorRepository {
     return profesor.toObject();
   }
 
-  async eliminar(id) {
+    async cambiarEstado(id, activo) {
     if (!mongoose.isValidObjectId(id)) return false;
-    const eliminado = await Usuario.findOneAndDelete({ _id: id, rol: 'profesor' });
-    return eliminado !== null;
+    const resultado = await Usuario.findOneAndUpdate(
+      { _id: id, rol: 'profesor' },
+      { activo }
+    );
+    return resultado !== null;
   }
+
 }
 
 module.exports = ProfesorRepository;

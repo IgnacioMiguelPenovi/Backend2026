@@ -1,8 +1,12 @@
 extends ../layout
 
 block content
+  - const activo = profesor.activo !== false
   h2= `${profesor.nombre} ${profesor.apellido}`
   ul.detalle
+    li
+      strong Estado:
+      |  #{activo ? 'Activo' : 'Inactivo'}
     li
       strong Sucursal:
       |  #{profesor.sucursal}
@@ -13,7 +17,14 @@ block content
       strong Horarios:
       |  #{profesor.horarios.join(', ')}
 
-  a.boton(href=`/profesores/${profesor._id}/editar`) Editar
-  form(action=`/profesores/${profesor._id}/eliminar` method="POST")
-    button(type="submit") Eliminar
-  a(href="/profesores") Volver al listado
+  .acciones
+    a.boton(href=`/profesores/${profesor._id}/editar`) Editar
+    if activo
+      form(action=`/profesores/${profesor._id}/desactivar` method="POST" onsubmit="return confirm('¿Seguro que querés desactivar a este profesor?')")
+        button.desactivar(type="submit") Desactivar
+    else
+      form(action=`/profesores/${profesor._id}/activar` method="POST")
+        button(type="submit") Activar
+
+  .volver 
+   a(href="/profesores") Volver al listado
