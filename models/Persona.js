@@ -5,7 +5,7 @@ class Persona {
   #sucursal;
 
   constructor(id, nombre, apellido, sucursal) {
-    this.#id = Number(id);
+    this.#id = id ? String(id) : null;
     this.#nombre = nombre;
     this.#apellido = apellido;
     this.#sucursal = sucursal;

@@ -7,9 +7,23 @@ block content
             p.error= error
         form(action="/login" method="POST")
             label(for="user") Usuario
-            input#user(type="text" name="user" required)
+            input#user(
+                type="text" 
+                name="user" 
+                required 
+                minlength="3" 
+                maxlength="30" 
+                oninvalid="this.setCustomValidity('El usuario debe tener al menos 3 caracteres')" 
+                oninput="this.setCustomValidity('')")
 
             label(for="password") Contraseña
-            input#password(type="password" name="password" required)
+            input#password(
+                type="password" 
+                name="password" r
+                equired 
+                minlength="6" 
+                maxlength="50"
+                oninvalid="this.setCustomValidity('La contraseña de be tener un mínimo de 6 caracteres y al menos un símbolo especial (*, !, @, #, etc...)')" 
+                oninput="this.setCustomValidity('')")
 
             button.boton(type="submit") Ingresar

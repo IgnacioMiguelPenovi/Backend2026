@@ -8,8 +8,21 @@ const esProfesor = function () { return this.rol === 'profesor'; };
 const tieneSucursal = function () { return ['alumno', 'profesor'].includes(this.rol); };
 
 const usuarioSchema = new mongoose.Schema({
-  nombre: { type: String, required: true, trim: true },
-  apellido: { type: String, required: true, trim: true },
+    nombre: {
+    type: String,
+    required: [true, 'El nombre es obligatorio'],
+    trim: true,
+    minlength: [2, 'El nombre debe tener al menos 2 caracteres'],
+    maxlength: [50, 'El nombre no puede exceder los 50 caracteres']
+  },
+  apellido: {
+    type: String,
+    required: [true, 'El apellido es obligatorio'],
+    trim: true,
+    minlength: [2, 'El apellido debe tener al menos 2 caracteres'],
+    maxlength: [50, 'El apellido no puede exceder los 50 caracteres']
+  },
+  
   rol: { type: String, required: true, enum: ROLES },
   activo: { type: Boolean, default: true },
   sucursal: { type: String, enum: SUCURSALES, required: tieneSucursal },
