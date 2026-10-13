@@ -14,16 +14,35 @@ block content
                 minlength="3" 
                 maxlength="30" 
                 oninvalid="this.setCustomValidity('El usuario debe tener al menos 3 caracteres')" 
-                oninput="this.setCustomValidity('')")
+                oninput="this.setCustomValidity('')"
+            )
 
             label(for="password") Contraseña
             input#password(
                 type="password" 
-                name="password" r
-                equired 
+                name="password" 
+                required 
                 minlength="6" 
                 maxlength="50"
-                oninvalid="this.setCustomValidity('La contraseña de be tener un mínimo de 6 caracteres y al menos un símbolo especial (*, !, @, #, etc...)')" 
-                oninput="this.setCustomValidity('')")
+                pattern=".*[@$!%*?&#._\\-].*"
+                oninvalid="validarPass(this)"
+                oninput="validarPass(this)"
+            )
 
             button.boton(type="submit") Ingresar
+
+    script.
+      function validarPass(input) {
+        const valor = input.value;
+        const regexEspecial = /[@$!%*?&#._\-]/;
+
+        if (input.validity.valueMissing) {
+          input.setCustomValidity('Por favor ingresá tu contraseña');
+        } else if (valor.length < 6) {
+          input.setCustomValidity('La contraseña debe tener al menos 6 caracteres');
+        } else if (!regexEspecial.test(valor)) {
+          input.setCustomValidity('La contraseña debe incluir al menos un símbolo especial (*, !, @, #, $, etc.)');
+        } else {
+          input.setCustomValidity(''); // Válido, limpia el error para permitir enviar
+        }
+      }
