@@ -18,18 +18,20 @@ block content
             )
 
             label(for="password") Contraseña
-            input#password(
-                type="password" 
-                name="password" 
-                required 
-                minlength="6" 
-                maxlength="50"
-                pattern=".*[@$!%*?&#._\\-].*"
-                oninvalid="validarPass(this)"
-                oninput="validarPass(this)"
-            )
+            .input-pass
+                input#password(
+                    type="password" 
+                    name="password" 
+                    required 
+                    minlength="6" 
+                    maxlength="50"
+                    pattern=".*[@$!%*?&#._\\-].*"
+                    oninvalid="validarPass(this)"
+                    oninput="validarPass(this)"
+                )
+                button.toggle-pass(type="button" onclick="togglePassword()" title="Ver contraseña"): i#eyeIcon.fa-regular.fa-eye-slash
 
-            button.boton(type="submit") Ingresar
+            button.boton(type="submit" disabled=bloqueado) Ingresar
 
     script.
       function validarPass(input) {
@@ -46,3 +48,16 @@ block content
           input.setCustomValidity(''); // Válido, limpia el error para permitir enviar
         }
       }
+
+      function togglePassword() {
+        const input = document.getElementById('password');
+        const icon = document.getElementById('eyeIcon');
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.replace('fa-eye-slash', 'fa-eye'); // cerrado → abierto
+        } else {
+          input.type = 'password';
+          icon.classList.replace('fa-eye', 'fa-eye-slash'); // abierto → cerrado
+        }
+      }
+    
