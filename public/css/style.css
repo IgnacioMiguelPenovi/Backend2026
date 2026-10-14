@@ -122,6 +122,35 @@ ul.detalle {
   margin-top: 1.5rem;
 }
 
+.acciones form {
+  display: flex;
+  align-items: center;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.acciones a.boton,
+.acciones button {
+  width: 130px;          
+  height: 40px;          
+  display: flex;         
+  justify-content: center; 
+  align-items: center;   
+  margin: 0;             
+  padding: 0;            
+  line-height: normal;
+  text-align: center;
+}
+
+.acciones {
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
 a.boton.grande {
   display: flex;
   width: max-content;
@@ -223,4 +252,25 @@ form.logout {
 
 .salir:hover {
   background-color: #b71c1c;
+}
+
+/* 1. Permitimos que el contenedor principal sea más ancho solo para la tabla */
+main:has(table) {
+  max-width: 1200px;
+}
+
+/* 2. Evitamos que los botones "Ver" y "Editar" se apilen verticalmente */
+td:last-child {
+  white-space: nowrap;
+}
+
+/* 3. Ajuste menor de margen para los botones internos de la tabla */
+td a.boton {
+  margin: 0 4px;
+}
+
+.volver {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
 }

@@ -19,14 +19,14 @@ block content
     li
       strong Sucursal:
       |  #{alumno.sucursal}
-    li
-      strong Turno:
-      |  #{alumno.turnoDia} - #{alumno.turnoHorario}
-
+    li 
+      strong Fecha de Nacimiento:
+      |  #{alumno.fechaNacimiento ? alumno.fechaNacimiento.toISOString().split('T')[0] : 'No informado'}
 
 
   .acciones
     a.boton(href=`/alumnos/${alumno._id}/editar`) Editar
+    
     if activo
       form(action=`/alumnos/${alumno._id}/desactivar` method="POST" onsubmit="return confirm('¿Seguro que querés desactivar a este alumno?')")
         button.desactivar(type="submit") Desactivar
@@ -35,4 +35,4 @@ block content
         button(type="submit") Activar
 
   .volver 
-   a(href="/alumnos") Volver al listado
+    a(href="/alumnos") Volver al listado
