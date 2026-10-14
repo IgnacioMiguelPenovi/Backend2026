@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const AlumnoRepository = require('../models/AlumnoRepository');
-const { SUCURSALES, DIAS, HORARIOS } = require('../config/opciones');
+const { SUCURSALES } = require('../config/opciones');
 
 const alumnoRepository = new AlumnoRepository();
 
@@ -17,9 +17,7 @@ router.get('/', async (req, res, next) => {
 router.get('/nuevo', (req, res) => {
   res.render('alumnos/formulario', {
     alumno: null,
-    sucursales: SUCURSALES,
-    dias: DIAS,
-    horarios: HORARIOS
+    sucursales: SUCURSALES
   });
 });
 
@@ -52,9 +50,7 @@ router.get('/:id/editar', async (req, res, next) => {
     }
     res.render('alumnos/formulario', {
       alumno,
-      sucursales: SUCURSALES,
-      dias: DIAS,
-      horarios: HORARIOS
+      sucursales: SUCURSALES
     });
   } catch (error) {
     next(error);

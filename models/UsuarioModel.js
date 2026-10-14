@@ -27,9 +27,45 @@ const usuarioSchema = new mongoose.Schema({
   activo: { type: Boolean, default: true },
   sucursal: { type: String, enum: SUCURSALES, required: tieneSucursal },
 
+    // --- NUEVOS CAMPOS GLOBALES ---
+    dni: { 
+    type: String, 
+    required: [true, 'El DNI es obligatorio'],
+    match: [/^\d+$/, 'El DNI debe contener solo números'] // Comprueba que sean solo dígitos
+  },
+
+  email: { type: String, required: [true, 'El Email es obligatorio'], trim: true },
+
+  telefono: { 
+    type: String, 
+    trim: true,
+    minlength: [10, 'El teléfono debe tener un mínimo de 10 caracteres'],
+    maxlength: [12, 'El teléfono no puede superar los 12 caracteres'],
+    match: [/^\d+$/, 'El teléfono debe contener solo números'] 
+  },
+
+
+  //Fecha de Nacimiento: Mayor de 18 años al día de inscripción
+  fechaNacimiento: { 
+    type: Date,
+    validate: {
+      validator: function(valor) {
+        // Si no cargan la fecha y no es requerida, pasa la validación
+        if (!valor) return true; 
+        
+        const hoy = new Date();
+        const fechaMinima = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
+        
+        // El valor ingresado debe ser anterior o igual a la fecha de hace 18 años
+        return valor <= fechaMinima;
+      },
+      message: 'El alumno debe ser mayor de 18 años para inscribirse.'
+    }
+  },
+
   // solo alumnos
-  turnoDia: { type: String, enum: DIAS, required: esAlumno },
-  turnoHorario: { type: String, enum: HORARIOS, required: esAlumno },
+  /*turnoDia: { type: String, enum: DIAS, required: esAlumno },
+  turnoHorario: { type: String, enum: HORARIOS, required: esAlumno },*/
 
   // solo profesores
   dias: {

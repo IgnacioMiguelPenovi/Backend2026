@@ -30,12 +30,115 @@ block content
       oninput="this.setCustomValidity('')"
     )
 
+    label(for="dni") DNI
+    input(
+      type="text" 
+      id="dni" 
+      name="dni" 
+      value=alumno ? alumno.dni : '' 
+      required 
+      maxlength="8"
+      placeholder="Ej. 12345678"
+      oninput="validarDNI(this)"
+    )
+    span#error-dni(style="color: red; display: none; font-size: 0.85em; margin-top: 5px;") El DNI debe contener solo números.
+
+    label(for="email") Email
+    input(
+      type="email" 
+      id="email"
+      name="email" 
+      value=alumno ? alumno.email : '' 
+      required
+      oninvalid="this.setCustomValidity('Por favor, ingrese un correo electrónico válido')"
+      oninput="this.setCustomValidity('')"
+    )
+
+    label(for="telefono") Teléfono
+    input(
+      type="tel" 
+      id="telefono"
+      name="telefono" 
+      value=alumno ? alumno.telefono : '' 
+      placeholder="Ej: 1112345678"
+      maxlength="12"
+      oninput="validarTelefono(this)"
+    )
+    span#error-telefono(style="color: red; display: none; font-size: 0.85em; margin-top: 5px;") El teléfono debe contener solo números (sin letras, espacios ni guiones).
+
+
+    label(for="fechaNacimiento") Fecha de Nacimiento
+    input(
+      type="date" 
+      id="fechaNacimiento" 
+      name="fechaNacimiento" 
+      value=(alumno && alumno.fechaNacimiento) ? new Date(alumno.fechaNacimiento).toISOString().split('T')[0] : ""
+      required
+      oninput="validarEdad(this)"
+    )
+    span#error-edad(style="color: red; display: none; font-size: 0.85em; margin-top: 5px;") La edad debe ser mayor o igual a 18 años.
+
+
     label(for="sucursal") Sucursal
     select(id="sucursal" name="sucursal" required)
       option(value="" disabled selected=(!alumno || !alumno.sucursal)) Seleccione una sucursal
       each sucursal in sucursales
         option(value=sucursal selected=(alumno && alumno.sucursal === sucursal))= sucursal
 
+    .acciones
+      button(type="submit")= alumno ? 'Guardar cambios' : 'Inscribir alumno'
+      a.boton.grande.cancelar(href="/index") Cancelar
+
+      script.
+        function validarTelefono(input) {
+          const errorSpan = document.getElementById('error-telefono');
+      
+          // Si contiene letras, espacios, guiones o caracteres especiales
+          if (/[^0-9]/.test(input.value)) {
+            errorSpan.style.display = 'block'; // Muestra el cartel rojo
+            input.value = input.value.replace(/[^0-9]/g, ''); // Borra lo que no sea número
+          } else {
+            errorSpan.style.display = 'none'; // Oculta el mensaje si está correcto
+          }
+        }
+        
+        function validarDNI(input) {
+          const errorSpan = document.getElementById('error-dni');
+      
+          // Si el valor contiene algo que NO sea un número del 0 al 9
+          if (/[^0-9]/.test(input.value)) {
+            errorSpan.style.display = 'block'; // Mostramos el cartel rojo
+            input.value = input.value.replace(/[^0-9]/g, ''); // Limpiamos las letras
+          } else {
+            errorSpan.style.display = 'none'; // Ocultamos el cartel si está limpio
+          }
+        }
+
+        function validarEdad(input) {
+          if (!input.value) {
+            input.setCustomValidity('');
+            return;
+          }
+
+        // Convertimos la fecha ingresada por el usuario
+        const [anio, mes, dia] = input.value.split('-').map(Number);
+        const fechaNacimiento = new Date(anio, mes - 1, dia);
+      
+        // Calculamos la fecha exacta de hoy menos 18 años
+        const hoy = new Date();
+        const fechaLimite = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
+
+        // Si la fecha de nacimiento es posterior a la límite, es menor de 18
+        if (fechaNacimiento > fechaLimite) {
+          input.setCustomValidity('El alumno debe ser mayor de 18 años para inscribirse.');
+          input.reportValidity(); // Muestra el cartel de error nativo del navegador inmediatamente
+        } else {
+         input.setCustomValidity(''); // Remueve el error y permite enviar
+          }
+        }
+
+
+  //
     label(for="fechaCalendario") Fecha del turno
     input#fechaCalendario(type="date" required)
 
@@ -47,10 +150,6 @@ block content
       option(value="" disabled selected=(!alumno || !alumno.turnoHorario)) Seleccione una hora
       each horario in horarios
         option(value=horario selected=(alumno && alumno.turnoHorario === horario))= horario
-
-    .acciones
-      button(type="submit")= alumno ? 'Guardar cambios' : 'Aceptar'
-      a.boton.grande.cancelar(href="/index") Cancelar
 
     script.
       const inputFecha = document.getElementById('fechaCalendario');
