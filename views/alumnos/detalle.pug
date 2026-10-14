@@ -5,6 +5,15 @@ block content
   h2= `${alumno.nombre} ${alumno.apellido}`
   ul.detalle
     li
+      strong DNI:
+      |  #{alumno.dni || 'No informado'}
+    li
+      strong Email:
+      |  #{alumno.email || 'No informado'}
+    li
+      strong Teléfono:
+      |  #{alumno.telefono || 'No informado'}
+    li
       strong Estado:
       | #{activo ? 'Activo' : 'Inactivo'}
     li

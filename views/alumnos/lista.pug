@@ -11,24 +11,29 @@ block content
         tr
           th Nombre
           th Apellido
+          th DNI
+          th Email
+          th Teléfono
+          th Fecha de Nacimiento
           th Sucursal
-          th Turno
           th Estado
-          th
+          th Acciones
       tbody
         each alumno in alumnos
           - const activo = alumno.activo !== false
           tr
             td= alumno.nombre
             td= alumno.apellido
+            td= alumno.dni || '-' 
+            td= alumno.email || '-'
+            td= alumno.telefono || '-'
+            td= alumno.fechaNacimiento ? alumno.fechaNacimiento.toISOString().split('T')[0] : '-'
             td= alumno.sucursal
-            td= `${alumno.turnoDia} - ${alumno.turnoHorario}`
             td= activo ? 'Activo' : 'Inactivo'
             td
-
               a.boton(href=`/alumnos/${alumno._id}`) Ver              
               a.boton(href=`/alumnos/${alumno._id}/editar`) Editar
 
-    .enlaces
-      a.boton.grande(href="/alumnos/nuevo") Inscribir alumno
-      a.boton.grande(href="/index") Volver al Inicio
+  .enlaces
+    a.boton.grande(href="/alumnos/nuevo") Inscribir alumno
+    a.boton.grande(href="/index") Volver al Inicio
