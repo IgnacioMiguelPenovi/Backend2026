@@ -38,12 +38,12 @@ const usuarioSchema = new mongoose.Schema({
 
   telefono: { 
     type: String, 
+    required: [true, 'El teléfono es obligatorio'],
     trim: true,
     minlength: [10, 'El teléfono debe tener un mínimo de 10 caracteres'],
     maxlength: [12, 'El teléfono no puede superar los 12 caracteres'],
-    match: [/^\d+$/, 'El teléfono debe contener solo números'] 
+    match: [/^\d+$/, 'El teléfono debe contener solo números']
   },
-
 
   //Fecha de Nacimiento: Mayor de 18 años al día de inscripción
   fechaNacimiento: { 

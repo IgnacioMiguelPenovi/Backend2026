@@ -61,11 +61,12 @@ block content
       name="telefono" 
       value=alumno ? alumno.telefono : '' 
       placeholder="Ej: 1112345678"
+      minlength="10"
       maxlength="12"
+      required
       oninput="validarTelefono(this)"
     )
     span#error-telefono(style="color: red; display: none; font-size: 0.85em; margin-top: 5px;") El teléfono debe contener solo números (sin letras, espacios ni guiones).
-
 
     label(for="fechaNacimiento") Fecha de Nacimiento
     input(
@@ -89,36 +90,36 @@ block content
       button(type="submit")= alumno ? 'Guardar cambios' : 'Inscribir alumno'
       a.boton.grande.cancelar(href="/index") Cancelar
 
-      script.
-        function validarTelefono(input) {
-          const errorSpan = document.getElementById('error-telefono');
+    script.
+      function validarTelefono(input) {
+        const errorSpan = document.getElementById('error-telefono');
       
-          // Si contiene letras, espacios, guiones o caracteres especiales
-          if (/[^0-9]/.test(input.value)) {
-            errorSpan.style.display = 'block'; // Muestra el cartel rojo
-            input.value = input.value.replace(/[^0-9]/g, ''); // Borra lo que no sea número
-          } else {
-            errorSpan.style.display = 'none'; // Oculta el mensaje si está correcto
-          }
+        // Solo evalúa caracteres incorrectos si el campo tiene texto
+        if (input.value && /[^0-9]/.test(input.value)) {
+          errorSpan.style.display = 'block';
+          input.value = input.value.replace(/[^0-9]/g, '');
+        } else {
+          errorSpan.style.display = 'none';
         }
+      }
         
-        function validarDNI(input) {
-          const errorSpan = document.getElementById('error-dni');
+      function validarDNI(input) {
+        const errorSpan = document.getElementById('error-dni');
       
-          // Si el valor contiene algo que NO sea un número del 0 al 9
-          if (/[^0-9]/.test(input.value)) {
-            errorSpan.style.display = 'block'; // Mostramos el cartel rojo
-            input.value = input.value.replace(/[^0-9]/g, ''); // Limpiamos las letras
-          } else {
-            errorSpan.style.display = 'none'; // Ocultamos el cartel si está limpio
-          }
+        // Si el valor contiene algo que NO sea un número del 0 al 9
+        if (/[^0-9]/.test(input.value)) {
+          errorSpan.style.display = 'block'; // Mostramos el cartel rojo
+          input.value = input.value.replace(/[^0-9]/g, ''); // Limpiamos las letras
+        } else {
+          errorSpan.style.display = 'none'; // Ocultamos el cartel si está limpio
         }
+      }
 
-        function validarEdad(input) {
-          if (!input.value) {
-            input.setCustomValidity('');
-            return;
-          }
+      function validarEdad(input) {
+        if (!input.value) {
+          input.setCustomValidity('');
+          return;
+        }
 
         // Convertimos la fecha ingresada por el usuario
         const [anio, mes, dia] = input.value.split('-').map(Number);
@@ -135,7 +136,7 @@ block content
         } else {
          input.setCustomValidity(''); // Remueve el error y permite enviar
           }
-        }
+      }
 
 
   //
