@@ -10,9 +10,12 @@ html(lang="es")
   body
     header
       h1
-        a(href="/") TurnoFlex
         if usuario
-          form.logout(method="POST" action="/logout")
+          a(href="/index") TurnoFlex
+        else
+          a(href="/") TurnoFlex
+      if usuario
+          form.logout(method="POST" action="/logout" id="logoutForm")
             button.salir(type="submit") Cerrar Sesión
     main
       block content
