@@ -2,8 +2,18 @@ const express = require('express');
 const router = express.Router();
 const AlumnoRepository = require('../models/AlumnoRepository');
 const { SUCURSALES } = require('../config/opciones');
+const {
+  registrarActividad,
+  obtenerCambios,
+  obtenerCamposCreados
+} = require('../utils/auditoria');
 
 const alumnoRepository = new AlumnoRepository();
+
+function requiereSesion(req, res, next) {
+  if (!req.session?.usuario) return res.redirect('/login');
+  next();
+}
 
 router.get('/', async (req, res, next) => {
   try {
@@ -23,7 +33,20 @@ router.get('/nuevo', (req, res) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    await alumnoRepository.crear(req.body);
+    const alumno = await alumnoRepository.crear(req.body);
+    await registrarActividad(req, {
+      accion: 'ALUMNO_CREADO',
+      entidad: 'Usuario',
+      entidadId: alumno._id,
+      cambios: obtenerCamposCreados(alumno),
+      // El alta desde "Registrarse" es pública; en ese caso el actor es la cuenta creada.
+      actorAlternativo: {
+        id: alumno._id,
+        usuario: alumno.usuario,
+        nombre: alumno.nombre,
+        rol: alumno.rol
+      }
+    });
     res.redirect('/alumnos');
   } catch (error) {
     next(error);
@@ -36,13 +59,18 @@ router.get('/:id', async (req, res, next) => {
     if (!alumno) {
       return res.status(404).render('404');
     }
-    res.render('alumnos/detalle', { alumno });
+    res.render('alumnos/detalle', {
+      alumno,
+      mensaje: req.query.mensaje === 'editado'
+        ? 'Alumno editado exitosamente.'
+        : null
+    });
   } catch (error) {
     next(error);
   }
 });
 
-router.get('/:id/editar', async (req, res, next) => {
+router.get('/:id/editar', requiereSesion, async (req, res, next) => {
   try {
     const alumno = await alumnoRepository.obtenerPorId(req.params.id);
     if (!alumno) {
@@ -57,27 +85,60 @@ router.get('/:id/editar', async (req, res, next) => {
   }
 });
 
-router.post('/:id', async (req, res, next) => {
+router.post('/:id', requiereSesion, async (req, res, next) => {
   try {
-    await alumnoRepository.actualizar(req.params.id, req.body);
-    res.redirect(`/alumnos/${req.params.id}`);
+    const anterior = await alumnoRepository.obtenerPorId(req.params.id);
+    if (!anterior) return res.status(404).render('404');
+
+    const alumno = await alumnoRepository.actualizar(req.params.id, req.body);
+    if (!alumno) return res.status(404).render('404');
+
+    await registrarActividad(req, {
+      accion: 'ALUMNO_ACTUALIZADO',
+      entidad: 'Usuario',
+      entidadId: alumno._id,
+      cambios: obtenerCambios(anterior, alumno)
+    });
+    res.redirect(`/alumnos/${req.params.id}?mensaje=editado`);
   } catch (error) {
     next(error);
   }
 });
 
-router.post('/:id/desactivar', async (req, res, next) => {
+router.post('/:id/desactivar', requiereSesion, async (req, res, next) => {
   try {
-    await alumnoRepository.cambiarEstado(req.params.id, false);
+    const anterior = await alumnoRepository.obtenerPorId(req.params.id);
+    if (!anterior) return res.status(404).render('404');
+
+    const alumno = await alumnoRepository.cambiarEstado(req.params.id, 'inactivo');
+    if (!alumno) return res.status(404).render('404');
+
+    await registrarActividad(req, {
+      accion: 'ALUMNO_ESTADO_CAMBIADO',
+      entidad: 'Usuario',
+      entidadId: alumno._id,
+      cambios: obtenerCambios(anterior, alumno)
+    });
     res.redirect('/alumnos');
   } catch (error) {
     next(error);
   }
 });
 
-router.post('/:id/activar', async (req, res, next) => {
+router.post('/:id/activar', requiereSesion, async (req, res, next) => {
   try {
-    await alumnoRepository.cambiarEstado(req.params.id, true);
+    const anterior = await alumnoRepository.obtenerPorId(req.params.id);
+    if (!anterior) return res.status(404).render('404');
+
+    const alumno = await alumnoRepository.cambiarEstado(req.params.id, 'activo');
+    if (!alumno) return res.status(404).render('404');
+
+    await registrarActividad(req, {
+      accion: 'ALUMNO_ESTADO_CAMBIADO',
+      entidad: 'Usuario',
+      entidadId: alumno._id,
+      cambios: obtenerCambios(anterior, alumno)
+    });
     res.redirect('/alumnos');
   } catch (error) {
     next(error);

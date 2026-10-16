@@ -97,16 +97,24 @@ block content
         maxlength="30"
       )
 
-    label(for="contrasena") Contraseña
-    input#contrasena(
-      type="password"
-      name="contrasena"
-      required
-      minlength="6"
-      maxlength="30"
-      oninput="validarPass(this)"
-      oninvalid="validarPass(this)"
-    )
+    if !alumno
+      label(for="contrasena") Contraseña
+      .input-pass
+        input#contrasena(
+          type="password"
+          name="contrasena"
+          required
+          minlength="6"
+          maxlength="30"
+          oninput="validarPass(this)"
+          oninvalid="validarPass(this)"
+        )
+        button.toggle-pass(
+          type="button"
+          onclick="togglePassword(this)"
+          title="Ver contraseña"
+          aria-label="Ver contraseña"
+        ): i.fa-regular.fa-eye-slash
 
     .acciones
       button(type="submit")= alumno ? 'Guardar cambios' : 'Aceptar'

@@ -115,11 +115,26 @@ block content
       input#usuario(type="text" name="usuario" required minlength="3" maxlength="30")
 
       label(for="contrasena") Contraseña
-      input#contrasena(type="password" name="contrasena" required minlength="6" maxlength="50")
+      .input-pass
+        input#contrasena(
+          type="password" 
+          name="contrasena" 
+          required 
+          minlength="6" 
+          maxlength="50"
+          oninvalid="validarPass(this)"
+          oninput="validarPass(this)"
+        )
+        button.toggle-pass(
+          type="button"
+          onclick="togglePassword(this)"
+          title="Ver contraseña"
+          aria-label="Ver contraseña"
+        ): i.fa-regular.fa-eye-slash
 
     .enlaces
       button(type="submit")= persona ? 'Guardar cambios' : 'Inscribir personal'
-      a.boton.cancelar(href="/personal") Cancelar
+      a.boton.cancelar(href="/index") Cancelar
 
   script.
     function actualizarCamposRol() {
@@ -136,7 +151,7 @@ block content
     }
 
     actualizarCamposRol();
-  
+
     function validarPass(input) {
         const valor = input.value;
         const regexEspecial = /[@$!%*?&#._-]/;
