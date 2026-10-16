@@ -56,8 +56,19 @@ class PersonalRepository {
   }
 
   crear(datos) {
-    return Usuario.create(prepararDatos(datos));
+  const usuario = String(datos.usuario || '').trim().toLowerCase();
+  const contrasena = String(datos.contrasena || '');
+
+  if (!usuario || !contrasena) {
+    throw new Error('El usuario y la contraseña son obligatorios');
   }
+
+  return Usuario.create({
+    ...prepararDatos(datos),
+    usuario,
+    contrasena
+  });
+}
 
   async actualizar(id, datos) {
     if (!mongoose.isValidObjectId(id)) return null;

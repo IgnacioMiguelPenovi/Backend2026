@@ -87,9 +87,44 @@ block content
       each sucursal in sucursales
         option(value=sucursal selected=(alumno && alumno.sucursal === sucursal))= sucursal
 
+    if !alumno
+      label(for="usuario") Usuario
+      input#usuario(
+        type="text"
+        name="usuario"
+        required
+        minlength="3"
+        maxlength="30"
+      )
+
+    label(for="contrasena") Contraseña
+    input#contrasena(
+      type="password"
+      name="contrasena"
+      required
+      minlength="6"
+      maxlength="30"
+      oninput="validarPass(this)"
+      oninvalid="validarPass(this)"
+    )
+
     .acciones
       button(type="submit")= alumno ? 'Guardar cambios' : 'Aceptar'
-      a.boton.grande.cancelar(href="/alumnos") Cancelar
+      a.boton.grande.cancelar(href="/index") Cancelar
+
+    script.
+      function validarPass(input) {
+        const valor = input.value;
+        const regexEspecial = /[@$!%*?&#._-]/;
+
+        if (input.validity.valueMissing) {
+          input.setCustomValidity('Por favor ingresá tu contraseña');
+        } else if (valor.length < 6 || !regexEspecial.test(valor)) {
+          input.setCustomValidity('La contraseña debe tener al menos 6 caracteres e incluir un símbolo especial (@, !, #, $, etc.)');
+        } else {
+          input.setCustomValidity('');
+        }
+      }
 
   script(src="/js/validaciones.js")
 

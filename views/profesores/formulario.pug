@@ -77,6 +77,25 @@ block content
         label.checkbox
           input(type="checkbox" name="horarios" value=horario checked=(profesor && profesor.horarios.includes(horario)))
           |  #{horario}
+
+          if !
+            label(for="usuario") Usuario
+            input#usuario(
+              type="text"
+              name="usuario"
+              required
+              minlength="3"
+              maxlength="30"
+          )
+
+          label(for="contrasena") Contraseña
+          input#contrasena(
+            type="password"
+            name="contrasena"
+            required
+            minlength="6"
+            maxlength="50"
+          )
     .enlaces
       button(type="submit")= profesor ? 'Guardar cambios' : 'Inscribir profesor'
       a.boton.cancelar(href="/profesores") Cancelar

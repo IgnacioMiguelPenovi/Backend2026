@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const Usuario = require('../models/UsuarioModel');
 
 const MIN_USER = 3;
 const MAX_USER = 30;
@@ -25,7 +26,7 @@ router.get('/', (req, res) => {
   res.render('login');
 });
 
-router.post('/', (req, res) => {
+router.post('/',async (req, res, next) => {
   // Inicializar contador si no existe
   req.session.intentos = req.session.intentos || 0;
 
@@ -86,7 +87,24 @@ router.post('/', (req, res) => {
     return fallarIntento('La contraseña debe incluir al menos un carácter especial (*, !, @, #, $, %, etc.)');
   }
 
-  // (Si verificás contra Base de Datos en un futuro, el error de usuario/contraseña incorrectos también llamaría a fallarIntento)
+  // VERIFICACIÓN CON LA BD DE MONGO
+    let usuarioDB;
+
+  try {
+    usuarioDB = await Usuario.findOne({
+      usuario: usuarioLimpio.toLowerCase()
+    }).select('+contrasena');
+  } catch (error) {
+    return next(error);
+  }
+
+  if (
+    !usuarioDB ||
+    usuarioDB.contrasena !== password ||
+    usuarioDB.activo === false
+  ) {
+    return fallarIntento('Usuario o contraseña incorrectos');
+  }
 
   // SI EL INICIO ES EXITOSO:
   // Se resetean los intentos y se crea la sesión
@@ -94,7 +112,10 @@ router.post('/', (req, res) => {
   delete req.session.bloqueadoHasta;
 
   req.session.usuario = {
-    nombre: usuarioLimpio
+    id: usuarioDB._id,
+    nombre: usuarioDB.nombre,
+    usuario: usuarioDB.usuario,
+    rol: usuarioDB.rol
   };
 
   res.redirect('/index');
