@@ -36,13 +36,14 @@ class AlumnoRepository {
     return alumno.toObject();
   }
 
-  async cambiarEstado(id, activo) {
+  async cambiarEstado(id, estado) {
     if (!mongoose.isValidObjectId(id)) return false;
-    const resultado = await Usuario.findOneAndUpdate(
+    if (typeof estado === 'boolean') estado = estado ? 'activo' : 'inactivo';
+    return Usuario.findOneAndUpdate(
       { _id: id, rol: 'alumno' },
-      { activo }
+      { $set: { estado } },
+      { new: true, runValidators: true }
     );
-    return resultado !== null;
   }
 }
 
