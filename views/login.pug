@@ -32,6 +32,7 @@ block content
                 button.toggle-pass(type="button" onclick="togglePassword()" title="Ver contraseña"): i#eyeIcon.fa-regular.fa-eye-slash
 
             button.boton(type="submit" disabled=bloqueado) Ingresar
+            button.boton(type="button" onclick="window.location.href='/register'" disabled=bloqueado) Registrarse
 
     script.
       function validarPass(input) {
