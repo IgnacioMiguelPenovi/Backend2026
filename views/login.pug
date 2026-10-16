@@ -32,33 +32,34 @@ block content
                 button.toggle-pass(type="button" onclick="togglePassword()" title="Ver contraseña"): i#eyeIcon.fa-regular.fa-eye-slash
 
             button.boton(type="submit" disabled=bloqueado) Ingresar
-            button.boton(type="button" onclick="window.location.href='/register'" disabled=bloqueado) Registrarse
+            button.boton(type="button" onclick="window.location.href='/alumnos/nuevo'" disabled=bloqueado) Registrarse
 
     script.
       function validarPass(input) {
         const valor = input.value;
-        const regexEspecial = /[@$!%*?&#._\-]/;
+        const regexEspecial = /[@$!%*?&#._-]/;
 
         if (input.validity.valueMissing) {
           input.setCustomValidity('Por favor ingresá tu contraseña');
-        } else if (valor.length < 6) {
-          input.setCustomValidity('La contraseña debe tener al menos 6 caracteres');
-        } else if (!regexEspecial.test(valor)) {
-          input.setCustomValidity('La contraseña debe incluir al menos un símbolo especial (*, !, @, #, $, etc.)');
+        } else if (valor.length < 6 || !regexEspecial.test(valor)) {
+          input.setCustomValidity(
+            'La contraseña debe tener al menos 6 caracteres e incluir un símbolo especial'
+          );
         } else {
-          input.setCustomValidity(''); // Válido, limpia el error para permitir enviar
+          input.setCustomValidity('');
         }
       }
 
       function togglePassword() {
         const input = document.getElementById('password');
         const icon = document.getElementById('eyeIcon');
+
         if (input.type === 'password') {
           input.type = 'text';
-          icon.classList.replace('fa-eye-slash', 'fa-eye'); // cerrado → abierto
+          icon.classList.replace('fa-eye-slash', 'fa-eye');
         } else {
           input.type = 'password';
-          icon.classList.replace('fa-eye', 'fa-eye-slash'); // abierto → cerrado
+          icon.classList.replace('fa-eye', 'fa-eye-slash');
         }
       }
     

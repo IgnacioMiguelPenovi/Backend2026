@@ -12,7 +12,19 @@ class AlumnoRepository {
   }
 
   crear(datos) {
-    return Usuario.create({ ...datos, rol: 'alumno'});
+    const usuario = String(datos.usuario || '').trim().toLowerCase();
+    const contrasena = String(datos.contrasena || '');
+
+    if (!usuario || !contrasena) {
+      throw new Error('El usuario y la contraseña son obligatorios');
+    }
+
+    return Usuario.create( {
+      ...datos,
+      usuario,
+      contrasena,
+      rol: 'alumno'
+    });
   }
 
   async actualizar(id, datos) {

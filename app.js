@@ -5,6 +5,7 @@ const session = require('express-session');
 const path = require('path');
 const morgan = require('morgan');
 const logger = require('./middlewares/logger');
+const personalRouter = require('./routes/personal');
 
 const indexRouter = require('./routes/index');
 const alumnosRouter = require('./routes/alumnos');
@@ -42,7 +43,8 @@ app.use('/profesores', profesoresRouter);
 app.use('/api/alumnos', alumnosApiRouter);
 app.use('/api/profesores', profesoresApiRouter);
 app.use('/login', loginRouter);
-app.use('/register', registerRouter)
+app.use('/register', registerRouter);
+app.use('/personal', personalRouter);
 
 
 app.post('/logout', (req, res) => {

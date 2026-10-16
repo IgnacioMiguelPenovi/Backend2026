@@ -1,30 +1,50 @@
 const mongoose = require('mongoose');
 const { SUCURSALES, DIAS, HORARIOS } = require('../config/opciones');
 
-const ROLES = ['alumno', 'profesor', 'administrador', 'gerencia'];
+const ROLES = ['alumno', 'profesor', 'administrador', 'empleado', 'gerencia'];
 
 const esAlumno = function () { return this.rol === 'alumno'; };
 const esProfesor = function () { return this.rol === 'profesor'; };
-const tieneSucursal = function () { return ['alumno', 'profesor'].includes(this.rol); };
+const esAdmin = function () { return this.rol === 'administrador'; };
+const esEmpleado = function () { return this.rol === 'empleado'; };
+const esGerencia = function () { return this.rol === 'gerencia'; };
+const tieneSucursal = function () { return ['alumno', 'profesor', 'administrador', 'empleado', 'gerencia'].includes(this.rol); };
 
 const usuarioSchema = new mongoose.Schema({
-    nombre: {
-    type: String,
-    required: [true, 'El nombre es obligatorio'],
-    trim: true,
-    minlength: [2, 'El nombre debe tener al menos 2 caracteres'],
-    maxlength: [50, 'El nombre no puede exceder los 50 caracteres']
-  },
+  nombre: {
+  type: String,
+  required: [true, 'El nombre es obligatorio'],
+  trim: true,
+  minlength: [2, 'El nombre debe tener al menos 2 caracteres'],
+  maxlength: [50, 'El nombre no puede exceder los 50 caracteres']
+},
   apellido: {
-    type: String,
+  type: String,
     required: [true, 'El apellido es obligatorio'],
-    trim: true,
-    minlength: [2, 'El apellido debe tener al menos 2 caracteres'],
-    maxlength: [50, 'El apellido no puede exceder los 50 caracteres']
-  },
+  trim: true,
+  minlength: [2, 'El apellido debe tener al menos 2 caracteres'],
+  maxlength: [50, 'El apellido no puede exceder los 50 caracteres']
+},
+  usuario: {
+  type: String,
+  trim: true,
+  lowercase: true,
+  unique: true,
+  sparse: true
+},
+  contrasena: {
+  type: String,
+  minlength: 6,
+  select: false
+},
   
   rol: { type: String, required: true, enum: ROLES },
-  activo: { type: Boolean, default: true },
+  estado: { 
+    type: String, 
+    enum: ['activo', 'inactivo', 'licencia'],
+    default: 'activo',
+    required: true
+   },
   sucursal: { type: String, enum: SUCURSALES, required: tieneSucursal },
 
     // --- NUEVOS CAMPOS GLOBALES ---

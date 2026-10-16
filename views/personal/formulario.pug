@@ -1,0 +1,153 @@
+extends ../layout
+
+block content
+  h2= persona ? 'Editar personal' : 'Inscribir personal'
+
+  form(
+    action=persona ? `/personal/${persona._id}` : '/personal'
+    method="POST"
+  )
+    label(for="rol") Tipo de personal
+    select#rol(name="rol" required onchange="actualizarCamposRol()")
+      option(value="" disabled selected=(!persona)) Seleccioná un rol
+      option(value="profesor" selected=(persona && persona.rol === 'profesor')) Profesor
+      option(value="empleado" selected=(persona && persona.rol === 'empleado')) Empleado
+      option(value="gerencia" selected=(persona && persona.rol === 'gerencia')) Gerencia
+
+    label(for="nombre") Nombre
+    input#nombre(
+      type="text"
+      name="nombre"
+      value=persona ? persona.nombre : ''
+      required
+      minlength="2"
+      maxlength="50"
+    )
+
+    label(for="apellido") Apellido
+    input#apellido(
+      type="text"
+      name="apellido"
+      value=persona ? persona.apellido : ''
+      required
+      minlength="2"
+      maxlength="50"
+    )
+
+    label(for="dni") DNI
+    input#dni(
+      type="text"
+      name="dni"
+      value=persona ? persona.dni : ''
+      required
+      minlength="7"
+      maxlength="8"
+      oninput="validarDNI(this)"
+    )
+    span#error-dni(style="color: red; display: none;") El DNI debe contener solo números.
+
+    label(for="email") Email
+    input#email(
+      type="email"
+      name="email"
+      value=persona ? persona.email : ''
+      required
+    )
+
+    label(for="telefono") Teléfono
+    input#telefono(
+      type="tel"
+      name="telefono"
+      value=persona ? persona.telefono : ''
+      minlength="10"
+      maxlength="12"
+      required
+      oninput="validarTelefono(this)"
+    )
+    span#error-telefono(style="color: red; display: none;") El teléfono debe contener solo números.
+
+    label(for="fechaNacimiento") Fecha de nacimiento
+    input#fechaNacimiento(
+      type="date"
+      name="fechaNacimiento"
+      value=(persona && persona.fechaNacimiento) ? new Date(persona.fechaNacimiento).toISOString().split('T')[0] : ''
+      required
+      onchange="validarEdad(this)"
+    )
+    span#error-edad(style="color: red; display: none;") La edad debe ser mayor o igual a 18 años.
+
+    #camposProfesor(style=(persona && persona.rol === 'profesor') ? '' : 'display:none')
+      label(for="sucursal") Sucursal
+      select#sucursal(name="sucursal")
+        option(value="") Seleccioná una sucursal
+        each sucursal in sucursales
+          option(
+            value=sucursal
+            selected=(persona && persona.sucursal === sucursal)
+          )= sucursal
+
+      label Días disponibles
+      .checkboxes
+        each dia in dias
+          label.checkbox
+            input(
+              type="checkbox"
+              name="dias"
+              value=dia
+              checked=(persona && persona.dias && persona.dias.includes(dia))
+            )
+            |  #{dia}
+
+      label Horarios disponibles
+      .checkboxes
+        each horario in horarios
+          label.checkbox
+            input(
+              type="checkbox"
+              name="horarios"
+              value=horario
+              checked=(persona && persona.horarios && persona.horarios.includes(horario))
+            )
+            |  #{horario}
+
+    if !persona
+      label(for="usuario") Usuario
+      input#usuario(type="text" name="usuario" required minlength="3" maxlength="30")
+
+      label(for="contrasena") Contraseña
+      input#contrasena(type="password" name="contrasena" required minlength="6" maxlength="50")
+
+    .enlaces
+      button(type="submit")= persona ? 'Guardar cambios' : 'Inscribir personal'
+      a.boton.cancelar(href="/personal") Cancelar
+
+  script.
+    function actualizarCamposRol() {
+      const esProfesor = document.getElementById('rol').value === 'profesor';
+      const camposProfesor = document.getElementById('camposProfesor');
+      const sucursal = document.getElementById('sucursal');
+
+      camposProfesor.style.display = esProfesor ? '' : 'none';
+      sucursal.required = esProfesor;
+
+      camposProfesor.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+        checkbox.disabled = !esProfesor;
+      });
+    }
+
+    actualizarCamposRol();
+  
+    function validarPass(input) {
+        const valor = input.value;
+        const regexEspecial = /[@$!%*?&#._-]/;
+
+        if (input.validity.valueMissing) {
+          input.setCustomValidity('Por favor ingresá tu contraseña');
+        } else if (valor.length < 6 || !regexEspecial.test(valor)) {
+          input.setCustomValidity('La contraseña debe tener al menos 6 caracteres e incluir un símbolo especial (@, !, #, $, etc.)');
+        } else {
+          input.setCustomValidity('');
+        }
+      }
+
+  script(src="/js/validaciones.js")

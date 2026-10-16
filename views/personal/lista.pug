@@ -1,0 +1,30 @@
+extends ../layout
+
+block content
+  h2 Personal registrado
+
+  if personas.length
+    table
+      thead
+        tr
+          th Nombre
+          th Apellido
+          th DNI
+          th Email
+          th Teléfono
+          th Rol
+          th Estado
+      tbody
+        each persona in personas
+          tr
+            td= persona.nombre
+            td= persona.apellido
+            td= persona.dni
+            td= persona.email
+            td= persona.telefono
+            td= persona.rol
+            td= persona.activo ? 'Activo' : 'Inactivo'
+  else
+    p Todavía no hay personal registrado.
+
+  a.boton(href="/personal/nuevo") Inscribir personal
