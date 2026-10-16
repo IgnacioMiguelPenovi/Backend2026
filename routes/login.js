@@ -101,7 +101,7 @@ router.post('/',async (req, res, next) => {
   if (
     !usuarioDB ||
     usuarioDB.contrasena !== password ||
-    usuarioDB.activo === false
+    usuarioDB.estado !== 'activo'
   ) {
     return fallarIntento('Usuario o contraseña incorrectos');
   }

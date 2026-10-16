@@ -39,7 +39,12 @@ const usuarioSchema = new mongoose.Schema({
 },
   
   rol: { type: String, required: true, enum: ROLES },
-  activo: { type: Boolean, default: true },
+  estado: { 
+    type: String, 
+    enum: ['activo', 'inactivo', 'licencia'],
+    default: 'activo',
+    required: true
+   },
   sucursal: { type: String, enum: SUCURSALES, required: tieneSucursal },
 
     // --- NUEVOS CAMPOS GLOBALES ---
