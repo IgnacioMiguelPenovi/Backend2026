@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
 const { SUCURSALES, DIAS, HORARIOS } = require('../config/opciones');
 
-const ROLES = ['alumno', 'profesor', 'administrador', 'gerencia'];
+const ROLES = ['alumno', 'profesor', 'administrador', 'empleado', 'gerencia'];
 
 const esAlumno = function () { return this.rol === 'alumno'; };
 const esProfesor = function () { return this.rol === 'profesor'; };
-const tieneSucursal = function () { return ['alumno', 'profesor'].includes(this.rol); };
+const esAdmin = function () { return this.rol === 'administrador'; };
+const esEmpleado = function () { return this.rol === 'empleado'; };
+const esGerencia = function () { return this.rol === 'gerencia'; };
+const tieneSucursal = function () { return ['alumno', 'profesor', 'administrador', 'empleado', 'gerencia'].includes(this.rol); };
 
 const usuarioSchema = new mongoose.Schema({
     nombre: {

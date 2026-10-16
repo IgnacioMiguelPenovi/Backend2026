@@ -88,7 +88,7 @@ block content
         option(value=sucursal selected=(alumno && alumno.sucursal === sucursal))= sucursal
 
     .acciones
-      button(type="submit")= alumno ? 'Guardar cambios' : 'Inscribir alumno'
+      button(type="submit")= alumno ? 'Guardar cambios' : 'Aceptar'
       a.boton.grande.cancelar(href="/alumnos") Cancelar
 
   script(src="/js/validaciones.js")
