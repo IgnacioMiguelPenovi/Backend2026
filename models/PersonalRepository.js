@@ -86,15 +86,15 @@ class PersonalRepository {
     return persona.toObject();
   }
 
-  async cambiarEstado(id, activo) {
+  async cambiarEstado(id, estado) {
     if (!mongoose.isValidObjectId(id)) return false;
+    if (typeof estado === 'boolean') estado = estado ? 'activo' : 'inactivo';
 
-    const persona = await Usuario.findOneAndUpdate(
+    return Usuario.findOneAndUpdate(
       { _id: id, rol: { $in: ROLES_PERSONAL } },
-      { $set: { activo } }
+      { $set: { estado } },
+      { new: true, runValidators: true }
     );
-
-    return persona !== null;
   }
 }
 

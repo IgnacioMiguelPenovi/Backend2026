@@ -23,7 +23,7 @@ block content
             td= persona.email
             td= persona.telefono
             td= persona.rol
-            td= persona.activo ? 'Activo' : 'Inactivo'
+            td= persona.estado === 'licencia' ? 'De licencia' : persona.estado === 'inactivo' ? 'Inactivo' : 'Activo'
   else
     p Todavía no hay personal registrado.
 

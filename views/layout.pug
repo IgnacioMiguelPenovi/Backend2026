@@ -19,3 +19,16 @@ html(lang="es")
             button.salir(type="submit") Cerrar Sesión
     main
       block content
+
+    script.
+      function togglePassword(button) {
+        const contenedor = button.closest('.input-pass');
+        const input = contenedor.querySelector('input');
+        const icono = button.querySelector('i');
+        const mostrar = input.type === 'password';
+
+        input.type = mostrar ? 'text' : 'password';
+        icono.classList.toggle('fa-eye', mostrar);
+        icono.classList.toggle('fa-eye-slash', !mostrar);
+        button.title = mostrar ? 'Ocultar contraseña' : 'Ver contraseña';
+      }
