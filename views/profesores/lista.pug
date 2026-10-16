@@ -11,6 +11,9 @@ block content
         tr
           th Nombre
           th Apellido
+          th DNI
+          th Email
+          th Teléfono
           th Sucursal
           th Días
           th Horarios
@@ -22,6 +25,9 @@ block content
           tr
             td= profesor.nombre
             td= profesor.apellido
+            td= profesor.dni || '-' 
+            td= profesor.email || '-'
+            td= profesor.telefono || '-'
             td= profesor.sucursal
             td= profesor.dias.join(', ')
             td= profesor.horarios.join(', ')
