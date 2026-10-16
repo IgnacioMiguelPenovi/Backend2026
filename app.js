@@ -12,6 +12,7 @@ const profesoresRouter = require('./routes/profesores');
 const alumnosApiRouter = require('./routes/api/alumnos');
 const profesoresApiRouter = require('./routes/api/profesores');
 const loginRouter = require('./routes/login')
+const registerRouter = require('./routes/register')
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use('/profesores', profesoresRouter);
 app.use('/api/alumnos', alumnosApiRouter);
 app.use('/api/profesores', profesoresApiRouter);
 app.use('/login', loginRouter);
+app.use('/register', registerRouter)
 
 
 app.post('/logout', (req, res) => {
