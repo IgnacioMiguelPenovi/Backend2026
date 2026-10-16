@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
     return res.redirect('/index');
   }
   // Si no está logueado, lo mandamos al formulario de login tradicional
-  res.redirect('/register');
+  res.redirect('/login');
 });
 
 // Ruta de la pantalla principal (/index)
