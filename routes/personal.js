@@ -3,8 +3,18 @@ const router = express.Router();
 
 const PersonalRepository = require('../models/PersonalRepository');
 const { SUCURSALES, DIAS, HORARIOS } = require('../config/opciones');
+const {
+  registrarActividad,
+  obtenerCambios,
+  obtenerCamposCreados
+} = require('../utils/auditoria');
 
 const personalRepository = new PersonalRepository();
+
+function requiereSesion(req, res, next) {
+  if (!req.session?.usuario) return res.redirect('/login');
+  next();
+}
 
 router.get('/', async (req, res, next) => {
   try {
@@ -24,9 +34,15 @@ router.get('/nuevo', (req, res) => {
   });
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', requiereSesion, async (req, res, next) => {
   try {
-    await personalRepository.crear(req.body);
+    const persona = await personalRepository.crear(req.body);
+    await registrarActividad(req, {
+      accion: 'PERSONAL_CREADO',
+      entidad: 'Usuario',
+      entidadId: persona._id,
+      cambios: obtenerCamposCreados(persona)
+    });
     res.redirect('/personal');
   } catch (error) {
     next(error);
@@ -52,8 +68,11 @@ router.get('/:id/editar', async (req, res, next) => {
   }
 });
 
-router.post('/:id', async (req, res, next) => {
+router.post('/:id', requiereSesion, async (req, res, next) => {
   try {
+    const anterior = await personalRepository.obtenerPorId(req.params.id);
+    if (!anterior) return res.status(404).render('404');
+
     const persona = await personalRepository.actualizar(
       req.params.id,
       req.body
@@ -63,22 +82,12 @@ router.post('/:id', async (req, res, next) => {
       return res.status(404).render('404');
     }
 
-    res.redirect('/personal');
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.post('/:id/desactivar', async (req, res, next) => {
-  try {
-    const actualizado = await personalRepository.cambiarEstado(
-      req.params.id,
-      false
-    );
-
-    if (!actualizado) {
-      return res.status(404).render('404');
-    }
+    await registrarActividad(req, {
+      accion: 'PERSONAL_ACTUALIZADO',
+      entidad: 'Usuario',
+      entidadId: persona._id,
+      cambios: obtenerCambios(anterior, persona)
+    });
 
     res.redirect('/personal');
   } catch (error) {
@@ -86,16 +95,53 @@ router.post('/:id/desactivar', async (req, res, next) => {
   }
 });
 
-router.post('/:id/activar', async (req, res, next) => {
+router.post('/:id/desactivar', requiereSesion, async (req, res, next) => {
   try {
+    const anterior = await personalRepository.obtenerPorId(req.params.id);
+    if (!anterior) return res.status(404).render('404');
+
     const actualizado = await personalRepository.cambiarEstado(
       req.params.id,
-      true
+      'inactivo'
     );
 
     if (!actualizado) {
       return res.status(404).render('404');
     }
+
+    await registrarActividad(req, {
+      accion: 'PERSONAL_ESTADO_CAMBIADO',
+      entidad: 'Usuario',
+      entidadId: actualizado._id,
+      cambios: obtenerCambios(anterior, actualizado)
+    });
+
+    res.redirect('/personal');
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/:id/activar', requiereSesion, async (req, res, next) => {
+  try {
+    const anterior = await personalRepository.obtenerPorId(req.params.id);
+    if (!anterior) return res.status(404).render('404');
+
+    const actualizado = await personalRepository.cambiarEstado(
+      req.params.id,
+      'activo'
+    );
+
+    if (!actualizado) {
+      return res.status(404).render('404');
+    }
+
+    await registrarActividad(req, {
+      accion: 'PERSONAL_ESTADO_CAMBIADO',
+      entidad: 'Usuario',
+      entidadId: actualizado._id,
+      cambios: obtenerCambios(anterior, actualizado)
+    });
 
     res.redirect('/personal');
   } catch (error) {
