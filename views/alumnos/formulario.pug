@@ -37,6 +37,7 @@ block content
       name="dni" 
       value=alumno ? alumno.dni : '' 
       required 
+      minlength="7"
       maxlength="8"
       placeholder="Ej. 12345678"
       oninput="validarDNI(this)"
@@ -60,7 +61,7 @@ block content
       id="telefono"
       name="telefono" 
       value=alumno ? alumno.telefono : '' 
-      placeholder="Ej: 1112345678"
+      placeholder="Código de área sin el 0 y sin el 15. Ej: 1112345678"
       minlength="10"
       maxlength="12"
       required
@@ -75,7 +76,7 @@ block content
       name="fechaNacimiento" 
       value=(alumno && alumno.fechaNacimiento) ? new Date(alumno.fechaNacimiento).toISOString().split('T')[0] : ""
       required
-      oninput="validarEdad(this)"
+      onchange="validarEdad(this)" 
     )
     span#error-edad(style="color: red; display: none; font-size: 0.85em; margin-top: 5px;") La edad debe ser mayor o igual a 18 años.
 
@@ -88,56 +89,9 @@ block content
 
     .acciones
       button(type="submit")= alumno ? 'Guardar cambios' : 'Inscribir alumno'
-      a.boton.grande.cancelar(href="/index") Cancelar
+      a.boton.grande.cancelar(href="/alumnos") Cancelar
 
-    script.
-      function validarTelefono(input) {
-        const errorSpan = document.getElementById('error-telefono');
-      
-        // Solo evalúa caracteres incorrectos si el campo tiene texto
-        if (input.value && /[^0-9]/.test(input.value)) {
-          errorSpan.style.display = 'block';
-          input.value = input.value.replace(/[^0-9]/g, '');
-        } else {
-          errorSpan.style.display = 'none';
-        }
-      }
-        
-      function validarDNI(input) {
-        const errorSpan = document.getElementById('error-dni');
-      
-        // Si el valor contiene algo que NO sea un número del 0 al 9
-        if (/[^0-9]/.test(input.value)) {
-          errorSpan.style.display = 'block'; // Mostramos el cartel rojo
-          input.value = input.value.replace(/[^0-9]/g, ''); // Limpiamos las letras
-        } else {
-          errorSpan.style.display = 'none'; // Ocultamos el cartel si está limpio
-        }
-      }
-
-      function validarEdad(input) {
-        if (!input.value) {
-          input.setCustomValidity('');
-          return;
-        }
-
-        // Convertimos la fecha ingresada por el usuario
-        const [anio, mes, dia] = input.value.split('-').map(Number);
-        const fechaNacimiento = new Date(anio, mes - 1, dia);
-      
-        // Calculamos la fecha exacta de hoy menos 18 años
-        const hoy = new Date();
-        const fechaLimite = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
-
-        // Si la fecha de nacimiento es posterior a la límite, es menor de 18
-        if (fechaNacimiento > fechaLimite) {
-          input.setCustomValidity('El alumno debe ser mayor de 18 años para inscribirse.');
-          input.reportValidity(); // Muestra el cartel de error nativo del navegador inmediatamente
-        } else {
-         input.setCustomValidity(''); // Remueve el error y permite enviar
-          }
-      }
-
+  script(src="/js/validaciones.js")
 
   //
     label(for="fechaCalendario") Fecha del turno
