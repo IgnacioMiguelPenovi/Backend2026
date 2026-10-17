@@ -34,6 +34,20 @@ router.get('/nuevo', (req, res) => {
   });
 });
 
+router.get('/:id', async (req, res, next) => {
+  try {
+    const persona = await personalRepository.obtenerPorId(req.params.id);
+
+    if (!persona) {
+      return res.status(404).send('Personal no encontrado');
+    }
+
+    res.render('personal/detalle', { persona });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post('/', requiereSesion, async (req, res, next) => {
   try {
     const persona = await personalRepository.crear(req.body);

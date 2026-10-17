@@ -9,9 +9,9 @@ const personalRouter = require('./routes/personal');
 
 const indexRouter = require('./routes/index');
 const alumnosRouter = require('./routes/alumnos');
-const profesoresRouter = require('./routes/profesores');
+//const profesoresRouter = require('./routes/profesores');
 const alumnosApiRouter = require('./routes/api/alumnos');
-const profesoresApiRouter = require('./routes/api/profesores');
+//const profesoresApiRouter = require('./routes/api/profesores');
 const loginRouter = require('./routes/login')
 const registerRouter = require('./routes/register')
 
@@ -39,9 +39,9 @@ app.use((req, res, next) => {
 
 app.use('/', indexRouter);
 app.use('/alumnos', alumnosRouter);
-app.use('/profesores', profesoresRouter);
+//app.use('/profesores', profesoresRouter);
 app.use('/api/alumnos', alumnosApiRouter);
-app.use('/api/profesores', profesoresApiRouter);
+//app.use('/api/profesores', profesoresApiRouter);
 app.use('/login', loginRouter);
 app.use('/register', registerRouter);
 app.use('/personal', personalRouter);
