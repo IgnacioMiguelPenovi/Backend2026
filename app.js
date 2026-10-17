@@ -15,6 +15,7 @@ const alumnosApiRouter = require('./routes/api/alumnos');
 const loginRouter = require('./routes/login')
 const sucursalesRouter = require('./routes/sucursales');
 const registerRouter = require('./routes/register')
+const turnosRouter = require('./routes/turnos');
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.use('/login', loginRouter);
 app.use('/sucursales', sucursalesRouter);
 app.use('/register', registerRouter);
 app.use('/personal', personalRouter);
+app.use('/', turnosRouter);
 
 
 app.post('/logout', (req, res) => {

@@ -23,7 +23,11 @@ router.get('/', (req, res) => {
     });
   }
 
-  res.render('login');
+  const mensaje = req.query.registrado === '1'
+    ? '¡Cuenta creada con éxito! Por favor iniciá sesión con tu usuario y contraseña.'
+    : null;
+
+  res.render('login', { mensaje });
 });
 
 router.post('/',async (req, res, next) => {

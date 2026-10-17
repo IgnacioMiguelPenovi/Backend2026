@@ -18,7 +18,8 @@ router.get('/index', (req, res) => {
   if (!req.session || !req.session.usuario) {
     return res.redirect('/login');
   }
-  res.render('index');
+  const exito = req.query.exito === '1';
+  res.render('index', { exito });
 });
 
 module.exports = router;
