@@ -12,6 +12,7 @@ block content
       option(value="" disabled selected=(!persona)) Seleccioná un rol
       option(value="profesor" selected=(persona && persona.rol === 'profesor')) Profesor
       option(value="empleado" selected=(persona && persona.rol === 'empleado')) Empleado
+      option(value="administrador"selected=(persona && persona.rol === 'administrador'))
       option(value="gerencia" selected=(persona && persona.rol === 'gerencia')) Gerencia
 
     label(for="nombre") Nombre

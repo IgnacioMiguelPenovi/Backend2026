@@ -1,0 +1,33 @@
+extends ../layout
+
+block content
+  h2 Sucursales Registradas
+
+  if sucursales.length === 0
+    p No hay sucursales dadas de alta en el sistema.
+    .enlaces
+        a.boton.grande(href="/sucursales/nuevo") Nueva sucursal
+        a.boton.grande(href="/index") Volver al Inicio
+  else
+    table
+      thead
+        tr
+          th Nombre
+          th Dirección
+          th Teléfono
+          th Estado
+          th Acciones
+      tbody
+        each sucursal in sucursales
+          tr
+            td= sucursal.nombre
+            td= sucursal.direccion
+            td= sucursal.telefono
+            td= sucursal.estado === 'activo' ? 'Activo' : 'Inactivo'
+            td
+              a.boton(href=`/sucursales/${sucursal._id}`) Ver
+              a.boton(href=`/sucursales/${sucursal._id}/editar`) Editar
+
+    .enlaces
+        a.boton.grande(href="/sucursales/nuevo") Nueva sucursal
+        a.boton.grande(href="/index") Volver al Inicio
