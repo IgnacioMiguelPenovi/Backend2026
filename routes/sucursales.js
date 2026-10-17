@@ -16,23 +16,6 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// GET /sucursales/:id - Ver el detalle de una sucursal específica
-router.get('/:id', async (req, res, next) => {
-  try {
-    const sucursal = await sucursalRepository.obtenerPorId(req.params.id);
-    if (!sucursal) {
-      return res.status(404).render('404');
-    }
-    res.render('sucursales/detalle', {
-      titulo: `Detalle de Sucursal - ${sucursal.nombre}`,
-      sucursal: sucursal
-    });
-  } catch (error) {
-    next(error); 
-  }
-});
-
-
 // GET /sucursales/nuevo - Formulario de alta (Limpio)
 router.get('/nuevo', (req, res) => {
   res.render('sucursales/formulario', {
@@ -96,6 +79,22 @@ router.post('/:id', async (req, res, next) => {
       });
     }
     next(error);
+  }
+});
+
+// GET /sucursales/:id - Ver el detalle de una sucursal específica
+router.get('/:id', async (req, res, next) => {
+  try {
+    const sucursal = await sucursalRepository.obtenerPorId(req.params.id);
+    if (!sucursal) {
+      return res.status(404).render('404');
+    }
+    res.render('sucursales/detalle', {
+      titulo: `Detalle de Sucursal - ${sucursal.nombre}`,
+      sucursal: sucursal
+    });
+  } catch (error) {
+    next(error); 
   }
 });
 
