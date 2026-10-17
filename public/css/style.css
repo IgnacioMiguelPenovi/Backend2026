@@ -10,6 +10,12 @@ body {
   padding-top: 80px; 
 }
 
+/* Oculta el ojo nativo de Edge para evitar duplicarlo con el botón del formulario. */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
 header {
   display: flex;  
   justify-content: space-between;
@@ -215,18 +221,21 @@ label.checkbox input {
   box-sizing: border-box;
 }
 
-.login .input-pass {
+.input-pass {
+  width: 100%;
   position: relative;
 }
 
-.login .input-pass input {
+.input-pass input {
+  width: 100%;
   padding-right: 3.25rem;
 }
 
-.login .toggle-pass {
+.input-pass .toggle-pass {
   position: absolute;
   top: 50%;
   right: 0.5rem;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -237,9 +246,10 @@ label.checkbox input {
   transform: translateY(-50%);
   background: transparent;
   color: #2c3e50;
+  cursor: pointer;
 }
 
-.login .toggle-pass:hover {
+.input-pass .toggle-pass:hover {
   background: transparent;
   color: #1a252f;
 }
@@ -256,6 +266,15 @@ label.checkbox input {
 .login .error {
   color: #c0392b;
   text-align: center;
+}
+
+.mensaje-exito {
+  color: #1e8449;
+  background-color: #eafaf1;
+  border: 1px solid #a9dfbf;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
 }
 
 #sucursal,

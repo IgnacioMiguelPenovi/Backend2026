@@ -20,7 +20,6 @@ block content
           th Acciones
       tbody
         each alumno in alumnos
-          - const activo = alumno.activo !== false
           tr
             td= alumno.nombre
             td= alumno.apellido
@@ -29,7 +28,7 @@ block content
             td= alumno.telefono || '-'
             td= alumno.fechaNacimiento ? alumno.fechaNacimiento.toISOString().split('T')[0] : '-'
             td= alumno.sucursal
-            td= activo ? 'Activo' : 'Inactivo'
+            td= alumno.estado === 'licencia' ? 'De licencia' : alumno.estado === 'inactivo' ? 'Inactivo' : 'Activo'
             td
               a.boton(href=`/alumnos/${alumno._id}`) Ver              
               a.boton(href=`/alumnos/${alumno._id}/editar`) Editar
