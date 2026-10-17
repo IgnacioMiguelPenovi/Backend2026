@@ -1,0 +1,59 @@
+extends ../layout
+
+block content
+  h2= sucursal ? 'Editar Sucursal' : 'Registrar Sucursal'
+
+  if error
+    p#error-duplicado #{error}
+
+  form(action=esEdicion ? `/sucursales/${sucursal._id}` : '/sucursales', method="POST")
+    
+    label(for="nombre") Nombre de la Sucursal
+    input(
+      type="text" 
+      id="nombre" 
+      name="nombre" 
+      value=sucursal ? sucursal.nombre : '' 
+      required=true 
+      minlength="3" 
+      maxlength="50"
+      placeholder="Ej: Caballito"
+    )
+
+    label(for="direccion") Dirección
+    input(
+      type="text" 
+      id="direccion" 
+      name="direccion" 
+      value=sucursal ? sucursal.direccion : '' 
+      required=true 
+      minlength="5" 
+      maxlength="100"
+      placeholder="Ej: Av. Rivadavia 4500"
+    )
+
+    label(for="telefono") Teléfono de Contacto
+    input(
+      type="tel" 
+      id="telefono" 
+      name="telefono" 
+      value=sucursal ? sucursal.telefono : '' 
+      required=true 
+      minlength="10" 
+      maxlength="12"
+      placeholder="Ej: 1112345678"
+      oninput="validarTelefono(this)"
+    )
+    span#error-telefono(style="color: red; display: none; font-size: 0.85em; margin-top: 5px;") El teléfono debe contener solo números (sin letras, espacios ni guiones).
+
+    if esEdicion
+      label(for="estado") Estado Operativo
+      select(id="estado" name="estado" required=true)
+        option(value="activo" selected=(sucursal.estado === 'activo')) Activo
+        option(value="inactivo" selected=(sucursal.estado === 'inactivo')) Inactivo
+
+    .acciones
+      button(type="submit")= sucursal ? 'Guardar Cambios' : 'Dar de Alta'
+      a.boton.grande.cancelar(href="/sucursales") Cancelar
+
+  script(src="/js/validaciones.js")
