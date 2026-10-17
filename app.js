@@ -13,6 +13,7 @@ const alumnosRouter = require('./routes/alumnos');
 const alumnosApiRouter = require('./routes/api/alumnos');
 //const profesoresApiRouter = require('./routes/api/profesores');
 const loginRouter = require('./routes/login')
+const sucursalesRouter = require('./routes/sucursales');
 const registerRouter = require('./routes/register')
 
 const app = express();
@@ -43,6 +44,7 @@ app.use('/alumnos', alumnosRouter);
 app.use('/api/alumnos', alumnosApiRouter);
 //app.use('/api/profesores', profesoresApiRouter);
 app.use('/login', loginRouter);
+app.use('/sucursales', sucursalesRouter);
 app.use('/register', registerRouter);
 app.use('/personal', personalRouter);
 
