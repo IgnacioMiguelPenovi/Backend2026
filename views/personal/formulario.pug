@@ -1,7 +1,7 @@
 extends ../layout
 
 block content
-  h2= persona ? 'Editar personal' : 'Inscribir personal'
+  h2= persona ? 'Editar personal' : 'Inscribir Empleado'
 
   form(
     action=persona ? `/personal/${persona._id}` : '/personal'
@@ -133,7 +133,7 @@ block content
         ): i.fa-regular.fa-eye-slash
 
     .enlaces
-      button(type="submit")= persona ? 'Guardar cambios' : 'Inscribir personal'
+      button(type="submit")= persona ? 'Guardar cambios' : 'Inscribir Empleado'
       a.boton.cancelar(href="/index") Cancelar
 
   script.
