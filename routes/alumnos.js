@@ -47,6 +47,12 @@ router.post('/', async (req, res, next) => {
         rol: alumno.rol
       }
     });
+
+    // Si el alta es desde el registro público (sin sesión o rol alumno), va a /login sin iniciar sesión
+    if (!req.session?.usuario || req.session.usuario.rol === 'alumno') {
+      return res.redirect('/login?registrado=1');
+    }
+
     res.redirect('/alumnos');
   } catch (error) {
     next(error);

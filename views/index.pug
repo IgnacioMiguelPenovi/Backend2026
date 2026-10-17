@@ -1,14 +1,22 @@
 extends layout
 
 block content
+  if exito
+    p.mensaje-exito(style="text-align: center;") ¡Turno añadido con éxito!
+
   h2 ¿Qué querés hacer?
   
-  .acciones
-    a.boton.grande(href="/alumnos/nuevo") Inscribir Alumno
-    a.boton.grande(href="/profesores/nuevo") Inscribir Profesor
-    a.boton.grande(href="/sucursales/nuevo") Registrar Sucursal
+  if usuario && (usuario.rol === 'alumno' || !['administrador', 'empleado', 'gerencia'].includes(usuario.rol))
+    .acciones
+      a.boton.grande(href="/nuevoTurno") Añadir Turno
+      a.boton.grande(href="/misTurnos") Mis Turnos
+  else
+    .acciones
+      a.boton.grande(href="/alumnos/nuevo") Inscribir Alumno
+      a.boton.grande(href="/profesores/nuevo") Inscribir Profesor
+      a.boton.grande(href="/sucursales/nuevo") Registrar Sucursal
 
-  .enlaces
-    a(href="/alumnos") Ver alumnos
-    a(href="/profesores") Ver profesores
-    a(href="/sucursales") Ver sucursales
+    .enlaces
+      a(href="/alumnos") Ver alumnos
+      a(href="/profesores") Ver profesores
+      a(href="/sucursales") Ver sucursales
