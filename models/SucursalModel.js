@@ -4,8 +4,7 @@ const sucursalSchema = new mongoose.Schema({
   nombre: {
     type: String,
     required: [true, 'El nombre de la sucursal es obligatorio'],
-    trim: true,
-    unique: true
+    trim: true   
   },
   direccion: {
     type: String,
@@ -23,5 +22,13 @@ const sucursalSchema = new mongoose.Schema({
     enum: ['activo', 'inactivo'] 
   }
 });
+
+sucursalSchema.index(
+  { nombre: 1 },
+  {
+    unique: true,
+    collation: { locale: 'es', strength: 2 }
+  }
+);
 
 module.exports = mongoose.model('Sucursal', sucursalSchema, 'sucursales');
