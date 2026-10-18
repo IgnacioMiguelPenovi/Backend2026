@@ -1,6 +1,9 @@
 extends layout
 
 block content
+  if exito
+    p.mensaje-exito(style="text-align: center;") ¡Turno añadido con éxito!
+
   h2 ¿Qué querés hacer?
   if exito
     p.mensaje-exito Turno agregado con éxito.

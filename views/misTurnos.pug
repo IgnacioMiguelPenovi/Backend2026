@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  h2 Mis Turnos Reservados
+
+  if !turnos || turnos.length === 0
+    p(style="text-align: center; margin: 2rem 0; color: #555;") Todavía no tenés ningún turno reservado.
+  else
+    table
+      thead
+        tr
+          th Sucursal
+          th Día
+          th Horario
+          th Motivo
+          th Estado
+          th Fecha de Reserva
+      tbody
+        each turno in turnos
+          tr
+            td= turno.sucursal
+            td= turno.dia
+            td= `${turno.horario} hs`
+            td= turno.motivo || '-'
+            td
+              span(style=turno.estado === 'confirmado' ? 'color: green; font-weight: bold;' : 'color: red;')= turno.estado === 'confirmado' ? 'Confirmado' : turno.estado === 'cancelado' ? 'Cancelado' : 'Pendiente'
+            td= turno.creadoEn ? new Date(turno.creadoEn).toLocaleDateString('es-AR') : '-'
+
+  .acciones
+    a.boton.grande(href="/nuevoTurno") Añadir Turno
+    a.boton.grande.cancelar(href="/index") Volver al Inicio
