@@ -1,10 +1,10 @@
 extends ../layout
 
 block content
-  h2 Empleados Registrados
+  h2= titulo || 'Personal registrado'
 
   if personas.length === 0
-    p Todavía no hay empleados registrados.
+    p No hay personas registradas en esta lista.
   else
     table
       thead
@@ -29,8 +29,10 @@ block content
             td= persona.estado === 'licencia' ? 'De licencia' : persona.estado === 'inactivo' ? 'Inactivo' : 'Activo'
             td
               a.boton(href=`/personal/${persona._id}`) Ver   
-              a.boton(href=`/personal/${persona._id}/editar`) Editar
+              if puedeEditar
+                a.boton(href=`/personal/${persona._id}/editar`) Editar
    
   .enlaces
-    a.boton.grande(href="/personal/nuevo") Inscribir Empleado
+    if puedeEditar
+      a.boton.grande(href="/personal/nuevo") Inscribir personal
     a.boton.grande(href="/index") Volver al Inicio

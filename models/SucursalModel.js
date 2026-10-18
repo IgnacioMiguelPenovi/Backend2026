@@ -4,7 +4,8 @@ const sucursalSchema = new mongoose.Schema({
   nombre: {
     type: String,
     required: [true, 'El nombre de la sucursal es obligatorio'],
-    trim: true
+    trim: true,
+    unique: true
   },
   direccion: {
     type: String,
@@ -21,12 +22,6 @@ const sucursalSchema = new mongoose.Schema({
     default: 'activo', 
     enum: ['activo', 'inactivo'] 
   }
-});
-
-// ÚNICA DECLARACIÓN DE ÍNDICE: Aplica la unicidad junto con la regla Case-Insensitive 
-sucursalSchema.index({ nombre: 1 }, { 
-  unique: true, 
-  collation: { locale: 'es', strength: 2 } 
 });
 
 module.exports = mongoose.model('Sucursal', sucursalSchema, 'sucursales');

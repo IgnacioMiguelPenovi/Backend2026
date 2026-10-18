@@ -1,0 +1,42 @@
+extends ../layout
+
+block content
+  h2 Turnos agendados
+
+  if turnos.length === 0
+    p No hay turnos agendados.
+  else
+    table
+      thead
+        tr
+          th Alumno
+          th Sucursal
+          th Fecha
+          th Día
+          th Horario
+          th Motivo
+          th Estado
+          if puedeEditar || puedeCancelar
+            th Acciones
+      tbody
+        each turno in turnos
+          tr
+            td= turno.usuario ? `${turno.usuario.apellido}, ${turno.usuario.nombre}` : 'Alumno no disponible'
+            td= turno.sucursal
+            td= turno.fecha ? new Date(turno.fecha).toISOString().split('T')[0] : '-'
+            td= turno.dia
+            td= `${turno.horario} hs`
+            td= turno.motivo || '-'
+            td= turno.estado
+            if puedeEditar || puedeCancelar
+              td
+                if puedeEditar
+                  a.boton(href=`/turnos/${turno._id}/editar`) Editar
+                if puedeCancelar && turno.estado === 'confirmado'
+                  form(action=`/turnos/${turno._id}/cancelar` method="POST")
+                    button.desactivar(type="submit") Cancelar
+
+  .acciones
+    if usuario.rol === 'administrador'
+      a.boton.grande(href="/nuevoTurno") Agendar turno
+    a.boton.grande(href="/index") Volver al inicio

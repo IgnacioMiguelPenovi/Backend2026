@@ -27,11 +27,10 @@ class SucursalRepository {
   }
 
   async actualizar(id, datos) {
-    try {
-      return await SucursalModel.findByIdAndUpdate(id, datos, { new: true });
-    } catch (error) {
-      throw error;
-    }
+    return await SucursalModel.findByIdAndUpdate(id, datos, {
+      new: true,
+      runValidators: true
+    });
   }
 }
 

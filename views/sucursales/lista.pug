@@ -6,7 +6,8 @@ block content
   if sucursales.length === 0
     p No hay sucursales dadas de alta en el sistema.
     .enlaces
-        a.boton.grande(href="/sucursales/nuevo") Nueva sucursal
+        if puedeEditar
+          a.boton.grande(href="/sucursales/nuevo") Nueva sucursal
         a.boton.grande(href="/index") Volver al Inicio
   else
     table
@@ -26,8 +27,10 @@ block content
             td= sucursal.estado === 'activo' ? 'Activo' : 'Inactivo'
             td
               a.boton(href=`/sucursales/${sucursal._id}`) Ver
-              a.boton(href=`/sucursales/${sucursal._id}/editar`) Editar
+              if puedeEditar
+                a.boton(href=`/sucursales/${sucursal._id}/editar`) Editar
 
     .enlaces
-        a.boton.grande(href="/sucursales/nuevo") Nueva sucursal
+        if puedeEditar
+          a.boton.grande(href="/sucursales/nuevo") Nueva sucursal
         a.boton.grande(href="/index") Volver al Inicio

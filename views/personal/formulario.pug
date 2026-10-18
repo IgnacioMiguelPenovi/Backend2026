@@ -1,7 +1,7 @@
 extends ../layout
 
 block content
-  h2= persona ? 'Editar personal' : 'Inscribir Empleado'
+  h2= persona ? 'Editar personal' : 'Inscribir personal'
 
   form(
     action=persona ? `/personal/${persona._id}` : '/personal'
@@ -12,6 +12,7 @@ block content
       option(value="" disabled selected=(!persona)) Seleccioná un rol
       option(value="profesor" selected=(persona && persona.rol === 'profesor')) Profesor
       option(value="empleado" selected=(persona && persona.rol === 'empleado')) Empleado
+      option(value="administrador" selected=(persona && persona.rol === 'administrador')) Administrador
       option(value="gerencia" selected=(persona && persona.rol === 'gerencia')) Gerencia
 
     label(for="nombre") Nombre
@@ -76,16 +77,16 @@ block content
     )
     span#error-edad(style="color: red; display: none;") La edad debe ser mayor o igual a 18 años.
 
-    #camposProfesor(style=(persona && persona.rol === 'profesor') ? '' : 'display:none')
-      label(for="sucursal") Sucursal
-      select#sucursal(name="sucursal")
-        option(value="") Seleccioná una sucursal
-        each sucursal in sucursales
-          option(
-            value=sucursal
-            selected=(persona && persona.sucursal === sucursal)
-          )= sucursal
+    label(for="sucursal") Sucursal
+    select#sucursal(name="sucursal" required)
+      option(value="" disabled selected=(!persona || !persona.sucursal)) Seleccioná una sucursal
+      each sucursal in sucursales
+        option(
+          value=sucursal
+          selected=(persona && persona.sucursal === sucursal)
+        )= sucursal
 
+    #camposProfesor(style=(persona && persona.rol === 'profesor') ? '' : 'display:none')
       label Días disponibles
       .checkboxes
         each dia in dias
@@ -133,17 +134,15 @@ block content
         ): i.fa-regular.fa-eye-slash
 
     .enlaces
-      button(type="submit")= persona ? 'Guardar cambios' : 'Inscribir Empleado'
+      button(type="submit")= persona ? 'Guardar cambios' : 'Inscribir personal'
       a.boton.cancelar(href="/index") Cancelar
 
   script.
     function actualizarCamposRol() {
       const esProfesor = document.getElementById('rol').value === 'profesor';
       const camposProfesor = document.getElementById('camposProfesor');
-      const sucursal = document.getElementById('sucursal');
 
       camposProfesor.style.display = esProfesor ? '' : 'none';
-      sucursal.required = esProfesor;
 
       camposProfesor.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
         checkbox.disabled = !esProfesor;

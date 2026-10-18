@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { SUCURSALES, DIAS, HORARIOS } = require('../config/opciones');
+const { DIAS, HORARIOS } = require('../config/opciones');
 
 const turnoSchema = new mongoose.Schema({
   usuario: {
@@ -9,13 +9,16 @@ const turnoSchema = new mongoose.Schema({
   },
   sucursal: {
     type: String,
-    enum: SUCURSALES,
     required: [true, 'La sucursal es obligatoria']
   },
   dia: {
     type: String,
     enum: DIAS,
     required: [true, 'El día es obligatorio']
+  },
+  fecha: {
+    type: Date,
+    required: [true, 'La fecha del turno es obligatoria']
   },
   horario: {
     type: String,

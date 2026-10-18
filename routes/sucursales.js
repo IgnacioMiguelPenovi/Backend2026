@@ -2,14 +2,18 @@ const express = require('express');
 const router = express.Router();
 const SucursalRepository = require('../models/SucursalRepository');
 const sucursalRepository = new SucursalRepository(); 
+const { requiereRoles } = require('../middlewares/autorizacion');
+
+const rolesLectura = ['empleado', 'administrador', 'gerencia'];
 
 // GET /sucursales - Listado general
-router.get('/', async (req, res, next) => {
+router.get('/', requiereRoles(...rolesLectura), async (req, res, next) => {
   try {
     const sucursales = await sucursalRepository.obtenerTodos();
     res.render('sucursales/lista', {
       titulo: 'Listado de Sucursales',
-      sucursales
+      sucursales,
+      puedeEditar: req.session.usuario.rol === 'administrador'
     });
   } catch (error) {
     next(error); 
@@ -17,17 +21,35 @@ router.get('/', async (req, res, next) => {
 });
 
 // GET /sucursales/nuevo - Formulario de alta (Limpio)
-router.get('/nuevo', (req, res) => {
+router.get('/nuevo', requiereRoles('administrador'), (req, res) => {
   res.render('sucursales/formulario', {
     titulo: 'Registrar Sucursal',
     sucursal: null,
-    esEdicion: false, //  Flag para controlar la vista del formulario
+    esEdicion: false,
     error: null
   });
 });
 
+// GET /sucursales/:id - Ver el detalle de una sucursal específica
+router.get('/:id', requiereRoles(...rolesLectura), async (req, res, next) => {
+  try {
+    const sucursal = await sucursalRepository.obtenerPorId(req.params.id);
+    if (!sucursal) {
+      return res.status(404).render('404');
+    }
+    res.render('sucursales/detalle', {
+      titulo: `Detalle de Sucursal - ${sucursal.nombre}`,
+      sucursal: sucursal,
+      puedeEditar: req.session.usuario.rol === 'administrador'
+    });
+  } catch (error) {
+    next(error); 
+  }
+});
+
+
 // POST /sucursales - Guardar sucursal nueva manteniendo los datos si hay error
-router.post('/', async (req, res, next) => {
+router.post('/', requiereRoles('administrador'), async (req, res, next) => {
   try {
     await sucursalRepository.crear(req.body);
     res.redirect('/sucursales');
@@ -45,7 +67,7 @@ router.post('/', async (req, res, next) => {
 });
 
 // GET /sucursales/:id/editar - Obtener los datos y renderizar en modo edición
-router.get('/:id/editar', async (req, res, next) => {
+router.get('/:id/editar', requiereRoles('administrador'), async (req, res, next) => {
   try {
     const sucursal = await sucursalRepository.obtenerPorId(req.params.id);
     if (!sucursal) {
@@ -63,7 +85,7 @@ router.get('/:id/editar', async (req, res, next) => {
 });
 
 // POST /sucursales/:id - Procesar la actualización manteniendo los datos si hay error
-router.post('/:id', async (req, res, next) => {
+router.post('/:id', requiereRoles('administrador'), async (req, res, next) => {
   try {
     const id = req.params.id;
     await sucursalRepository.actualizar(id, req.body);
@@ -82,19 +104,23 @@ router.post('/:id', async (req, res, next) => {
   }
 });
 
-// GET /sucursales/:id - Ver el detalle de una sucursal específica
-router.get('/:id', async (req, res, next) => {
+router.post('/:id/desactivar', requiereRoles('administrador'), async (req, res, next) => {
   try {
-    const sucursal = await sucursalRepository.obtenerPorId(req.params.id);
-    if (!sucursal) {
-      return res.status(404).render('404');
-    }
-    res.render('sucursales/detalle', {
-      titulo: `Detalle de Sucursal - ${sucursal.nombre}`,
-      sucursal: sucursal
-    });
+    const sucursal = await sucursalRepository.actualizar(req.params.id, { estado: 'inactivo' });
+    if (!sucursal) return res.status(404).render('404');
+    res.redirect('/sucursales');
   } catch (error) {
-    next(error); 
+    next(error);
+  }
+});
+
+router.post('/:id/activar', requiereRoles('administrador'), async (req, res, next) => {
+  try {
+    const sucursal = await sucursalRepository.actualizar(req.params.id, { estado: 'activo' });
+    if (!sucursal) return res.status(404).render('404');
+    res.redirect('/sucursales');
+  } catch (error) {
+    next(error);
   }
 });
 

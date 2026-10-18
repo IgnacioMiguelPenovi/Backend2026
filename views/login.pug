@@ -6,7 +6,7 @@ block content
         if error
             p.error= error
         if mensaje
-            p.mensaje-exito(style="text-align: center;")= mensaje
+            p.mensaje-exito= mensaje
         form(action="/login" method="POST")
             label(for="user") Usuario
             input#user(

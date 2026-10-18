@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const Usuario = require('./UsuarioModel');
+const { validarSucursalActiva } = require('../utils/sucursales');
 
-const ROLES_PERSONAL = ['profesor', 'empleado', 'gerencia'];
+const ROLES_PERSONAL = ['profesor', 'empleado', 'administrador', 'gerencia'];
 
 function normalizarLista(valor) {
   if (Array.isArray(valor)) return valor;
@@ -9,7 +10,7 @@ function normalizarLista(valor) {
   return [valor];
 }
 
-function prepararDatos(datos) {
+async function prepararDatos(datos) {
   const rol = String(datos.rol || '').trim();
 
   if (!ROLES_PERSONAL.includes(rol)) {
@@ -26,12 +27,12 @@ function prepararDatos(datos) {
     rol
   };
 
+  persona.sucursal = await validarSucursalActiva(datos.sucursal);
+
   if (rol === 'profesor') {
-    persona.sucursal = datos.sucursal;
     persona.dias = normalizarLista(datos.dias);
     persona.horarios = normalizarLista(datos.horarios);
   } else {
-    persona.sucursal = undefined;
     persona.dias = [];
     persona.horarios = [];
   }
@@ -55,7 +56,7 @@ class PersonalRepository {
     }).lean();
   }
 
-  crear(datos) {
+  async crear(datos) {
   const usuario = String(datos.usuario || '').trim().toLowerCase();
   const contrasena = String(datos.contrasena || '');
 
@@ -64,7 +65,7 @@ class PersonalRepository {
   }
 
   return Usuario.create({
-    ...prepararDatos(datos),
+    ...(await prepararDatos(datos)),
     usuario,
     contrasena
   });
@@ -80,7 +81,7 @@ class PersonalRepository {
 
     if (!persona) return null;
 
-    persona.set(prepararDatos(datos));
+    persona.set(await prepararDatos(datos));
     await persona.save();
 
     return persona.toObject();

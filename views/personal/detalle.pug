@@ -18,10 +18,10 @@ block content
     li
       strong Estado:
       |  #{persona.estado === 'licencia' ? 'De licencia' : persona.estado === 'inactivo' ? 'Inactivo' : 'Activo'}
+    li
+      strong Sucursal:
+      |  #{persona.sucursal || 'No informada'}
     if persona.rol === 'profesor'
-      li
-        strong Sucursal:
-        |  #{persona.sucursal || 'No informada'}
       li
         strong Días:
         |  #{(persona.dias || []).join(', ') || 'No informados'}
@@ -29,14 +29,15 @@ block content
         strong Horarios:
         |  #{(persona.horarios || []).join(', ') || 'No informados'}
 
-  .acciones
-    a.boton(href=`/personal/${persona._id}/editar`) Editar
-    if persona.estado === 'activo'
-      form(action=`/personal/${persona._id}/desactivar` method="POST" onsubmit="return confirm('¿Seguro que querés desactivar a esta persona?')")
-        button.desactivar(type="submit") Desactivar
-    else
-      form(action=`/personal/${persona._id}/activar` method="POST" onsubmit="return confirm('¿Querés activar a esta persona?')")
-        button(type="submit") Activar
+  if puedeEditar
+    .acciones
+      a.boton(href=`/personal/${persona._id}/editar`) Editar
+      if persona.estado === 'activo'
+        form(action=`/personal/${persona._id}/desactivar` method="POST" onsubmit="return confirm('¿Seguro que querés desactivar a esta persona?')")
+          button.desactivar(type="submit") Desactivar
+      else
+        form(action=`/personal/${persona._id}/activar` method="POST" onsubmit="return confirm('¿Querés activar a esta persona?')")
+          button(type="submit") Activar
 
   .volver
-    a.boton(href="/personal") Volver al listado
+    a.boton(href=usuario && usuario.rol === 'empleado' ? '/personal/profesores' : '/personal') Volver al listado

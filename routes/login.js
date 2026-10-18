@@ -23,11 +23,9 @@ router.get('/', (req, res) => {
     });
   }
 
-  const mensaje = req.query.registrado === '1'
-    ? '¡Cuenta creada con éxito! Por favor iniciá sesión con tu usuario y contraseña.'
-    : null;
-
-  res.render('login', { mensaje });
+  res.render('login', {
+    mensaje: req.query.registrado === '1' ? 'Registro completado. Ya podés iniciar sesión.' : null
+  });
 });
 
 router.post('/',async (req, res, next) => {
@@ -119,7 +117,8 @@ router.post('/',async (req, res, next) => {
     id: usuarioDB._id,
     nombre: usuarioDB.nombre,
     usuario: usuarioDB.usuario,
-    rol: usuarioDB.rol
+    rol: usuarioDB.rol,
+    sucursal: usuarioDB.sucursal
   };
 
   res.redirect('/index');
