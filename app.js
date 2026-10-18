@@ -14,9 +14,7 @@ const alumnosRouter = require('./routes/alumnos');
 const alumnosApiRouter = require('./routes/api/alumnos');
 //const profesoresApiRouter = require('./routes/api/profesores');
 const loginRouter = require('./routes/login')
-const sucursalesRouter = require('./routes/sucursales');
 const registerRouter = require('./routes/register')
-const turnosRouter = require('./routes/turnos');
 
 
 const app = express();
