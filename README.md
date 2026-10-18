@@ -89,7 +89,7 @@ Backend2026/
 │   ├── css/                  # Carpeta contenedora de hojas de estilo CSS estáticas
 │   │   └── style.css         # Archivo de estilos globales de la interfaz web de TurnoFlex
 │   └── js/                   # Carpeta para scripts dinámicos ejecutados en el navegador
-│       └── validaciones.js   # Script del lado del cliente: Captura eventos, peticiones Fetch y control del DOM
+│       └── validaciones.js   # Script del lado del cliente: Captura eventos, peticiones y control del DOM
 ├── utils/                    # Herramientas de utilidad global del sistema
 │   └── auditoria.js          # Motor asíncrono de tracking de cambios y auditoría de datos
 ├── app.js                    # Servidor principal Express
