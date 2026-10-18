@@ -1,0 +1,62 @@
+extends ../layout
+
+block content
+  h2 Mi agenda de clases
+
+  .info-profesor(style="background: #fff; padding: 1.2rem 1.5rem; border-radius: 6px; margin: 1rem auto; max-width: 800px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);")
+    p(style="margin: 0.3rem 0;")
+      strong Profesor: 
+      | #{profesor.nombre} #{profesor.apellido}
+    p(style="margin: 0.3rem 0;")
+      strong Sucursal: 
+      | #{profesor.sucursal}
+    p(style="margin: 0.3rem 0;")
+      strong Días asignados: 
+      | #{profesor.dias && profesor.dias.length ? profesor.dias.join(', ') : 'Todos'}
+    p(style="margin: 0.3rem 0;")
+      strong Horarios asignados: 
+      | #{profesor.horarios && profesor.horarios.length ? profesor.horarios.map(h => `${h} hs`).join(', ') : 'Todos'}
+
+  form.filtro-fecha(action="/agenda" method="GET" style="display: flex; gap: 0.8rem; align-items: center; justify-content: center; margin: 1.5rem auto; max-width: 500px;")
+    label(for="fechaInput" style="font-weight: bold; margin: 0;") Consultar fecha:
+    input#fechaInput(type="date" name="fecha" value=fechaTexto required onchange="this.form.submit()" style="width: auto; padding: 0.4rem 0.8rem;")
+    button(type="submit" style="margin: 0;") Consultar
+
+  if !trabajaEseDia
+    p(style="text-align: center; color: #b9770e; background: #fef9e7; padding: 0.75rem; border-radius: 4px; max-width: 800px; margin: 1rem auto; font-weight: bold;")
+      | ⚠️ Nota: No tenés clases programadas los #{diaSemana}. (Tus días asignados son: #{profesor.dias.join(', ')}).
+
+  h3(style="text-align: center; margin-top: 1.5rem;") Alumnos del #{diaSemana} #{fechaTexto}
+
+  if !turnos || turnos.length === 0
+    p(style="text-align: center; margin: 2rem 0; color: #666; font-size: 1.1rem;")
+      | No tenés alumnos con turnos confirmados en esta fecha y horario.
+  else
+    table(style="width: 100%; max-width: 800px; margin: 1rem auto;")
+      thead
+        tr
+          th Horario
+          th Alumno
+          th Teléfono
+          th Email
+          th Motivo
+          th Estado
+      tbody
+        each turno in turnos
+          tr
+            td(style="font-weight: bold; color: #2c3e50;")= `${turno.horario} hs`
+            td
+              if turno.usuario
+                | #{turno.usuario.apellido}, #{turno.usuario.nombre}
+                if turno.usuario.dni
+                  small(style="display: block; color: #777;") DNI: #{turno.usuario.dni}
+              else
+                | Alumno no disponible
+            td= turno.usuario && turno.usuario.telefono ? turno.usuario.telefono : '-'
+            td= turno.usuario && turno.usuario.email ? turno.usuario.email : '-'
+            td= turno.motivo || 'Clase regular'
+            td
+              span(style="color: green; font-weight: bold;") Confirmado
+
+  .acciones(style="margin-top: 2rem;")
+    a.boton.grande(href="/index") Volver al Inicio
