@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { SUCURSALES, DIAS, HORARIOS } = require('../config/opciones');
+const { DIAS, HORARIOS } = require('../config/opciones');
 
 const ROLES = ['alumno', 'profesor', 'administrador', 'empleado', 'gerencia'];
 
@@ -45,7 +45,7 @@ const usuarioSchema = new mongoose.Schema({
     default: 'activo',
     required: true
    },
-  sucursal: { type: String, enum: SUCURSALES, required: tieneSucursal },
+  sucursal: { type: String, trim: true, required: tieneSucursal },
 
     // --- NUEVOS CAMPOS GLOBALES ---
     dni: { 

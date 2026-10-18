@@ -31,8 +31,10 @@ block content
             td= alumno.estado === 'licencia' ? 'De licencia' : alumno.estado === 'inactivo' ? 'Inactivo' : 'Activo'
             td
               a.boton(href=`/alumnos/${alumno._id}`) Ver              
-              a.boton(href=`/alumnos/${alumno._id}/editar`) Editar
+              if puedeEditar
+                a.boton(href=`/alumnos/${alumno._id}/editar`) Editar
 
   .enlaces
-    a.boton.grande(href="/alumnos/nuevo") Inscribir alumno
+    if puedeInscribir
+      a.boton.grande(href="/alumnos/nuevo") Inscribir alumno
     a.boton.grande(href="/index") Volver al Inicio

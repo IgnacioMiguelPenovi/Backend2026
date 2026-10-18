@@ -2,13 +2,40 @@ extends layout
 
 block content
   h2 ¿Qué querés hacer?
-  .acciones
-    a.boton.grande(href="/alumnos/nuevo") Inscribir Alumno   
-    a.boton.grande(href="/personal/nuevo") Inscribir Empleado
-     a.boton.grande(href="/sucursales/nuevo") Registrar Sucursal  
-    a.boton.grande(href="/turno/nuevo") Registrar Turno
-  .enlaces
-    a(href="/alumnos") Ver Alumnos
-    a(href="/personal") Ver Empleados
-    a(href="/sucursales") Ver Sucursales
-    a(href="/turnos") Ver Turnos
+  if exito
+    p.mensaje-exito Turno agregado con éxito.
+
+  if usuario.rol === 'alumno'
+    .acciones
+      a.boton.grande(href="/nuevoTurno") Agendar turno
+      a.boton.grande(href="/misTurnos") Mis turnos
+  else if usuario.rol === 'profesor'
+    .acciones
+      a.boton.grande(href="/agenda") Ver mis clases y alumnos
+  else if usuario.rol === 'empleado'
+    .acciones
+      a.boton.grande(href="/alumnos/nuevo") Inscribir alumno
+      a.boton.grande(href="/nuevoTurno") Agendar turno para un alumno
+    .enlaces
+      a(href="/alumnos") Ver alumnos
+      a(href="/personal/profesores") Ver profesores
+      a(href="/sucursales") Ver sucursales
+  else if usuario.rol === 'gerencia'
+    .enlaces
+      a(href="/alumnos") Ver alumnos
+      a(href="/personal") Ver personal
+      a(href="/personal/profesores") Ver profesores
+      a(href="/sucursales") Ver sucursales
+      a(href="/turnos") Ver turnos
+  else if usuario.rol === 'administrador'
+    .acciones
+      a.boton.grande(href="/alumnos/nuevo") Inscribir alumno
+      a.boton.grande(href="/personal/nuevo") Inscribir personal
+      a.boton.grande(href="/sucursales/nuevo") Registrar sucursal
+      a.boton.grande(href="/nuevoTurno") Agendar turno
+    .enlaces
+      a(href="/alumnos") Ver alumnos
+      a(href="/personal") Ver personal
+      a(href="/personal/profesores") Ver profesores
+      a(href="/sucursales") Ver sucursales
+      a(href="/turnos") Ver turnos

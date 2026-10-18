@@ -1,8 +1,8 @@
 extends ../layout
 
 block content
-  - const activo = sucursal.activo !== false
-  h2= `${sucursal.nombre} ${sucursal.apellido}`
+  - const activo = sucursal.estado === 'activo'
+  h2= sucursal.nombre
   ul.detalle
     li
       strong Dirección:
@@ -16,15 +16,15 @@ block content
 
 
 
-  .acciones
-    a.boton(href=`/sucursales/${sucursal._id}/editar`) Editar
-    
-    if activo
-      form(action=`/sucursales/${sucursal._id}/desactivar` method="POST" onsubmit="return confirm('¿Seguro que querés desactivar a esta sucursal?')")
-        button.desactivar(type="submit") Desactivar
-    else
-      form(action=`/sucursales/${sucursal._id}/activar` method="POST")
-        button(type="submit") Activar
+  if puedeEditar
+    .acciones
+      a.boton(href=`/sucursales/${sucursal._id}/editar`) Editar
+      if activo
+        form(action=`/sucursales/${sucursal._id}/desactivar` method="POST" onsubmit="return confirm('¿Seguro que querés desactivar a esta sucursal?')")
+          button.desactivar(type="submit") Desactivar
+      else
+        form(action=`/sucursales/${sucursal._id}/activar` method="POST")
+          button(type="submit") Activar
 
   .volver 
     a.boton(href="/sucursales") Volver al listado

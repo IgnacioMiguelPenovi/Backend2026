@@ -1,36 +1,44 @@
-extends layout
+extends ../layout
 
 block content
-  h2 Añadir Turno
+  h2 Agendar turno
 
-  if usuario
+  if !equipo && usuarioAlumno
     p(style="text-align: center; color: #555; margin-bottom: 1.5rem;")
-      | Reservando turno para: 
-      strong #{usuario.nombre} (#{usuario.usuario})
+      | Agendando turno para:
+      strong #{usuarioAlumno.nombre} (#{usuarioAlumno.usuario}) — #{usuarioAlumno.sucursal}
 
   if error
     #error-duplicado= error
 
-  form(action="/nuevoTurno" method="POST")
-    label(for="sucursal") Sucursal
-    select#sucursal(name="sucursal" required)
-      option(value="" disabled selected=(!valores || !valores.sucursal)) Seleccione una sucursal
-      each s in sucursales
-        option(value=s selected=(valores && valores.sucursal === s))= s
+  form(action=turno ? `/turnos/${turno._id}/editar` : '/nuevoTurno' method="POST")
+    if equipo
+      label(for="sucursalTurno") Sucursal donde se dará la clase
+      select#sucursalTurno(name="sucursal" required)
+        option(value="" disabled selected=(!sucursalSeleccionada) ) Seleccioná una sucursal
+        each nombreSucursal in sucursales
+          option(value=nombreSucursal selected=(sucursalSeleccionada === nombreSucursal))= nombreSucursal
 
-    label(for="turnoDia") Día
-    select#turnoDia(name="dia" required)
-      option(value="" disabled selected=(!valores || !valores.dia)) Seleccione un día
-      each d in dias
-        option(value=d selected=(valores && valores.dia === d))= d
+      label(for="buscarAlumno") Filtrar alumno por nombre o apellido (opcional)
+      input#buscarAlumno(type="search" placeholder="Escribí para filtrar la lista..." autocomplete="off" disabled=!sucursalSeleccionada)
+
+      label(for="alumnoSelect") Alumno
+      select#alumnoSelect(name="alumno" required disabled=!sucursalSeleccionada)
+        option(value="" disabled selected) Seleccioná un alumno
+    else if usuarioAlumno
+      input(type="hidden" name="alumno" value=usuarioAlumno._id)
+      p Sucursal asignada: #{usuarioAlumno.sucursal}
+
+    label(for="fecha") Fecha de la clase
+    input#fecha(type="date" name="fecha" min=fechaMinima value=(valores && valores.fecha ? valores.fecha : '') required)
 
     label(for="turnoHorario") Horario
     select#turnoHorario(name="horario" required)
-      option(value="" disabled selected=(!valores || !valores.horario)) Seleccione un horario
+      option(value="" disabled selected=(!valores || !valores.horario)) Seleccioná un horario
       each h in horarios
         option(value=h selected=(valores && valores.horario === h))= `${h} hs`
 
-    label(for="motivo") Motivo o Comentario (opcional)
+    label(for="motivo") Motivo o comentario (opcional)
     input#motivo(
       type="text"
       name="motivo"
@@ -40,5 +48,97 @@ block content
     )
 
     .acciones
-      button(type="submit") Confirmar Turno
+      button(type="submit")= turno ? 'Guardar cambios' : 'Confirmar turno'
       a.boton.grande.cancelar(href="/index") Cancelar
+
+  if equipo
+    script.
+      (() => {
+        const todosLosAlumnos = !{JSON.stringify(alumnos.map(a => ({ id: String(a._id), nombre: a.nombre, apellido: a.apellido, sucursal: a.sucursal })))};
+        const alumnoInicialId = "#{valores && valores.alumno ? String(valores.alumno) : ''}";
+        const sucursalSelect = document.getElementById('sucursalTurno');
+        const busquedaInput = document.getElementById('buscarAlumno');
+        const alumnoSelect = document.getElementById('alumnoSelect');
+
+        const normalizar = (texto) => (texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+
+        const actualizarAlumnos = (conservarSeleccion = false) => {
+          const sucursalSeleccionada = sucursalSelect ? sucursalSelect.value : '';
+          const termino = normalizar(busquedaInput.value);
+          const valorActual = conservarSeleccion ? alumnoSelect.value : (alumnoInicialId || '');
+
+          alumnoSelect.innerHTML = '';
+
+          if (!sucursalSeleccionada) {
+            alumnoSelect.disabled = true;
+            busquedaInput.disabled = true;
+            const opt = document.createElement('option');
+            opt.value = '';
+            opt.disabled = true;
+            opt.selected = true;
+            opt.textContent = 'Primero seleccioná una sucursal';
+            alumnoSelect.appendChild(opt);
+            return;
+          }
+
+          alumnoSelect.disabled = false;
+          busquedaInput.disabled = false;
+
+          const alumnosFiltrados = todosLosAlumnos.filter((a) => {
+            const coincideSucursal = normalizar(a.sucursal) === normalizar(sucursalSeleccionada);
+            const textoCompleto = normalizar(`${a.apellido} ${a.nombre} ${a.nombre} ${a.apellido}`);
+            const coincideBusqueda = !termino || textoCompleto.includes(termino);
+            return coincideSucursal && coincideBusqueda;
+          });
+
+          if (alumnosFiltrados.length === 0) {
+            const opt = document.createElement('option');
+            opt.value = '';
+            opt.disabled = true;
+            opt.selected = true;
+            opt.textContent = termino 
+              ? 'No hay alumnos que coincidan con la búsqueda'
+              : 'No hay alumnos registrados en esta sucursal';
+            alumnoSelect.appendChild(opt);
+            return;
+          }
+
+          const optDefault = document.createElement('option');
+          optDefault.value = '';
+          optDefault.disabled = true;
+          optDefault.selected = !valorActual;
+          optDefault.textContent = 'Seleccioná un alumno';
+          alumnoSelect.appendChild(optDefault);
+
+          let seleccionado = false;
+          alumnosFiltrados.forEach((a) => {
+            const opt = document.createElement('option');
+            opt.value = a.id;
+            opt.textContent = `${a.apellido}, ${a.nombre}`;
+            if (valorActual && String(a.id) === String(valorActual)) {
+              opt.selected = true;
+              seleccionado = true;
+            }
+            alumnoSelect.appendChild(opt);
+          });
+
+          if (!seleccionado && alumnosFiltrados.length === 1 && termino) {
+            alumnoSelect.value = alumnosFiltrados[0].id;
+          }
+        };
+
+        if (sucursalSelect) {
+          sucursalSelect.addEventListener('change', () => {
+            busquedaInput.value = '';
+            actualizarAlumnos(false);
+          });
+        }
+
+        if (busquedaInput) {
+          busquedaInput.addEventListener('input', () => {
+            actualizarAlumnos(true);
+          });
+        }
+
+        actualizarAlumnos(true);
+      })();

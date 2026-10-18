@@ -23,7 +23,9 @@ router.get('/', (req, res) => {
     });
   }
 
-  res.render('login');
+  res.render('login', {
+    mensaje: req.query.registrado === '1' ? 'Registro completado. Ya podés iniciar sesión.' : null
+  });
 });
 
 router.post('/',async (req, res, next) => {
@@ -115,7 +117,8 @@ router.post('/',async (req, res, next) => {
     id: usuarioDB._id,
     nombre: usuarioDB.nombre,
     usuario: usuarioDB.usuario,
-    rol: usuarioDB.rol
+    rol: usuarioDB.rol,
+    sucursal: usuarioDB.sucursal
   };
 
   res.redirect('/index');

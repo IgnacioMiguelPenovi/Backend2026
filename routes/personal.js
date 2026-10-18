@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const PersonalRepository = require('../models/PersonalRepository');
-const { SUCURSALES, DIAS, HORARIOS } = require('../config/opciones');
+const Usuario = require('../models/UsuarioModel');
+const { DIAS, HORARIOS } = require('../config/opciones');
+const { obtenerNombresSucursalesActivas } = require('../utils/sucursales');
 const {
   registrarActividad,
   obtenerCambios,
@@ -10,31 +12,44 @@ const {
 } = require('../utils/auditoria');
 
 const personalRepository = new PersonalRepository();
+const { requiereRoles } = require('../middlewares/autorizacion');
 
-function requiereSesion(req, res, next) {
-  if (!req.session?.usuario) return res.redirect('/login');
-  next();
-}
-
-router.get('/', async (req, res, next) => {
+router.get('/', requiereRoles('administrador', 'gerencia'), async (req, res, next) => {
   try {
     const personas = await personalRepository.obtenerTodos();
-    res.render('personal/lista', { personas });
+    res.render('personal/lista', {
+      personas,
+      puedeEditar: req.session.usuario.rol === 'administrador',
+      titulo: 'Personal registrado'
+    });
   } catch (error) {
     next(error);
   }
 });
 
-router.get('/nuevo', (req, res) => {
-  res.render('personal/formulario', {
-    persona: null,
-    sucursales: SUCURSALES,
-    dias: DIAS,
-    horarios: HORARIOS
-  });
+router.get('/profesores', requiereRoles('empleado', 'administrador', 'gerencia'), async (req, res, next) => {
+  try {
+    const personas = await Usuario.find({ rol: 'profesor' }).sort({ apellido: 1, nombre: 1 }).lean();
+    res.render('personal/lista', {
+      personas,
+      puedeEditar: req.session.usuario.rol === 'administrador',
+      titulo: 'Profesores registrados'
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.get('/:id', async (req, res, next) => {
+router.get('/nuevo', requiereRoles('administrador'), async (req, res, next) => {
+  try {
+    const sucursales = await obtenerNombresSucursalesActivas();
+    res.render('personal/formulario', { persona: null, sucursales, dias: DIAS, horarios: HORARIOS });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/:id', requiereRoles('empleado', 'administrador', 'gerencia'), async (req, res, next) => {
   try {
     const persona = await personalRepository.obtenerPorId(req.params.id);
 
@@ -42,13 +57,20 @@ router.get('/:id', async (req, res, next) => {
       return res.status(404).send('Personal no encontrado');
     }
 
-    res.render('personal/detalle', { persona });
+    if (req.session.usuario.rol === 'empleado' && persona.rol !== 'profesor') {
+      return res.status(403).send('No tenés permisos para consultar este perfil.');
+    }
+
+    res.render('personal/detalle', {
+      persona,
+      puedeEditar: req.session.usuario.rol === 'administrador'
+    });
   } catch (error) {
     next(error);
   }
 });
 
-router.post('/', requiereSesion, async (req, res, next) => {
+router.post('/', requiereRoles('administrador'), async (req, res, next) => {
   try {
     const persona = await personalRepository.crear(req.body);
     await registrarActividad(req, {
@@ -63,7 +85,7 @@ router.post('/', requiereSesion, async (req, res, next) => {
   }
 });
 
-router.get('/:id/editar', async (req, res, next) => {
+router.get('/:id/editar', requiereRoles('administrador'), async (req, res, next) => {
   try {
     const persona = await personalRepository.obtenerPorId(req.params.id);
 
@@ -71,18 +93,14 @@ router.get('/:id/editar', async (req, res, next) => {
       return res.status(404).render('404');
     }
 
-    res.render('personal/formulario', {
-      persona,
-      sucursales: SUCURSALES,
-      dias: DIAS,
-      horarios: HORARIOS
-    });
+    const sucursales = await obtenerNombresSucursalesActivas();
+    res.render('personal/formulario', { persona, sucursales, dias: DIAS, horarios: HORARIOS });
   } catch (error) {
     next(error);
   }
 });
 
-router.post('/:id', requiereSesion, async (req, res, next) => {
+router.post('/:id', requiereRoles('administrador'), async (req, res, next) => {
   try {
     const anterior = await personalRepository.obtenerPorId(req.params.id);
     if (!anterior) return res.status(404).render('404');
@@ -109,7 +127,7 @@ router.post('/:id', requiereSesion, async (req, res, next) => {
   }
 });
 
-router.post('/:id/desactivar', requiereSesion, async (req, res, next) => {
+router.post('/:id/desactivar', requiereRoles('administrador'), async (req, res, next) => {
   try {
     const anterior = await personalRepository.obtenerPorId(req.params.id);
     if (!anterior) return res.status(404).render('404');
@@ -136,7 +154,7 @@ router.post('/:id/desactivar', requiereSesion, async (req, res, next) => {
   }
 });
 
-router.post('/:id/activar', requiereSesion, async (req, res, next) => {
+router.post('/:id/activar', requiereRoles('administrador'), async (req, res, next) => {
   try {
     const anterior = await personalRepository.obtenerPorId(req.params.id);
     if (!anterior) return res.status(404).render('404');

@@ -18,7 +18,10 @@ router.get('/index', (req, res) => {
   if (!req.session || !req.session.usuario) {
     return res.redirect('/login');
   }
-  res.render('index');
+  if (!['alumno', 'profesor', 'empleado', 'administrador', 'gerencia'].includes(req.session.usuario.rol)) {
+    return res.status(403).send('Tu rol todavía no tiene permisos asignados.');
+  }
+  res.render('index', { exito: req.query.exito === '1' });
 });
 
 module.exports = router;

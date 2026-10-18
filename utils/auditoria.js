@@ -12,12 +12,20 @@ const CAMPOS_AUDITABLES = [
   'estado',
   'sucursal',
   'dias',
-  'horarios'
+  'horarios',
+  'fecha',
+  'dia',
+  'horario',
+  'motivo'
 ];
 
 function valorDe(registro, campo) {
   const valor = registro?.[campo] ?? null;
-  return valor instanceof Date ? valor.toISOString() : valor;
+  if (valor instanceof Date) return valor.toISOString();
+  if (valor && typeof valor === 'object' && (valor._bsontype === 'ObjectID' || valor.constructor?.name === 'ObjectId')) {
+    return valor.toString();
+  }
+  return valor;
 }
 
 function obtenerCambios(anterior, actual) {

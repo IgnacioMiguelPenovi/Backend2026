@@ -6,7 +6,8 @@ const path = require('path');
 const morgan = require('morgan');
 const logger = require('./middlewares/logger');
 const personalRouter = require('./routes/personal');
-
+const sucursalesRouter = require('./routes/sucursales');
+const turnosRouter = require('./routes/turnos');
 const indexRouter = require('./routes/index');
 const alumnosRouter = require('./routes/alumnos');
 //const profesoresRouter = require('./routes/profesores');
@@ -14,6 +15,7 @@ const alumnosApiRouter = require('./routes/api/alumnos');
 //const profesoresApiRouter = require('./routes/api/profesores');
 const loginRouter = require('./routes/login')
 const registerRouter = require('./routes/register')
+
 
 const app = express();
 
@@ -45,6 +47,8 @@ app.use('/api/alumnos', alumnosApiRouter);
 app.use('/login', loginRouter);
 app.use('/register', registerRouter);
 app.use('/personal', personalRouter);
+app.use('/sucursales', sucursalesRouter);
+app.use('/', turnosRouter);
 
 
 app.post('/logout', (req, res) => {
