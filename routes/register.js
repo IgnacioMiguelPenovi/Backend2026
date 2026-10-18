@@ -13,7 +13,7 @@ const TIEMPO_BLOQUEO_MS = 5 * 60 * 1000; // 5 minutos de bloqueo (opcional)
 const REGEX_CARACTER_ESPECIAL = /[@$!%*?&#._\-]/;
 
 router.get('/', (req, res) => {
-  res.redirect('/alumnos/nuevo');
+  res.render('register');
 });
 
 router.post('/', (req, res) => {
