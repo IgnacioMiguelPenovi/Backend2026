@@ -337,16 +337,3 @@ td a.boton {
   justify-content: center;
   margin-top: 1.5rem;
 }
-
-#error-duplicado {
-   background-color: #f8d7da; 
-   color: #721c24;
-   padding: 0.75rem;
-   border: 1px solid #f5c6cb;
-   border-radius: 4px;
-   margin-bottom: 1rem;
-   font-weight: bold;
-   text-align: center;
-   width: 100%;
-   box-sizing: border-box;
-}

@@ -45,7 +45,6 @@ app.use('/alumnos', alumnosRouter);
 app.use('/api/alumnos', alumnosApiRouter);
 //app.use('/api/profesores', profesoresApiRouter);
 app.use('/login', loginRouter);
-app.use('/sucursales', sucursalesRouter);
 app.use('/register', registerRouter);
 app.use('/personal', personalRouter);
 app.use('/sucursales', sucursalesRouter);
