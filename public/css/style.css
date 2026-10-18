@@ -77,7 +77,8 @@ a.boton, button,
   font-size: 1rem; 
 }
 
-a.boton.cancelar {
+a.boton.cancelar,
+.desactivar {
   background-color: #c0392b;
 }
 

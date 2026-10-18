@@ -15,11 +15,12 @@ block content
   else if usuario.rol === 'empleado'
     .acciones
       a.boton.grande(href="/alumnos/nuevo") Inscribir alumno
-      a.boton.grande(href="/nuevoTurno") Agendar turno para un alumno
+      a.boton.grande(href="/nuevoTurno") Agendar turno       
     .enlaces
       a(href="/alumnos") Ver alumnos
       a(href="/personal/profesores") Ver profesores
       a(href="/sucursales") Ver sucursales
+      a(href="/turnos") Ver turnos
   else if usuario.rol === 'gerencia'
     .enlaces
       a(href="/alumnos") Ver alumnos
