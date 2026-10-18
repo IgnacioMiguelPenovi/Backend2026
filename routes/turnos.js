@@ -13,7 +13,7 @@ const {
 } = require('../utils/auditoria');
 
 const rolesQueAgendan = ['alumno', 'empleado', 'administrador'];
-const rolesQueConsultan = ['administrador', 'gerencia'];
+const rolesQueConsultan = ['empleado', 'administrador', 'gerencia'];
 const nombresDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 function fechaActualTexto() {
@@ -164,7 +164,14 @@ router.post('/nuevoTurno', requiereRoles(...rolesQueAgendan), async (req, res, n
 
 router.get('/turnos', requiereRoles(...rolesQueConsultan), async (req, res, next) => {
   try {
-    const turnos = await Turno.find()
+    const esEmpleado = req.session.usuario.rol === 'empleado';
+    const sucursal = req.session.usuario.sucursal;
+    if (esEmpleado && !sucursal) {
+      return res.status(403).send('El empleado no tiene una sucursal asignada.');
+    }
+
+    const filtro = esEmpleado ? { sucursal } : {};
+    const turnos = await Turno.find(filtro)
       .populate('usuario', 'nombre apellido usuario sucursal')
       .sort({ fecha: 1, horario: 1 })
       .lean();
