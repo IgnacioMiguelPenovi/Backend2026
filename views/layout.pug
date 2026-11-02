@@ -32,3 +32,11 @@ html(lang="es")
         icono.classList.toggle('fa-eye-slash', !mostrar);
         button.title = mostrar ? 'Ocultar contraseña' : 'Ver contraseña';
       }
+
+    if usuario
+      script.
+        setTimeout(() => {
+          window.location.href = '/login?expirada=1';
+        }, 60 * 60 * 1000);
+
+      

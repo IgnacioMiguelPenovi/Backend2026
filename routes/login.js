@@ -24,7 +24,11 @@ router.get('/', (req, res) => {
   }
 
   res.render('login', {
-    mensaje: req.query.registrado === '1' ? 'Registro completado. Ya podés iniciar sesión.' : null
+    mensaje: req.query.registrado === '1' 
+    ? 'Registro completado. Ya podés iniciar sesión.' 
+    : req.query.expirada === '1'
+    ? 'Sesión cerrada por inactividad. Vuelva a iniciar sesión para abrirla.'
+    : null
   });
 });
 

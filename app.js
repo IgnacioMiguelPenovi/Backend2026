@@ -13,8 +13,9 @@ const alumnosRouter = require('./routes/alumnos');
 //const profesoresRouter = require('./routes/profesores');
 const alumnosApiRouter = require('./routes/api/alumnos');
 //const profesoresApiRouter = require('./routes/api/profesores');
-const loginRouter = require('./routes/login')
-const registerRouter = require('./routes/register')
+const loginRouter = require('./routes/login');
+const registerRouter = require('./routes/register');
+const UNA_HORA_MS = 60 * 60 * 100;
 
 
 const app = express();
@@ -31,7 +32,13 @@ app.use(express.json());
 app.use(session({
   secret: process.env.SESSION_SECRET || 'cambiar-este-secreto',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  rolling: true,
+  cookie: {
+    maxAge: UNA_HORA_MS,
+    httpOnly: true,
+    sameSite: 'lax'
+  }
 }));
 
 app.use((req, res, next) => {

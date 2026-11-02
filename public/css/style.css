@@ -338,3 +338,28 @@ td a.boton {
   justify-content: center;
   margin-top: 1.5rem;
 }
+
+.recuperar {
+  text-decoration: none;
+  color: rgb(131, 128, 128); 
+}
+
+.recuperar:hover {
+  color: #4984c4;
+}
+
+.recuperar-container {
+  margin-top: 0.5rem;
+}
+
+.error-container {
+  display: block;
+  justify-self: center;  
+}
+
+.volver {
+  display: flex;
+  justify-self: center;
+ 
+}
+
