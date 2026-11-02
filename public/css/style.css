@@ -32,6 +32,21 @@ header a {
   text-decoration: none;
 }
 
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #fff;
+}
+
+.logo {
+  height: 50px;
+  width: auto;
+  border-radius: 8px; /* Opcional: redondea las esquinas */
+  object-fit: contain;
+}
+
 main {
   max-width: 800px;
   margin: 2rem auto;
@@ -58,7 +73,7 @@ th, td {
   text-align: left;
 }
 
-h2 {
+h2, h4 {
   display: flex;
   justify-self: center;
 }
@@ -77,12 +92,12 @@ a.boton, button,
   font-size: 1rem; 
 }
 
-a.boton.cancelar,
+.boton.cancelar,
 .desactivar {
   background-color: #c0392b;
 }
 
-a.boton.cancelar:hover {
+.boton.cancelar:hover {
   background-color: #a93226;
 }
 

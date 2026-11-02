@@ -16,6 +16,7 @@ const alumnosApiRouter = require('./routes/api/alumnos');
 const loginRouter = require('./routes/login');
 const registerRouter = require('./routes/register');
 const UNA_HORA_MS = 60 * 60 * 100;
+const recuperacionRouter = require('./routes/recuperacion');
 
 
 const app = express();
@@ -56,6 +57,7 @@ app.use('/register', registerRouter);
 app.use('/personal', personalRouter);
 app.use('/sucursales', sucursalesRouter);
 app.use('/', turnosRouter);
+app.use('/recuperacion', recuperacionRouter);
 
 
 app.post('/logout', (req, res) => {
