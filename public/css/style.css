@@ -32,6 +32,21 @@ header a {
   text-decoration: none;
 }
 
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #fff;
+}
+
+.logo {
+  height: 50px;
+  width: auto;
+  border-radius: 8px; /* Opcional: redondea las esquinas */
+  object-fit: contain;
+}
+
 main {
   max-width: 800px;
   margin: 2rem auto;
@@ -58,7 +73,7 @@ th, td {
   text-align: left;
 }
 
-h2 {
+h2, h4 {
   display: flex;
   justify-self: center;
 }
@@ -77,12 +92,12 @@ a.boton, button,
   font-size: 1rem; 
 }
 
-a.boton.cancelar,
+.boton.cancelar,
 .desactivar {
   background-color: #c0392b;
 }
 
-a.boton.cancelar:hover {
+.boton.cancelar:hover {
   background-color: #a93226;
 }
 
@@ -214,7 +229,7 @@ label.checkbox input {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.login h2 {
+.login h2 p {
   text-align: center;
   margin-top: 0;
 }
@@ -338,3 +353,33 @@ td a.boton {
   justify-content: center;
   margin-top: 1.5rem;
 }
+
+.recuperar {
+  text-decoration: none;
+  color: rgb(131, 128, 128); 
+}
+
+.recuperar:hover {
+  color: #4984c4;
+}
+
+.recuperar-container {
+  margin-top: 0.5rem;
+}
+
+.error-container {
+  display: block;
+  justify-self: center;  
+}
+
+.volver {
+  display: flex;
+  justify-self: center; 
+}
+
+.recupero {
+  color: rgb(61, 61, 61);
+  display: block;
+  text-align: center;
+}
+

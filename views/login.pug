@@ -33,6 +33,9 @@ block content
                 )
                 button.toggle-pass(type="button" onclick="togglePassword(this)" title="Ver contraseña"): i#eyeIcon.fa-regular.fa-eye-slash
 
+            .recuperar-container     
+                a.recuperar(href="/recuperacion") ¿Olvidaste tu contraseña?
+
             button.boton(type="submit" disabled=bloqueado) Ingresar
             button.boton(type="button" onclick="window.location.href='/alumnos/nuevo'" disabled=bloqueado) Registrarse
 
