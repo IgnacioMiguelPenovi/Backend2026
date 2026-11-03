@@ -28,7 +28,7 @@ router.get('/', (req, res) => {
     ? 'Registro completado. Ya podés iniciar sesión.' 
     : req.query.expirada === '1'
     ? 'Sesión cerrada por inactividad. Vuelva a iniciar sesión para abrirla.'
-    : null
+    : req.query.mensaje || null
   });
 });
 

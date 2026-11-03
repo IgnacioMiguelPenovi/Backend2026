@@ -229,7 +229,7 @@ label.checkbox input {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.login h2 {
+.login h2 p {
   text-align: center;
   margin-top: 0;
 }
@@ -374,7 +374,12 @@ td a.boton {
 
 .volver {
   display: flex;
-  justify-self: center;
- 
+  justify-self: center; 
+}
+
+.recupero {
+  color: rgb(61, 61, 61);
+  display: block;
+  text-align: center;
 }
 
