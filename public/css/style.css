@@ -354,32 +354,17 @@ td a.boton {
   margin-top: 1.5rem;
 }
 
-.recuperar {
-  text-decoration: none;
-  color: rgb(131, 128, 128); 
-}
 
-.recuperar:hover {
-  color: #4984c4;
-}
-
-.recuperar-container {
-  margin-top: 0.5rem;
-}
-
-.error-container {
-  display: block;
-  justify-self: center;  
-}
-
-.volver {
-  display: flex;
-  justify-self: center; 
-}
-
-.recupero {
-  color: rgb(61, 61, 61);
-  display: block;
-  text-align: center;
-}
-
+/* Chatbot (solo alumnos) */
+#chatToggle{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;border:none;background:#6b5b95;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:1000}
+#chatBox{position:fixed;bottom:88px;right:20px;width:340px;max-width:calc(100vw - 40px);height:560px;max-height:calc(100vh - 110px);background:#fff;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.3);display:flex;flex-direction:column;overflow:hidden;z-index:1000}
+#chatBox[hidden]{display:none}
+.chat-header{background:#6b5b95;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;font-weight:bold}
+.chat-header button{background:none;border:none;color:#fff;font-size:22px;cursor:pointer}
+#chatMensajes{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;background:#f6f4fa}
+.chat-msg{padding:8px 12px;border-radius:12px;max-width:85%;font-size:14px;line-height:1.35;white-space:pre-wrap;color:#222}
+.chat-msg.bot{background:#fff;align-self:flex-start;border:1px solid #ddd}
+.chat-msg.user{background:#6b5b95;color:#fff;align-self:flex-end}
+#chatBox #chatForm{display:flex;gap:6px;padding:8px;margin:0;width:100%;border-top:1px solid #ddd}
+#chatBox #chatForm input{flex:1;min-width:0;width:auto;margin:0;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px}
+#chatBox #chatForm button{flex-shrink:0;margin:0;padding:8px 12px;border:none;border-radius:8px;background:#6b5b95;color:#fff;cursor:pointer;font-size:14px}
