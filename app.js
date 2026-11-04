@@ -43,6 +43,7 @@ app.use('/', indexRouter);
 app.use('/alumnos', alumnosRouter);
 //app.use('/profesores', profesoresRouter);
 app.use('/api/alumnos', alumnosApiRouter);
+app.use('/api/chat', require('./routes/chatbot'));
 //app.use('/api/profesores', profesoresApiRouter);
 app.use('/login', loginRouter);
 app.use('/register', registerRouter);

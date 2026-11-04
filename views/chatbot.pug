@@ -1,0 +1,12 @@
+button#chatToggle(type="button" aria-label="Abrir asistente" title="Asistente de TurnoFlex")
+  i.fa-solid.fa-comments
+#chatBox(hidden)
+  .chat-header
+    span Asistente TurnoFlex
+    button#chatClose(type="button" aria-label="Cerrar") ×
+  #chatMensajes
+    .chat-msg.bot Hola, soy el asistente de TurnoFlex. Puedo ayudarte a usar la aplicación, por ejemplo: ¿cómo saco un turno?
+  form#chatForm(autocomplete="off")
+    input#chatInput(type="text" maxlength="300" placeholder="Preguntá sobre la app..." required)
+    button(type="submit") Enviar
+script(src="/js/chatbot.js")

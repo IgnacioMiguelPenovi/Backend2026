@@ -20,6 +20,9 @@ html(lang="es")
     main
       block content
 
+    if usuario && usuario.rol === 'alumno'
+      include chatbot
+
     script.
       function togglePassword(button) {
         const contenedor = button.closest('.input-pass');
