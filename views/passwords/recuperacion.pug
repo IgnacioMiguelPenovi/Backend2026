@@ -1,0 +1,25 @@
+extends ../layout
+
+
+block content 
+    .login 
+        h2 Recuperar contraseña
+        .recupero
+          p Ingresá el correo electrónico con el que te registraste en la aplicación y te enviaremos las instrucciones para restablecer tu contraseña.
+
+          if error 
+              p.error= error
+          if mensaje 
+              p.mensaje-exito= mensaje 
+
+        form(action="/recuperacion" method="POST")            
+          label(for="email") Correo Electrónico 
+          input#email(
+              type="email" 
+              name="email" 
+              required 
+              placeholder="usuario@ejemplo.com"
+          )
+          
+          button.boton(type="submit") Enviar
+          button.boton.cancelar(type="button" onclick="window.location.href='/login'") Cancelar

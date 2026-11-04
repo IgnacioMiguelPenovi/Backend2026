@@ -5,15 +5,15 @@ html(lang="es")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
     link(rel="stylesheet" href="/css/style.css")
     link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css")
-    title= titulo || 'Tp1'
+    title= titulo || 'TurnoFlex'
     
   body
     header
       h1
-        if usuario
-          a(href="/index") TurnoFlex
-        else
-          a(href="/") TurnoFlex
+        a.logo-link(href=usuario ? "/index" : "/")
+           img.logo(src="/img/logo.png" alt="logo TurnoFlex") 
+           span TurnoFlex
+                                       
       if usuario
           form.logout(method="POST" action="/logout" id="logoutForm")
             button.salir(type="submit") Cerrar Sesión
@@ -35,3 +35,11 @@ html(lang="es")
         icono.classList.toggle('fa-eye-slash', !mostrar);
         button.title = mostrar ? 'Ocultar contraseña' : 'Ver contraseña';
       }
+
+    if usuario
+      script.
+        setTimeout(() => {
+          window.location.href = '/login?expirada=1';
+        }, 60 * 60 * 1000);
+
+      

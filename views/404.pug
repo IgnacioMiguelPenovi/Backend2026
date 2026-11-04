@@ -1,6 +1,10 @@
 extends layout
 
 block content
-  h2 404 - No encontrado
-  p El recurso solicitado no existe.
-  a(href="/index") Volver al inicio
+ 
+
+  .error-container
+    img(src="/img/error.png" alt="imagen de error 404")
+    h4 404 - Recurso solicitado No encontrado
+    button.boton.volver(type="button" onclick="window.location.href='/index'" disabled=bloqueado) Volver al inicio
+  
