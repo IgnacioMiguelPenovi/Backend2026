@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Usuario = require('../models/UsuarioModel');
+const { verificarContrasena } = require('../utils/contrasenas');
 
 const MIN_USER = 3;
 const MAX_USER = 30;
@@ -104,9 +105,16 @@ router.post('/',async (req, res, next) => {
     return next(error);
   }
 
+  let contrasenaValida = false;
+  try {
+    contrasenaValida = !!usuarioDB && await verificarContrasena(password, usuarioDB.contrasena);
+  } catch (error) {
+    return next(error);
+  }
+
   if (
     !usuarioDB ||
-    usuarioDB.contrasena !== password ||
+    !contrasenaValida ||
     usuarioDB.estado !== 'activo'
   ) {
     return fallarIntento('Usuario o contraseña incorrectos');

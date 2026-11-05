@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Usuario = require('./UsuarioModel');
 const { validarSucursalActiva } = require('../utils/sucursales');
+const { hashearContrasena } = require('../utils/contrasenas');
 
 const ROLES_PERSONAL = ['profesor', 'empleado', 'administrador', 'gerencia'];
 
@@ -64,10 +65,14 @@ class PersonalRepository {
     throw new Error('El usuario y la contraseña son obligatorios');
   }
 
+  if (contrasena.length < 6) {
+    throw new Error('La contraseña debe tener al menos 6 caracteres');
+  }
+
   return Usuario.create({
     ...(await prepararDatos(datos)),
     usuario,
-    contrasena
+    contrasena: await hashearContrasena(contrasena)
   });
 }
 
