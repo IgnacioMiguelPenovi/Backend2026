@@ -354,6 +354,18 @@ td a.boton {
   margin-top: 1.5rem;
 }
 
+.recuperar-container {
+  margin-top: 1.5rem;  
+}
+
+.recuperar {
+  text-decoration: none;  
+  color: black;
+}
+
+.recuperar:hover {
+  color: #858282;
+}
 
 /* Chatbot (solo alumnos) */
 #chatToggle{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;border:none;background:#6b5b95;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:1000}
