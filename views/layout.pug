@@ -16,6 +16,9 @@ html(lang="es")
                                        
       if usuario
           form.logout(method="POST" action="/logout" id="logoutForm")
+            p.usuario
+              i.fa-solid.fa-user(style="margin-right:0.4rem;")
+              | #{usuario.nombre} #{usuario.apellido}
             button.salir(type="submit") Cerrar Sesión
     main
       block content
