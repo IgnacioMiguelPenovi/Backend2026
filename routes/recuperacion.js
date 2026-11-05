@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Usuario = require('../models/UsuarioModel');
+const { hashearContrasena } = require('../utils/contrasenas');
 const nodemailer = require('nodemailer');
 const path = require('path');
 
@@ -184,7 +185,7 @@ router.post('/cambio-password', async (req, res, next) => {
     // 3. Actualiza el campo de la contraseña en MongoDB
     await Usuario.updateOne(
       { _id: usuarioDB._id },
-      { $set: { contrasena: newPassword } }
+      { $set: { contrasena: await hashearContrasena(newPassword) } }
     );
 
     console.log(`✅ Contraseña actualizada exitosamente para el usuario: ${usuarioDB.usuario}`);

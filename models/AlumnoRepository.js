@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Usuario = require('./UsuarioModel');
 const { validarSucursalActiva } = require('../utils/sucursales');
+const { hashearContrasena } = require('../utils/contrasenas');
 
 class AlumnoRepository {
   obtenerTodos() {
@@ -20,6 +21,10 @@ class AlumnoRepository {
       throw new Error('El usuario y la contraseña son obligatorios');
     }
 
+    if (contrasena.length < 6) {
+      throw new Error('La contraseña debe tener al menos 6 caracteres');
+    }
+
     const sucursal = await validarSucursalActiva(datos.sucursal);
 
     return Usuario.create({
@@ -31,7 +36,7 @@ class AlumnoRepository {
       fechaNacimiento: datos.fechaNacimiento || undefined,
       sucursal,
       usuario,
-      contrasena,
+      contrasena: await hashearContrasena(contrasena),
       rol: 'alumno',
       estado: 'activo'
     });
