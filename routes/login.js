@@ -128,6 +128,7 @@ router.post('/',async (req, res, next) => {
   req.session.usuario = {
     id: usuarioDB._id,
     nombre: usuarioDB.nombre,
+    apellido: usuarioDB.apellido,
     usuario: usuarioDB.usuario,
     rol: usuarioDB.rol,
     sucursal: usuarioDB.sucursal

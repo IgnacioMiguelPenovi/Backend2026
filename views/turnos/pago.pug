@@ -1,0 +1,34 @@
+extends ../layout
+
+block content
+  .pago
+    h2 Confirmar y pagar
+
+    .tarjeta
+      p.etiqueta Resumen de la clase
+      h3 Pilates Reformer · clase individual
+      p.detalle-clase Sucursal #{turno.sucursal} · 45 minutos
+      p.detalle-clase #{turno.dia} #{turno.fecha} · #{turno.horario} hs
+      p.detalle-clase Alumno: #{turno.alumno.apellido}, #{turno.alumno.nombre}
+
+      .total
+        span Total
+        strong $ #{precio.toLocaleString('es-AR')}
+
+    form.opciones(action="/pagarTurno" method="POST")
+      button.opcion.transferencia(type="submit" name="metodo" value="transferencia")
+        span Transferencia bancaria
+        span.oferta
+        span.descuento – 10% de descuento  
+        span.importe $ #{precioTransferencia.toLocaleString('es-AR')}
+
+      button.opcion.mercadopago(type="submit" name="metodo" value="mercadopago")
+        img.logo-mp(src="/img/logo_mp.png" alt="Mercado Pago")
+        span.promos
+          span Promociones bancarias
+          span.bancos
+            img(src="/img/logos_bancos.png" alt="Logos de bancos")
+           
+
+    .acciones
+      a.boton.grande.cancelar(href="/nuevoTurno") Cancelar
