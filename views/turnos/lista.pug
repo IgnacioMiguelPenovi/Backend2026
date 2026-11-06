@@ -16,7 +16,7 @@ block content
           th Horario
           th Motivo
           th Estado
-          if puedeEditar || puedeCancelar
+          if puedeEditar || puedeCancelar || puedePagar 
             th Acciones
       tbody
         each turno in turnos
@@ -29,9 +29,9 @@ block content
             td= turno.motivo || '-'
             td
               span(class=`estado-badge estado-${turno.estado}`)= turno.estado === 'confirmado' ? 'Confirmado' : turno.estado === 'cancelado' ? 'Cancelado' : 'Pendiente'
-            if puedeEditar || puedeCancelar
+            if puedeEditar || puedeCancelar || puedePagar 
               td
-                .accion-buttons
+                .accion-buttons                  
                   if puedeEditar
                     a.boton(href=`/turnos/${turno._id}/editar`) Editar
                   if puedeCancelar && turno.estado === 'confirmado'

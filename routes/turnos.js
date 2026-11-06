@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const Turno = require('../models/TurnoModel');
 const Usuario = require('../models/UsuarioModel');
+const QRCode = require('qrcode');
 const { DIAS, HORARIOS } = require('../config/opciones');
 const { obtenerNombresSucursalesActivas, validarSucursalActiva } = require('../utils/sucursales');
 const { requiereRoles } = require('../middlewares/autorizacion');
@@ -15,6 +16,9 @@ const {
 const rolesQueAgendan = ['alumno', 'empleado', 'administrador'];
 const rolesQueConsultan = ['empleado', 'administrador', 'gerencia'];
 const nombresDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const metodosPago = ['transferencia', 'mercadopago'];
+const precioClase = 8500;
+const descuentoTransferencia = 0.10;
 
 function fechaActualTexto() {
   const hoy = new Date();
@@ -140,23 +144,17 @@ router.post('/nuevoTurno', requiereRoles(...rolesQueAgendan), async (req, res, n
       });
     }
 
-    const nuevoTurno = await Turno.create({
-      usuario: alumno._id,
+    req.session.turnoPendiente = {
+      alumnoId: String(alumno._id),
       sucursal: equipo ? sucursalSolicitada : alumno.sucursal,
-      fecha: fechaYDia.fecha,
-      dia: fechaYDia.dia,
+      fecha: req.body.fecha,
       horario,
       motivo: req.body.motivo ? req.body.motivo.trim() : ''
-    });
+    };
 
-    await registrarActividad(req, {
-      accion: 'TURNO_CREADO',
-      entidad: 'Turno',
-      entidadId: nuevoTurno._id,
-      cambios: obtenerCamposCreados(nuevoTurno)
-    });
+    res.redirect('/pagarTurno');
 
-    res.redirect(req.session.usuario.rol === 'administrador' ? '/turnos' : equipo ? '/index?exito=1' : '/misTurnos');
+   /* res.redirect(req.session.usuario.rol === 'administrador' ? '/turnos' : equipo ? '/index?exito=1' : '/misTurnos');*/
   } catch (error) {
     next(error);
   }
@@ -179,7 +177,8 @@ router.get('/turnos', requiereRoles(...rolesQueConsultan), async (req, res, next
       titulo: 'Turnos agendados',
       turnos,
       puedeCancelar: req.session.usuario.rol === 'administrador',
-      puedeEditar: req.session.usuario.rol === 'administrador'
+      puedeEditar: req.session.usuario.rol === 'administrador',
+     /* puedePagar: ['empleado', 'administrador'].includes(req.session.usuario.rol)*/
     });
   } catch (error) {
     next(error);
@@ -374,5 +373,178 @@ router.get('/agenda', requiereRoles('profesor', 'administrador', 'gerencia'), as
     next(error);
   }
 });
+
+async function obtenerPendiente(req) {
+  const p = req.session.turnoPendiente;
+  if (!p || !mongoose.isValidObjectId(p.alumnoId)) return null;
+
+  const alumno = await Usuario.findOne({
+    _id: p.alumnoId,
+    rol: 'alumno',
+    estado: 'activo'
+  }).lean();
+  const fechaYDia = obtenerFechaYDia(p.fecha);
+  if (!alumno || !fechaYDia) return null;
+
+  return { ...p, alumno, dia: fechaYDia.dia };
+}
+
+router.get('/pagarTurno', requiereRoles(...rolesQueAgendan), async (req, res, next) => {
+  try {
+    const pendiente = await obtenerPendiente(req);
+    if (!pendiente) return res.redirect('/nuevoTurno');
+
+    res.render('turnos/pago', { 
+      titulo: 'Pagar turno', 
+      turno: pendiente,
+      precio: precioClase,
+      precioTransferencia: Math.round(precioClase * (1 - descuentoTransferencia))
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/pagarTurno', requiereRoles(...rolesQueAgendan), async (req, res, next) => {
+  try {
+    const metodo = req.body.metodo;
+    if (!metodosPago.includes(metodo)) {
+      return res.status(400).send('Método de pago inválido.');
+    }
+
+    const pendiente = await obtenerPendiente(req);
+    if (!pendiente) return res.redirect('/nuevoTurno');
+
+    const fechaYDia = obtenerFechaYDia(pendiente.fecha);
+
+    const duplicado = await Turno.findOne({
+      usuario: pendiente.alumno._id,
+      fecha: fechaYDia.fecha,
+      horario: pendiente.horario,
+      estado: 'confirmado'
+    });
+    if (duplicado || pendiente.fecha < fechaActualTexto()) {
+      delete req.session.turnoPendiente;
+      return await renderFormulario(req, res, {
+        status: 400,
+        error: 'El turno ya no está disponible. Elegí otra fecha u horario.',
+        valores: {
+          sucursal: pendiente.sucursal,
+          alumno: pendiente.alumno,
+          fecha: pendiente.fecha,
+          horario: pendiente.horario,
+          motivo: pendiente.motivo
+        }
+      });
+    }
+
+    const nuevoTurno = await Turno.create({
+      usuario: pendiente.alumno._id,
+      sucursal: pendiente.sucursal,
+      fecha: fechaYDia.fecha,
+      dia: fechaYDia.dia,
+      horario: pendiente.horario,
+      motivo: pendiente.motivo,
+      metodoPago: metodo,
+      pagado: true
+    });
+
+    await registrarActividad(req, {
+      accion: 'TURNO_CREADO',
+      entidad: 'Turno',
+      entidadId: nuevoTurno._id,
+      cambios: obtenerCamposCreados(nuevoTurno)
+    });
+
+    delete req.session.turnoPendiente;
+    res.redirect(`/turnos/${nuevoTurno._id}/comprobante`);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/turnos/:id/comprobante', requiereRoles(...rolesQueAgendan), async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).render('404');
+
+    const rol = req.session.usuario.rol;
+    const filtro = { _id: req.params.id, estado: 'confirmado' };
+    if (rol === 'alumno') filtro.usuario = req.session.usuario.id;
+    if (rol === 'empleado') filtro.sucursal = req.session.usuario.sucursal;
+
+    const turno = await Turno.findOne(filtro)
+      .populate('usuario', 'nombre apellido')
+      .lean();
+    if (!turno) return res.status(404).render('404');
+
+    const fechaTexto = new Date(turno.fecha).toISOString().slice(0, 10);
+
+    const contenido = [
+      'TurnoFlex - Comprobante',
+      `Turno: ${turno._id}`,
+      `Alumno: ${turno.usuario.apellido}, ${turno.usuario.nombre}`,
+      `Sucursal: ${turno.sucursal}`,
+      `Fecha: ${fechaTexto} (${turno.dia})`,
+      `Horario: ${turno.horario} hs`
+    ].join('\n');
+
+    const qr = await QRCode.toDataURL(contenido, { margin: 2, width: 280 });
+
+    res.render('turnos/comprobante', {
+      titulo: 'Comprobante de turno',
+      turno,
+      fechaTexto,
+      qr,
+      urlVolver: rol === 'alumno' ? '/misTurnos' : '/turnos'
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/*router.get('/turnos/:id/pagar/:metodo', requiereRoles('alumno', 'empleado', 'administrador'), async (req, res, next) => {
+  try {
+    const { id, metodo } = req.params;
+    if (!['transferencia', 'mercadopago'].includes(metodo)) {
+      return res.status(404).render('404');
+    }
+    if (!mongoose.isValidObjectId(id)) return res.status(404).render('404');
+
+    const rol = req.session.usuario.rol;
+
+    const filtro = { _id: id, estado: 'confirmado' };
+    if (rol === 'alumno') filtro.usuario = req.session.usuario.id;
+    if (rol === 'empleado') filtro.sucursal = req.session.usuario.sucursal;
+
+    const turno = await Turno.findOne(filtro)
+      .populate('usuario', 'nombre apellido')
+      .lean();
+    if (!turno) return res.status(404).render('404');
+
+    const fechaTexto = new Date(turno.fecha).toISOString().slice(0, 10);
+
+    const contenido = [
+      'TurnoFlex - Comprobante',
+      `Turno: ${turno._id}`,
+      `Alumno: ${turno.usuario.apellido}, ${turno.usuario.nombre}`,
+      `Sucursal: ${turno.sucursal}`,
+      `Fecha: ${fechaTexto} (${turno.dia})`,
+      `Horario: ${turno.horario} hs`
+    ].join('\n');
+
+    const qr = await QRCode.toDataURL(contenido, { margin: 2, width: 280 });
+
+    res.render('turnos/pago', {
+      titulo: 'Comprobante de turno',
+      turno,
+      fechaTexto,
+      metodo,
+      qr,
+      urlVolver: rol === 'alumno' ? '/misTurnos' : '/turnos'
+    });
+  } catch (error) {
+    next(error);
+  }
+});*/
 
 module.exports = router;

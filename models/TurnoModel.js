@@ -38,7 +38,15 @@ const turnoSchema = new mongoose.Schema({
   creadoEn: {
     type: Date,
     default: Date.now
-  }
+  },
+  metodoPago: {
+    type: String,
+    enum: ['transferencia', 'mercadopago']
+  },
+  pagado: {
+    type: Boolean,
+    default: false
+  },
 });
 
 module.exports = mongoose.model('Turno', turnoSchema);
