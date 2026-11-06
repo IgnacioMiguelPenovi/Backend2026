@@ -47,8 +47,8 @@ block content
       value=(valores && valores.motivo ? valores.motivo : '')
     )
 
-    .acciones
-      button(type="submit")= turno ? 'Guardar cambios' : 'Confirmar turno'
+    .enlaces
+      button.boton.grande(type="submit")= turno ? 'Guardar cambios' : 'Confirmar turno'
       a.boton.grande.cancelar(href="/index") Cancelar
 
   if equipo

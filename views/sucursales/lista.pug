@@ -24,7 +24,9 @@ block content
             td= sucursal.nombre
             td= sucursal.direccion
             td= sucursal.telefono
-            td= sucursal.estado === 'activo' ? 'Activo' : 'Inactivo'
+            td
+              - const estadoSuc = sucursal.estado === 'activo' ? 'activo' : 'inactivo'
+              span(class=`estado-badge estado-${estadoSuc}`)= sucursal.estado === 'activo' ? 'Activo' : 'Inactivo'
             td
               a.boton(href=`/sucursales/${sucursal._id}`) Ver
               if puedeEditar

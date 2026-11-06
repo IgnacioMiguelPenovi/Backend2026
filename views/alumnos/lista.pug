@@ -6,7 +6,7 @@ block content
   if alumnos.length === 0
     p No hay alumnos inscriptos.
   else
-    table
+    table.tabla-alumnos
       thead
         tr
           th Nombre
@@ -28,7 +28,10 @@ block content
             td= alumno.telefono || '-'
             td= alumno.fechaNacimiento ? alumno.fechaNacimiento.toISOString().split('T')[0] : '-'
             td= alumno.sucursal
-            td= alumno.estado === 'licencia' ? 'De licencia' : alumno.estado === 'inactivo' ? 'Inactivo' : 'Activo'
+            td
+              - const estadoAlumno = alumno.estado === 'licencia' ? 'licencia' : alumno.estado === 'inactivo' ? 'inactivo' : 'activo'
+              - const textoAlumno = alumno.estado === 'licencia' ? 'De licencia' : alumno.estado === 'inactivo' ? 'Inactivo' : 'Activo'
+              span(class=`estado-badge estado-${estadoAlumno}`)= textoAlumno
             td
               a.boton(href=`/alumnos/${alumno._id}`) Ver              
               if puedeEditar

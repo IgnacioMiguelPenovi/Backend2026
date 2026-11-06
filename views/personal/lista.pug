@@ -26,7 +26,10 @@ block content
             td= persona.email
             td= persona.telefono
             td= persona.rol
-            td= persona.estado === 'licencia' ? 'De licencia' : persona.estado === 'inactivo' ? 'Inactivo' : 'Activo'
+            td
+              - const estadoPersona = persona.estado === 'licencia' ? 'licencia' : persona.estado === 'inactivo' ? 'inactivo' : 'activo'
+              - const textoPersona = persona.estado === 'licencia' ? 'De licencia' : persona.estado === 'inactivo' ? 'Inactivo' : 'Activo'
+              span(class=`estado-badge estado-${estadoPersona}`)= textoPersona
             td
               a.boton(href=`/personal/${persona._id}`) Ver   
               if puedeEditar
