@@ -39,4 +39,27 @@ async function verificarContrasena(ingresada, almacenada) {
   return esperado.length === obtenido.length && crypto.timingSafeEqual(esperado, obtenido);
 }
 
-module.exports = { hashearContrasena, verificarContrasena, estaHasheada };
+/**
+ * Nueva funcion: compara la nueva contraseña contra la contraseña actual y el historial
+ * @param {string} nuevaContrasena - La clave tipeada en texto plano
+ * @param {string} contrasenaActual - El hash actual del usuario
+ * @param {Array} historial - Arreglo de hashes anteriores del usuario
+ * @returns {Promise<boolean>} - Devuelve true si la contraseña ya fue usada
+ */
+async function esContrasenaReutilizada(nuevaContrasena, contrasenaActual, historial = []) {
+  // 1.Verificar contra la contraseña actual
+  if (contrasenaActual && await verificarContrasena(nuevaContrasena, contrasenaActual)) {
+     return true; 
+    }
+  
+  // 2. Verificar contra cada clave registrada en el historial 
+  for (const entradaHistorial of historial) { 
+    if (entradaHistorial && await verificarContrasena(nuevaContrasena, entradaHistorial)) { 
+      return true; 
+    } 
+  }
+
+  return false; 
+}
+
+module.exports = { hashearContrasena, verificarContrasena, estaHasheada, esContrasenaReutilizada };

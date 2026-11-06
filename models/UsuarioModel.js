@@ -12,75 +12,86 @@ const tieneSucursal = function () { return ['alumno', 'profesor', 'administrador
 
 const usuarioSchema = new mongoose.Schema({
   nombre: {
-  type: String,
-  required: [true, 'El nombre es obligatorio'],
-  trim: true,
-  minlength: [2, 'El nombre debe tener al menos 2 caracteres'],
-  maxlength: [50, 'El nombre no puede exceder los 50 caracteres']
-},
+    type: String,
+    required: [true, "El nombre es obligatorio"],
+    trim: true,
+    minlength: [2, "El nombre debe tener al menos 2 caracteres"],
+    maxlength: [50, "El nombre no puede exceder los 50 caracteres"],
+  },
   apellido: {
-  type: String,
-    required: [true, 'El apellido es obligatorio'],
-  trim: true,
-  minlength: [2, 'El apellido debe tener al menos 2 caracteres'],
-  maxlength: [50, 'El apellido no puede exceder los 50 caracteres']
-},
+    type: String,
+    required: [true, "El apellido es obligatorio"],
+    trim: true,
+    minlength: [2, "El apellido debe tener al menos 2 caracteres"],
+    maxlength: [50, "El apellido no puede exceder los 50 caracteres"],
+  },
   usuario: {
-  type: String,
-  trim: true,
-  lowercase: true,
-  unique: true,
-  sparse: true
-},
+    type: String,
+    trim: true,
+    lowercase: true,
+    unique: true,
+    sparse: true,
+  },
   contrasena: {
-  type: String,
-  minlength: 6,
-  select: false
-},
-  
-  rol: { type: String, required: true, enum: ROLES },
-  estado: { 
-    type: String, 
-    enum: ['activo', 'inactivo', 'licencia'],
-    default: 'activo',
-    required: true
-   },
-  sucursal: { type: String, trim: true, required: tieneSucursal },
-
-    // --- NUEVOS CAMPOS GLOBALES ---
-    dni: { 
-    type: String, 
-    required: [true, 'El DNI es obligatorio'],
-    match: [/^\d+$/, 'El DNI debe contener solo números'] // Comprueba que sean solo dígitos
+    type: String,
+    minlength: 6,
+    select: false,
   },
 
-  email: { type: String, required: [true, 'El Email es obligatorio'], trim: true },
+  // NUEVO CAMPO: Historial de contraseñas anteriores (guarda hashes de scrypt)
+  historialContrasenas: [{ type: String, select: false }],
 
-  telefono: { 
-    type: String, 
-    required: [true, 'El teléfono es obligatorio'],
+  rol: { type: String, required: true, enum: ROLES },
+  estado: {
+    type: String,
+    enum: ["activo", "inactivo", "licencia"],
+    default: "activo",
+    required: true,
+  },
+  sucursal: { type: String, trim: true, required: tieneSucursal },
+
+  // --- NUEVOS CAMPOS GLOBALES ---
+  dni: {
+    type: String,
+    required: [true, "El DNI es obligatorio"],
+    match: [/^\d+$/, "El DNI debe contener solo números"], // Comprueba que sean solo dígitos
+  },
+
+  email: {
+    type: String,
+    required: [true, "El Email es obligatorio"],
     trim: true,
-    minlength: [10, 'El teléfono debe tener un mínimo de 10 caracteres'],
-    maxlength: [12, 'El teléfono no puede superar los 12 caracteres'],
-    match: [/^\d+$/, 'El teléfono debe contener solo números']
+  },
+
+  telefono: {
+    type: String,
+    required: [true, "El teléfono es obligatorio"],
+    trim: true,
+    minlength: [10, "El teléfono debe tener un mínimo de 10 caracteres"],
+    maxlength: [12, "El teléfono no puede superar los 12 caracteres"],
+    match: [/^\d+$/, "El teléfono debe contener solo números"],
   },
 
   //Fecha de Nacimiento: Mayor de 18 años al día de inscripción
-  fechaNacimiento: { 
+  fechaNacimiento: {
     type: Date,
     validate: {
-      validator: function(valor) {
+      validator: function (valor) {
         // Si no cargan la fecha y no es requerida, pasa la validación
-        if (!valor) return true; 
-        
+        if (!valor) return true;
+
         const hoy = new Date();
-        const fechaMinima = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
-        
+        const fechaMinima = new Date(
+          hoy.getFullYear() - 18,
+          hoy.getMonth(),
+          hoy.getDate(),
+        );
+
         // El valor ingresado debe ser anterior o igual a la fecha de hace 18 años
         return valor <= fechaMinima;
       },
-      message: 'El alumno debe ser mayor de 18 años para inscribirse.'
-    }
+      message: "El alumno debe ser mayor de 18 años para inscribirse.",
+    },
   },
 
   // solo alumnos
@@ -91,17 +102,21 @@ const usuarioSchema = new mongoose.Schema({
   dias: {
     type: [{ type: String, enum: DIAS }],
     validate: {
-      validator: function (valor) { return !esProfesor.call(this) || valor.length > 0; },
-      message: 'El profesor necesita al menos un día'
-    }
+      validator: function (valor) {
+        return !esProfesor.call(this) || valor.length > 0;
+      },
+      message: "El profesor necesita al menos un día",
+    },
   },
   horarios: {
     type: [{ type: String, enum: HORARIOS }],
     validate: {
-      validator: function (valor) { return !esProfesor.call(this) || valor.length > 0; },
-      message: 'El profesor necesita al menos un horario'
-    }
-  }
+      validator: function (valor) {
+        return !esProfesor.call(this) || valor.length > 0;
+      },
+      message: "El profesor necesita al menos un horario",
+    },
+  },
 });
 
 module.exports = mongoose.model('Usuario', usuarioSchema);
