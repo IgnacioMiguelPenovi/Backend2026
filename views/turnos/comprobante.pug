@@ -1,0 +1,21 @@
+extends ../layout
+
+block content
+  h2 Turno confirmado
+
+  .comprobante(style="text-align: center;")
+    p Pago por #{turno.metodoPago === 'mercadopago' ? 'Mercado Pago' : 'transferencia'} registrado. Este es tu comprobante.
+    img(src=qr alt="QR del comprobante del turno")
+    ul.detalle
+      li
+        strong Sucursal:
+        |  #{turno.sucursal}
+      li
+        strong Fecha:
+        |  #{fechaTexto} (#{turno.dia})
+      li
+        strong Horario:
+        |  #{turno.horario} hs
+
+  .acciones
+    a.boton.grande(href=urlVolver) Volver

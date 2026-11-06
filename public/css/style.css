@@ -203,7 +203,8 @@ ul.detalle {
   margin-top: 10%;
 }
 
-a.boton.grande {
+a.boton.grande,
+button.boton.grande {
   display: flex;
   width: max-content;
   font-size: 1.1rem;
@@ -384,6 +385,130 @@ form.logout {
   color: white;
   width: 11rem;
   max-width: fit-content;
+}
+
+.pago {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.pago h2 {
+  display: block;
+  color: #2c3e50;
+}
+
+.tarjeta {
+  background-color: #fff;
+  border: 1px solid #d5dde5;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.etiqueta {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #5d6d7e;
+}
+
+.tarjeta h3 {
+  margin: 0.6rem 0 0.3rem;
+  font-size: 1.2rem;
+  color: #2c3e50;
+}
+
+.detalle-clase {
+  margin: 0.2rem 0;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e1e8ed;
+}
+
+.total strong {
+  font-size: 1.5rem;
+  color: #2c3e50;
+}
+
+.pago form.opciones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 100%;
+  margin-top: 1rem;
+  padding-top: 0;
+}
+
+.opcion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0;
+  padding: 1rem 1.2rem;
+  background-color: #f0f6fa;
+  color: #1a73c8;
+  border: 1px solid #c5dbe6;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.opcion:hover {
+  background-color: #e3eff7;
+  border-color: #1a73c8;
+}
+
+.opcion.transferencia {  
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.oferta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+}
+
+.opcion .descuento {  
+  font-size: 0.95rem;
+}
+
+.importe {
+  font-size: 1.3rem;
+  color: #2c3e50;
+}
+
+.logo-mp {
+  height: 40px;
+}
+
+.promos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  color: #222;
+  font-size: 0.9rem;
+}
+
+.bancos {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.bancos img {
+  height: 22px;
 }
 
 /* Chatbot (solo alumnos) */
