@@ -38,8 +38,12 @@ const usuarioSchema = new mongoose.Schema({
     select: false,
   },
 
-  // NUEVO CAMPO: Historial de contraseñas anteriores (guarda hashes de scrypt)
+  // Historial de contraseñas anteriores (guarda hashes de scrypt)
   historialContrasenas: [{ type: String, select: false }],
+
+  // Token de recuperación de contraseña de un solo uso y su expiración
+  resetToken: { type: String, select: false },
+  resetTokenExpira: { type: Date, select: false },
 
   rol: { type: String, required: true, enum: ROLES },
   estado: {
@@ -50,11 +54,11 @@ const usuarioSchema = new mongoose.Schema({
   },
   sucursal: { type: String, trim: true, required: tieneSucursal },
 
-  // --- NUEVOS CAMPOS GLOBALES ---
+  // --- CAMPOS GLOBALES ---
   dni: {
     type: String,
     required: [true, "El DNI es obligatorio"],
-    match: [/^\d+$/, "El DNI debe contener solo números"], // Comprueba que sean solo dígitos
+    match: [/^\d+$/, "El DNI debe contener solo números"],
   },
 
   email: {
@@ -72,12 +76,11 @@ const usuarioSchema = new mongoose.Schema({
     match: [/^\d+$/, "El teléfono debe contener solo números"],
   },
 
-  //Fecha de Nacimiento: Mayor de 18 años al día de inscripción
+  // Fecha de Nacimiento: Mayor de 18 años al día de inscripción
   fechaNacimiento: {
     type: Date,
     validate: {
       validator: function (valor) {
-        // Si no cargan la fecha y no es requerida, pasa la validación
         if (!valor) return true;
 
         const hoy = new Date();
@@ -87,16 +90,11 @@ const usuarioSchema = new mongoose.Schema({
           hoy.getDate(),
         );
 
-        // El valor ingresado debe ser anterior o igual a la fecha de hace 18 años
         return valor <= fechaMinima;
       },
       message: "El alumno debe ser mayor de 18 años para inscribirse.",
     },
   },
-
-  // solo alumnos
-  /*turnoDia: { type: String, enum: DIAS, required: esAlumno },
-  turnoHorario: { type: String, enum: HORARIOS, required: esAlumno },*/
 
   // solo profesores
   dias: {

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const crypto = require('crypto');
 const Usuario = require('../models/UsuarioModel');
 const { hashearContrasena, esContrasenaReutilizada } = require('../utils/contrasenas');
 const nodemailer = require('nodemailer');
@@ -22,7 +23,7 @@ router.get('/', (req, res) => {
   res.render('passwords/recuperacion');
 });
 
-// 2. POST /recuperacion -> Recibe el mail y envía el correo con las instrucciones
+// 2. POST /recuperacion -> Recibe el mail y envía el correo con el token de un solo uso
 router.post('/', async (req, res, next) => {
   const { email } = req.body;
   
@@ -35,7 +36,7 @@ router.post('/', async (req, res, next) => {
   try {
     const emailLimpio = email.trim();
 
-    // Verificamos si existe un usuario activo con ese email (sin importar mayúsculas/minúsculas)
+    // Verificamos si existe un usuario activo con ese email
     const usuarioDB = await Usuario.findOne({ 
       email: { $regex: new RegExp(`^${emailLimpio}$`, 'i') }, 
       estado: 'activo' 
@@ -47,15 +48,21 @@ router.post('/', async (req, res, next) => {
       });
     }
 
-    // Arma la URL hacia cambioPassword (detecta automáticamente localhost o dominio)
+    // 1. Generar token aleatorio y fecha de expiración (15 minutos)
+    const token = crypto.randomBytes(32).toString('hex');
+    usuarioDB.resetToken = token;
+    usuarioDB.resetTokenExpira = Date.now() + 15 * 60 * 1000; // Vence en 15 minutos
+    await usuarioDB.save();
+
+    // 2. Armar la URL dinámica incluyendo el token de un solo uso
     const host = req.get('host');
-    const enlaceCambio = `${req.protocol}://${host}/recuperacion/cambio-password`;
+    const enlaceCambio = `${req.protocol}://${host}/recuperacion/cambio-password?token=${token}`;
     
     // Plantilla del correo en HTML
     const cuerpoEmail = `
       <div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e1e8ed; border-radius: 8px; overflow: hidden;">
         
-        <!-- Encabezado con Logo y Nombre al lado -->
+        <!-- Encabezado con Logo y Nombre -->
         <div style="background-color: #2c3e50; padding: 20px; text-align: center;">
           <img src="cid:logo.png" alt="Logo TurnoFlex" style="height: 48px; width: auto; vertical-align: middle; margin-right: 12px; border-radius: 6px;">
           <span style="color: #ffffff; font-size: 26px; font-weight: bold; vertical-align: middle; letter-spacing: 1px;">TurnoFlex</span>
@@ -71,11 +78,11 @@ router.post('/', async (req, res, next) => {
             <p style="margin: 0; font-weight: bold; color: #2c3e50;">Paso a paso para cambiar tu contraseña:</p>
             <ol style="margin: 10px 0 0 0; padding-left: 20px; line-height: 1.8;">
               <li>Tu nombre de usuario es: <strong>${usuarioDB.usuario}</strong></li>
-              <li>Hacé clic en el siguiente botón para ir al formulario de cambio de clave:</li>
+              <li>Hacé clic en el siguiente botón para ir al formulario de cambio de clave (válido por 15 minutos):</li>
             </ol>
             
             <ol start="3" style="margin: 0; padding-left: 20px; line-height: 1.8;">
-              <li>Ingresá tu nombre de usuario (<strong>${usuarioDB.usuario}</strong>).</li>
+              <li>Verificá tu nombre de usuario (<strong>${usuarioDB.usuario}</strong>).</li>
               <li>Ingresá tu nueva contraseña (mínimo 6 caracteres y al menos un símbolo especial como @, $, !, %, *, #, etc.).</li>
               <li>Volvé a escribir la nueva contraseña para confirmarla.</li>
               <li>Hacé clic en <strong>"Guardar contraseña"</strong>.</li>
@@ -83,10 +90,10 @@ router.post('/', async (req, res, next) => {
           </div>
 
           <div style="text-align: center; margin: 15px 0 10px 0;">
-              <a href="${enlaceCambio}" style="background-color: #2c3e50; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 5px; font-weight: bold; display: inline-block;">
-                Recuperar mi contraseña
-              </a>
-            </div>
+            <a href="${enlaceCambio}" style="background-color: #2c3e50; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 5px; font-weight: bold; display: inline-block;">
+              Recuperar mi contraseña
+            </a>
+          </div>
 
           <p style="font-size: 13px; color: #666; margin-top: 2rem">
             Si el botón no funciona, copiá y pegá este enlace en tu navegador:<br>
@@ -94,10 +101,10 @@ router.post('/', async (req, res, next) => {
           </p>
         </div>
 
-        <!-- Pie de página con aviso de mensaje automático -->
+        <!-- Pie de página -->
         <div style="background-color: #f4f6f7; padding: 15px 20px; text-align: center; font-size: 12px; color: #7f8c8d; border-top: 1px solid #e1e8ed;">
           <p style="margin: 0 0 6px 0; font-weight: bold; color: #c0392b;">
-            ⚠️ Este es un correo automático, por favor no respondas a este mensaje.
+            ⚠️ Este es un correo automático, por favor no respondas a este mensaje. Este enlace expirará en 15 minutos y es de un solo uso.
           </p>
           <p style="margin: 0 0 6px 0;">
             Si no solicitaste este cambio de contraseña contactanos al 11 2345-6789.
@@ -120,7 +127,7 @@ router.post('/', async (req, res, next) => {
         {
           filename: 'logo.png',
           path: path.join(__dirname, '../public/img/logo.png'),
-          cid: 'logo.png' // Identificador para <img src="cid:logo.png">
+          cid: 'logo.png'
         }
       ]
     });
@@ -137,33 +144,64 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-// 3. GET /recuperacion/cambio-password -> Muestra la pantalla con el formulario
-router.get('/cambio-password', (req, res) => {
-  res.render('passwords/cambioPassword');
+// 3. GET /recuperacion/cambio-password -> Muestra la pantalla validando el token de un solo uso
+router.get('/cambio-password', async (req, res, next) => {
+  const { token } = req.query;
+
+  if (!token) {
+    return res.render('passwords/recuperacion', {
+      error: 'El enlace de recuperación es inválido o falta el token de acceso.'
+    });
+  }
+
+  try {
+    // Busca el usuario con ese token no expirado
+    const usuarioDB = await Usuario.findOne({
+      resetToken: token,
+      resetTokenExpira: { $gt: Date.now() },
+      estado: 'activo'
+    });
+
+    if (!usuarioDB) {
+      return res.render('passwords/recuperacion', {
+        error: 'El enlace de recuperación es inválido, ya fue utilizado o ha expirado. Por favor, solicitá uno nuevo.'
+      });
+    }
+
+    res.render('passwords/cambioPassword', {
+      token,
+      user: usuarioDB.usuario
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
-// 4. POST /recuperacion/cambio-password -> Procesa el cambio de contraseña
+// 4. POST /recuperacion/cambio-password -> Procesa el cambio y CONSUME el token (un solo uso)
 router.post('/cambio-password', async (req, res, next) => {
-  const { user, newPassword, repeatPassword } = req.body;
+  const { token, user, newPassword, repeatPassword } = req.body;
 
-  // 1. Validaciones previas
-  if (!user || !newPassword || !repeatPassword) {
+  if (!token || !user || !newPassword || !repeatPassword) {
     return res.render('passwords/cambioPassword', {
+      token,
+      user,
       error: 'Todos los campos son obligatorios.'
     });
   }
 
-  // Verificación de contraseñas iguales
   if (newPassword !== repeatPassword) {
     return res.render('passwords/cambioPassword', {
+      token,
+      user,
       error: 'Las contraseñas ingresadas no coinciden.'
     });
   }
 
-  // Validación de longitud y carácter especial
   const regexEspecial = /[@$!%*?&#._\-]/;
   if (newPassword.length < 6 || !regexEspecial.test(newPassword)) {
     return res.render('passwords/cambioPassword', {
+      token,
+      user,
       error: 'La contraseña debe tener al menos 6 caracteres e incluir un símbolo especial.'
     });
   }
@@ -171,49 +209,56 @@ router.post('/cambio-password', async (req, res, next) => {
   try {
     const identificador = user.trim().toLowerCase();
 
-    // 2. Busca al usuario en MongoDB por su nombre de usuario
+    // Validar token activo y no expirado en MongoDB
     const usuarioDB = await Usuario.findOne({
       usuario: identificador,
+      resetToken: token,
+      resetTokenExpira: { $gt: Date.now() },
       estado: 'activo'
-  }).select('+contrasena +historialContrasenas');
+    }).select('+contrasena +historialContrasenas +resetToken +resetTokenExpira');
 
     if (!usuarioDB) {
-      return res.render('passwords/cambioPassword', {
-        error: 'No se encontró un usuario activo con ese nombre de usuario.'
+      return res.render('passwords/recuperacion', {
+        error: 'El enlace de recuperación es inválido, ya fue utilizado o ha expirado. Solicitá uno nuevo.'
       });
     }
-    
-//  Validar que la nueva contraseña NO esté en el historial ni sea la clave actual 
-const esReutilizada = await esContrasenaReutilizada( 
-  newPassword, 
-  usuarioDB.contrasena, 
-  usuarioDB.historialContrasenas || [] 
-);
 
-if (esReutilizada) { 
-  return res.render('passwords/cambioPassword', { 
-    error: 'Por razones de seguridad, no podés usar tu contraseña actual ni una que hayas utilizado anteriormente.' 
-  }); 
-}
+    // Validar no reutilización de contraseñas
+    const esReutilizada = await esContrasenaReutilizada(
+      newPassword,
+      usuarioDB.contrasena,
+      usuarioDB.historialContrasenas || []
+    );
 
-// Guardar la clave actual vieja en el historial antes de actualizarla 
-const historialActual = usuarioDB.historialContrasenas || []; 
-if (usuarioDB.contrasena) { 
-  historialActual.unshift(usuarioDB.contrasena); // Agrega la clave vieja al inicio del arreglo 
+    if (esReutilizada) {
+      return res.render('passwords/cambioPassword', {
+        token,
+        user,
+        error: 'Por razones de seguridad, no podés usar tu contraseña actual ni una que hayas utilizado anteriormente.'
+      });
+    }
+
+    // Actualizar historial
+    const historialActual = usuarioDB.historialContrasenas || [];
+    if (usuarioDB.contrasena) {
+      historialActual.unshift(usuarioDB.contrasena);
+    }
+    usuarioDB.historialContrasenas = historialActual.slice(0, MAX_HISTORIAL);
+
+    // Asignar nueva clave
+    usuarioDB.contrasena = await hashearContrasena(newPassword);
+
+    // BLANQUEAR / INVALIDAR TOKEN (Garantiza el UN SOLO USO)
+    usuarioDB.resetToken = undefined;
+    usuarioDB.resetTokenExpira = undefined;
+
+    await usuarioDB.save();
+
+    console.log(`✅ Contraseña e historial actualizados exitosamente para: ${usuarioDB.usuario}`);
+    res.redirect('/login?mensaje=Contraseña actualizada con éxito');
+  } catch (error) {
+    next(error);
   }
-
-  // Asignar el nuevo hash y guardar el usuario en MongoDB 
-  usuarioDB.contrasena = await hashearContrasena(newPassword); 
-  await usuarioDB.save(); 
-  
-  console.log(`✅ Contraseña e historial actualizados exitosamente para: ${usuarioDB.usuario}`); 
-    
-// Redirige al login con mensaje de éxito 
-res.redirect('/login?mensaje=Contraseña actualizada con éxito');
- } catch (error) { 
-  next(error);
-   } 
-  });
-   
+});
 
 module.exports = router;
