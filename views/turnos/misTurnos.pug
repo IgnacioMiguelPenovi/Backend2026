@@ -14,12 +14,12 @@ block content
           th Horario
           th Motivo
           th Estado
-          th Fecha de Reserva
+          th Reservado el
       tbody
         each turno in turnos
           tr
             td= turno.sucursal
-            td= turno.dia
+            td= `${turno.fecha ? new Date(turno.fecha).toLocaleDateString('es-AR', { timeZone: 'UTC' }) : ''} - (${turno.dia})`
             td= `${turno.horario} hs`
             td= turno.motivo || '-'
             td

@@ -681,3 +681,11 @@ td a.boton {
   background-color: #fff3cd;
   color: #856404;
 }
+
+/* estilo de inputs deshabilitados */
+form input:disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+  border-color: #ced4da;
+}
