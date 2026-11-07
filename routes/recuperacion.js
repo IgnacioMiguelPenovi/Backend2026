@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Usuario = require('../models/UsuarioModel');
-const { hashearContrasena } = require('../utils/contrasenas');
+const { hashearContrasena, esContrasenaReutilizada } = require('../utils/contrasenas');
 const nodemailer = require('nodemailer');
 const path = require('path');
+const MAX_HISTORIAL = 5; // Número de claves anteriores a recordar
 
 // Configuración del servicio de correo con Gmail
 function crearTransportador() {
@@ -174,7 +175,7 @@ router.post('/cambio-password', async (req, res, next) => {
     const usuarioDB = await Usuario.findOne({
       usuario: identificador,
       estado: 'activo'
-    });
+  }).select('+contrasena +historialContrasenas');
 
     if (!usuarioDB) {
       return res.render('passwords/cambioPassword', {
@@ -182,19 +183,37 @@ router.post('/cambio-password', async (req, res, next) => {
       });
     }
     
-    // 3. Actualiza el campo de la contraseña en MongoDB
-    await Usuario.updateOne(
-      { _id: usuarioDB._id },
-      { $set: { contrasena: await hashearContrasena(newPassword) } }
-    );
+//  Validar que la nueva contraseña NO esté en el historial ni sea la clave actual 
+const esReutilizada = await esContrasenaReutilizada( 
+  newPassword, 
+  usuarioDB.contrasena, 
+  usuarioDB.historialContrasenas || [] 
+);
 
-    console.log(`✅ Contraseña actualizada exitosamente para el usuario: ${usuarioDB.usuario}`);
+if (esReutilizada) { 
+  return res.render('passwords/cambioPassword', { 
+    error: 'Por razones de seguridad, no podés usar tu contraseña actual ni una que hayas utilizado anteriormente.' 
+  }); 
+}
 
-    // Redirige al login con mensaje de éxito
-    res.redirect('/login?mensaje=Contraseña actualizada con éxito');
-  } catch (error) {
-    next(error);
+// Guardar la clave actual vieja en el historial antes de actualizarla 
+const historialActual = usuarioDB.historialContrasenas || []; 
+if (usuarioDB.contrasena) { 
+  historialActual.unshift(usuarioDB.contrasena); // Agrega la clave vieja al inicio del arreglo 
   }
-});
+
+  // Asignar el nuevo hash y guardar el usuario en MongoDB 
+  usuarioDB.contrasena = await hashearContrasena(newPassword); 
+  await usuarioDB.save(); 
+  
+  console.log(`✅ Contraseña e historial actualizados exitosamente para: ${usuarioDB.usuario}`); 
+    
+// Redirige al login con mensaje de éxito 
+res.redirect('/login?mensaje=Contraseña actualizada con éxito');
+ } catch (error) { 
+  next(error);
+   } 
+  });
+   
 
 module.exports = router;
