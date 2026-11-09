@@ -1237,3 +1237,11 @@ form.logout {
     padding: 0.55rem 0.8rem;
   }
 }
+
+/* estilo de inputs deshabilitados */
+form input:disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+  border-color: #ced4da;
+}
