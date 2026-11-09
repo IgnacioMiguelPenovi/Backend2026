@@ -16,10 +16,13 @@ html(lang="es")
                                        
       if usuario
           form.logout(method="POST" action="/logout" id="logoutForm")
-            p.usuario
+            - const nombreCompleto = `${usuario.nombre} ${usuario.apellido}`.trim()
+            p.usuario(title=nombreCompleto)
               i.fa-solid.fa-user(style="margin-right:0.4rem;")
-              | #{usuario.nombre} #{usuario.apellido}
-            button.salir(type="submit") Cerrar Sesión
+              span.usuario-nombre= nombreCompleto
+            button.salir(type="submit" title="Cerrar Sesión" aria-label="Cerrar Sesión")
+              i.fa-solid.fa-right-from-bracket
+              span.salir-texto Cerrar Sesión
     main
       block content
 
