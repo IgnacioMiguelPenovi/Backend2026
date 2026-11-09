@@ -4,7 +4,7 @@ const router = express.Router();
 const Turno = require('../models/TurnoModel');
 const Usuario = require('../models/UsuarioModel');
 const QRCode = require('qrcode');
-const { DIAS, HORARIOS } = require('../config/opciones');
+const { DIAS, HORARIOS, CUPOS_POR_CLASE } = require('../config/opciones');
 const { obtenerNombresSucursalesActivas, validarSucursalActiva } = require('../utils/sucursales');
 const { requiereRoles } = require('../middlewares/autorizacion');
 const {
@@ -73,6 +73,48 @@ async function renderFormulario(req, res, opciones = {}) {
     fechaMinima: fechaActualTexto()
   });
 }
+
+// GET /disponibilidad -> Consulta la disponibilidad de cupos por fecha y sucursal
+router.get('/disponibilidad', requiereRoles(...rolesQueAgendan), async (req, res, next) => {
+  try {
+    const { sucursal, fecha } = req.query;
+    const fechaYDia = obtenerFechaYDia(fecha);
+    if (!sucursal || !fechaYDia) {
+      return res.json({ horariosDisponibles: HORARIOS, ocupacion: {}, cuposMaximos: CUPOS_POR_CLASE });
+    }
+
+    const turnosConfirmados = await Turno.aggregate([
+      {
+        $match: {
+          sucursal,
+          fecha: fechaYDia.fecha,
+          estado: 'confirmado'
+        }
+      },
+      {
+        $group: {
+          _id: '$horario',
+          total: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const ocupacion = {};
+    turnosConfirmados.forEach(t => {
+      ocupacion[t._id] = t.total;
+    });
+
+    const horariosDisponibles = HORARIOS.filter(h => (ocupacion[h] || 0) < CUPOS_POR_CLASE);
+
+    res.json({
+      horariosDisponibles,
+      ocupacion,
+      cuposMaximos: CUPOS_POR_CLASE
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 router.get('/nuevoTurno', requiereRoles(...rolesQueAgendan), async (req, res, next) => {
   try {
@@ -144,6 +186,23 @@ router.post('/nuevoTurno', requiereRoles(...rolesQueAgendan), async (req, res, n
       });
     }
 
+    // Validación de Capping (Máximo 8 alumnos por clase en esa sucursal y fecha/horario)
+    const sucursalTurno = equipo ? sucursalSolicitada : alumno.sucursal;
+    const cuposOcupados = await Turno.countDocuments({
+      sucursal: sucursalTurno,
+      fecha: fechaYDia.fecha,
+      horario,
+      estado: 'confirmado'
+    });
+
+    if (cuposOcupados >= CUPOS_POR_CLASE) {
+      return await renderFormulario(req, res, {
+        status: 400,
+        error: `El horario de las ${horario} hs para esa fecha y sucursal está completo (máximo ${CUPOS_POR_CLASE} alumnos por clase). Elegí otro horario.`,
+        valores: req.body
+      });
+    }
+
     req.session.turnoPendiente = {
       alumnoId: String(alumno._id),
       sucursal: equipo ? sucursalSolicitada : alumno.sucursal,
@@ -153,8 +212,6 @@ router.post('/nuevoTurno', requiereRoles(...rolesQueAgendan), async (req, res, n
     };
 
     res.redirect('/pagarTurno');
-
-   /* res.redirect(req.session.usuario.rol === 'administrador' ? '/turnos' : equipo ? '/index?exito=1' : '/misTurnos');*/
   } catch (error) {
     next(error);
   }
@@ -177,8 +234,7 @@ router.get('/turnos', requiereRoles(...rolesQueConsultan), async (req, res, next
       titulo: 'Turnos agendados',
       turnos,
       puedeCancelar: req.session.usuario.rol === 'administrador',
-      puedeEditar: req.session.usuario.rol === 'administrador',
-     /* puedePagar: ['empleado', 'administrador'].includes(req.session.usuario.rol)*/
+      puedeEditar: req.session.usuario.rol === 'administrador'
     });
   } catch (error) {
     next(error);
@@ -251,6 +307,23 @@ router.post('/turnos/:id/editar', requiereRoles('administrador'), async (req, re
         status: 400,
         turno,
         error: 'El alumno ya tiene otro turno confirmado en esa fecha y horario.',
+        valores: req.body
+      });
+    }
+
+    const cuposOcupados = await Turno.countDocuments({
+      _id: { $ne: turno._id },
+      sucursal: req.body.sucursal,
+      fecha: fechaYDia.fecha,
+      horario,
+      estado: 'confirmado'
+    });
+
+    if (cuposOcupados >= CUPOS_POR_CLASE) {
+      return renderFormulario(req, res, {
+        status: 400,
+        turno,
+        error: `El horario de las ${horario} hs para esa fecha y sucursal está completo (máximo ${CUPOS_POR_CLASE} alumnos por clase).`,
         valores: req.body
       });
     }
@@ -364,10 +437,10 @@ router.get('/agenda', requiereRoles('profesor', 'administrador', 'gerencia'), as
     res.render('turnos/agendaProfesor', {
       titulo: 'Agenda de clases',
       profesor,
-      turnos,
       fechaTexto,
       diaSemana: fechaYDia.dia,
-      trabajaEseDia
+      trabajaEseDia,
+      turnos
     });
   } catch (error) {
     next(error);
@@ -423,11 +496,21 @@ router.post('/pagarTurno', requiereRoles(...rolesQueAgendan), async (req, res, n
       horario: pendiente.horario,
       estado: 'confirmado'
     });
-    if (duplicado || pendiente.fecha < fechaActualTexto()) {
+
+    const cuposOcupados = await Turno.countDocuments({
+      sucursal: pendiente.sucursal,
+      fecha: fechaYDia.fecha,
+      horario: pendiente.horario,
+      estado: 'confirmado'
+    });
+
+    if (duplicado || cuposOcupados >= CUPOS_POR_CLASE || pendiente.fecha < fechaActualTexto()) {
       delete req.session.turnoPendiente;
       return await renderFormulario(req, res, {
         status: 400,
-        error: 'El turno ya no está disponible. Elegí otra fecha u horario.',
+        error: cuposOcupados >= CUPOS_POR_CLASE
+          ? `El cupo para la clase de las ${pendiente.horario} hs en ${pendiente.sucursal} se completó mientras realizabas el pago. Elegí otra fecha u horario.`
+          : 'El turno ya no está disponible. Elegí otra fecha u horario.',
         valores: {
           sucursal: pendiente.sucursal,
           alumno: pendiente.alumno,
