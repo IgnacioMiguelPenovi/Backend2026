@@ -1,0 +1,88 @@
+extends ../layout
+
+block content
+  h2 Mi Perfil
+
+  if error
+    p.error= error
+  if mensaje
+    p.mensaje-exito= mensaje
+
+  form(action="/alumnos/mi-perfil" method="POST")
+    label(for="nombre") Nombre
+    input#nombre(
+      type="text" 
+      name="nombre" 
+      value=alumno ? alumno.nombre : '' 
+      required 
+      minlength="2" 
+      maxlength="50"
+      oninvalid="this.setCustomValidity('El nombre debe tener al menos 2 caracteres')" 
+      oninput="this.setCustomValidity('')"
+    )
+
+    label(for="apellido") Apellido
+    input#apellido(
+      type="text" 
+      name="apellido" 
+      value=alumno ? alumno.apellido : '' 
+      required 
+      minlength="2" 
+      maxlength="50"
+      oninvalid="this.setCustomValidity('El apellido debe tener al menos 2 caracteres')" 
+      oninput="this.setCustomValidity('')"
+    )
+
+    label(for="dni") DNI
+    input#dni(
+      type="text" 
+      name="dni" 
+      value=alumno ? alumno.dni : '' 
+      required 
+      minlength="7"
+      maxlength="8"
+      placeholder="Ej. 12345678"
+      oninput="validarDNI(this)"
+    )
+
+    label(for="email") Email
+    input#email(
+      type="email" 
+      name="email" 
+      value=alumno ? alumno.email : '' 
+      required
+      oninvalid="this.setCustomValidity('Por favor, ingrese un correo electrónico válido')"
+      oninput="this.setCustomValidity('')"
+    )
+
+    label(for="telefono") Teléfono
+    input#telefono(
+      type="tel" 
+      name="telefono" 
+      value=alumno ? alumno.telefono : '' 
+      required
+      minlength="10"
+      maxlength="12"
+      placeholder="Ej. 1112345678"
+      oninput="validarTelefono(this)"
+    )
+
+    label(for="fechaNacimiento") Fecha de Nacimiento
+    input#fechaNacimiento(
+      type="date" 
+      name="fechaNacimiento" 
+      value=(alumno && alumno.fechaNacimiento) ? new Date(alumno.fechaNacimiento).toISOString().split('T')[0] : ''
+      required
+      onchange="validarEdad(this)" 
+    )
+
+    label Sucursal asignada
+    input#sucursal(
+      type="text"
+      value=alumno ? alumno.sucursal : 'No asignada'
+      disabled
+    )
+
+    .enlaces
+      button.boton.grande(type="submit") Guardar cambios
+      a.boton.grande.cancelar(href="/index") Cancelar

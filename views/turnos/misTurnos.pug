@@ -11,7 +11,6 @@ block content
         thead
           tr
             th Sucursal
-            th Fecha
             th Día
             th Horario
             th Motivo
@@ -22,8 +21,7 @@ block content
             tr
               td.col-nombre(data-label="Sucursal")
                 strong= turno.sucursal
-              td.col-nowrap(data-label="Fecha")= turno.fecha ? new Date(turno.fecha).toISOString().split('T')[0].split('-').reverse().join('/') : '-'
-              td(data-label="Día")= turno.dia
+              td.col-nowrap(data-label="Día")= `${turno.fecha ? new Date(turno.fecha).toLocaleDateString('es-AR', { timeZone: 'UTC' }) : ''} - (${turno.dia})`
               td.col-nowrap(data-label="Horario")= `${turno.horario} hs`
               td(data-label="Motivo")= turno.motivo || '-'
               td(data-label="Estado")
@@ -31,5 +29,5 @@ block content
               td.col-nowrap(data-label="Reservado el")= turno.creadoEn ? new Date(turno.creadoEn).toLocaleDateString('es-AR') : '-'
 
   .acciones
-    a.boton.grande(href="/nuevoTurno") Añadir Turno
+    a.boton.grande(href="/nuevoTurno") Agendar Turno
     a.boton.grande(href="/index") Volver al Inicio
