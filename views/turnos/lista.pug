@@ -6,37 +6,40 @@ block content
   if turnos.length === 0
     p No hay turnos agendados.
   else
-    table.tabla-turnos
-      thead
-        tr
-          th Alumno
-          th Sucursal
-          th Fecha
-          th Día
-          th Horario
-          th Motivo
-          th Estado
-          if puedeEditar || puedeCancelar || puedePagar 
-            th Acciones
-      tbody
-        each turno in turnos
+    - const hayAcciones = puedeEditar || puedeCancelar || puedePagar
+    .tabla-wrap
+      table.tabla-datos
+        thead
           tr
-            td= turno.usuario ? `${turno.usuario.apellido}, ${turno.usuario.nombre}` : 'Alumno no disponible'
-            td= turno.sucursal
-            td= turno.fecha ? new Date(turno.fecha).toISOString().split('T')[0] : '-'
-            td= turno.dia
-            td= `${turno.horario} hs`
-            td= turno.motivo || '-'
-            td
-              span(class=`estado-badge estado-${turno.estado}`)= turno.estado === 'confirmado' ? 'Confirmado' : turno.estado === 'cancelado' ? 'Cancelado' : 'Pendiente'
-            if puedeEditar || puedeCancelar || puedePagar 
-              td
-                .accion-buttons                  
-                  if puedeEditar
-                    a.boton(href=`/turnos/${turno._id}/editar`) Editar
-                  if puedeCancelar && turno.estado === 'confirmado'
-                    form(action=`/turnos/${turno._id}/cancelar` method="POST")
-                      button.desactivar(type="submit") Cancelar
+            th Alumno
+            th Sucursal
+            th Fecha
+            th Día
+            th Horario
+            th Motivo
+            th Estado
+            if hayAcciones
+              th Acciones
+        tbody
+          each turno in turnos
+            tr
+              td.col-nombre(data-label="Alumno")
+                strong= turno.usuario ? `${turno.usuario.apellido}, ${turno.usuario.nombre}` : 'Alumno no disponible'
+              td(data-label="Sucursal")= turno.sucursal
+              td.col-nowrap(data-label="Fecha")= turno.fecha ? new Date(turno.fecha).toISOString().split('T')[0].split('-').reverse().join('/') : '-'
+              td(data-label="Día")= turno.dia
+              td.col-nowrap(data-label="Horario")= `${turno.horario} hs`
+              td(data-label="Motivo")= turno.motivo || '-'
+              td(data-label="Estado")
+                span(class=`estado-badge estado-${turno.estado}`)= turno.estado === 'confirmado' ? 'Confirmado' : turno.estado === 'cancelado' ? 'Cancelado' : 'Pendiente'
+              if hayAcciones
+                td.col-acciones(data-label="Acciones")
+                  .celda-acciones
+                    if puedeEditar
+                      a.boton(href=`/turnos/${turno._id}/editar`) Editar
+                    if puedeCancelar && turno.estado === 'confirmado'
+                      form(action=`/turnos/${turno._id}/cancelar` method="POST")
+                        button.desactivar(type="submit") Cancelar
 
   .enlaces
     if usuario.rol === 'administrador'

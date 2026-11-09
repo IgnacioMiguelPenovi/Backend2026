@@ -6,35 +6,38 @@ block content
   if personas.length === 0
     p No hay personas registradas en esta lista.
   else
-    table
-      thead
-        tr
-          th Nombre
-          th Apellido
-          th DNI
-          th Email
-          th Teléfono
-          th Rol
-          th Estado
-          th Acciones
-      tbody
-        each persona in personas
+    .tabla-wrap
+      table.tabla-datos
+        thead
           tr
-            td= persona.nombre
-            td= persona.apellido
-            td= persona.dni
-            td= persona.email
-            td= persona.telefono
-            td= persona.rol
-            td
-              - const estadoPersona = persona.estado === 'licencia' ? 'licencia' : persona.estado === 'inactivo' ? 'inactivo' : 'activo'
-              - const textoPersona = persona.estado === 'licencia' ? 'De licencia' : persona.estado === 'inactivo' ? 'Inactivo' : 'Activo'
-              span(class=`estado-badge estado-${estadoPersona}`)= textoPersona
-            td
-              a.boton(href=`/personal/${persona._id}`) Ver   
-              if puedeEditar
-                a.boton(href=`/personal/${persona._id}/editar`) Editar
-   
+            th Nombre
+            th DNI
+            th Email
+            th Teléfono
+            th Rol
+            th Estado
+            th Acciones
+        tbody
+          each persona in personas
+            tr
+              td.col-nombre(data-label="Nombre")
+                strong= persona.nombre
+                |  
+                = persona.apellido
+              td.col-nowrap(data-label="DNI")= persona.dni
+              td.col-email(data-label="Email")= persona.email
+              td.col-nowrap(data-label="Teléfono")= persona.telefono
+              td(data-label="Rol")= persona.rol
+              td(data-label="Estado")
+                - const estadoPersona = persona.estado === 'licencia' ? 'licencia' : persona.estado === 'inactivo' ? 'inactivo' : 'activo'
+                - const textoPersona = persona.estado === 'licencia' ? 'De licencia' : persona.estado === 'inactivo' ? 'Inactivo' : 'Activo'
+                span(class=`estado-badge estado-${estadoPersona}`)= textoPersona
+              td.col-acciones(data-label="Acciones")
+                .celda-acciones
+                  a.boton(href=`/personal/${persona._id}`) Ver
+                  if puedeEditar
+                    a.boton(href=`/personal/${persona._id}/editar`) Editar
+
   .enlaces
     if puedeEditar
       a.boton.grande(href="/personal/nuevo") Inscribir personal

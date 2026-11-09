@@ -1,4 +1,4 @@
-extends layout
+extends ../layout
 
 block content
   h2 Mis Turnos Reservados
@@ -6,27 +6,29 @@ block content
   if !turnos || turnos.length === 0
     p(style="text-align: center; margin: 2rem 0; color: #555;") Todavía no tenés ningún turno reservado.
   else
-    table
-      thead
-        tr
-          th Sucursal
-          th Fecha
-          th Día
-          th Horario
-          th Motivo
-          th Estado
-          th Fecha de Reserva
-      tbody
-        each turno in turnos
+    .tabla-wrap
+      table.tabla-datos
+        thead
           tr
-            td= turno.sucursal
-            td= turno.fecha ? new Date(turno.fecha).toISOString().split('T')[0] : '-'
-            td= turno.dia
-            td= `${turno.horario} hs`
-            td= turno.motivo || '-'
-            td
-              span(style=turno.estado === 'confirmado' ? 'color: green; font-weight: bold;' : 'color: red;')= turno.estado === 'confirmado' ? 'Confirmado' : turno.estado === 'cancelado' ? 'Cancelado' : 'Pendiente'
-            td= turno.creadoEn ? new Date(turno.creadoEn).toLocaleDateString('es-AR') : '-'
+            th Sucursal
+            th Fecha
+            th Día
+            th Horario
+            th Motivo
+            th Estado
+            th Reservado el
+        tbody
+          each turno in turnos
+            tr
+              td.col-nombre(data-label="Sucursal")
+                strong= turno.sucursal
+              td.col-nowrap(data-label="Fecha")= turno.fecha ? new Date(turno.fecha).toISOString().split('T')[0].split('-').reverse().join('/') : '-'
+              td(data-label="Día")= turno.dia
+              td.col-nowrap(data-label="Horario")= `${turno.horario} hs`
+              td(data-label="Motivo")= turno.motivo || '-'
+              td(data-label="Estado")
+                span(class='estado-badge estado-' + turno.estado)= turno.estado === 'confirmado' ? 'Confirmado' : turno.estado === 'cancelado' ? 'Cancelado' : 'Pendiente'
+              td.col-nowrap(data-label="Reservado el")= turno.creadoEn ? new Date(turno.creadoEn).toLocaleDateString('es-AR') : '-'
 
   .acciones
     a.boton.grande(href="/nuevoTurno") Agendar turno

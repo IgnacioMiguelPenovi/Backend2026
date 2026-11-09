@@ -511,7 +511,6 @@ form.logout {
   height: 22px;
 }
 
-/* Chatbot (solo alumnos) */
 #chatToggle{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;border:none;background:#6b5b95;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:1000}
 #chatBox{position:fixed;bottom:88px;right:20px;width:340px;max-width:calc(100vw - 40px);height:560px;max-height:calc(100vh - 110px);background:#fff;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.3);display:flex;flex-direction:column;overflow:hidden;z-index:1000}
 #chatBox[hidden]{display:none}
@@ -680,4 +679,561 @@ td a.boton {
 .estado-licencia {
   background-color: #fff3cd;
   color: #856404;
+}
+
+img { max-width: 100%; }
+
+main {
+  min-width: 0;
+}
+
+form {
+  width: 100%;
+  max-width: 500px;
+}
+
+.enlaces {
+  flex-wrap: wrap;
+}
+
+.acciones {
+  flex-wrap: wrap;
+}
+
+form.filtro,
+form.filtro-fecha {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  header h1 {
+    margin-left: 1.5rem;
+  }
+
+  .salir {
+    margin-right: 1.5rem;
+  }
+
+  main {
+    margin: 1.5rem auto;
+  }
+
+  .accion-buttons {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  body {
+    padding-top: 0;
+  }
+
+  header {
+    position: sticky;
+    flex-wrap: wrap;
+    row-gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  header h1 {
+    width: auto;
+    flex: 1 1 auto;
+    margin: 0;
+    font-size: 1.4rem;
+  }
+
+  #logoutForm,
+  form.logout {
+    width: auto;
+    flex: 0 1 auto;
+    max-width: 100%;
+  }
+
+  #logoutForm p.usuario {
+    width: auto;
+    max-width: 10rem;
+    margin-right: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .salir {
+    margin-right: 0;
+    float: none;
+  }
+
+  main,
+  main:has(table) {
+    margin: 1rem auto;
+    padding: 0.75rem;
+  }
+
+  h2, h4 {
+    justify-self: stretch;
+    justify-content: center;
+    text-align: center;
+  }
+
+  table {
+    min-width: 560px;
+  }
+
+  main:has(table) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabla-turnos {
+    table-layout: auto;
+    min-width: 760px;
+  }
+
+  .tabla-turnos th,
+  .tabla-turnos td {
+    width: auto !important;
+  }
+
+  .tabla-turnos td:nth-child(8) {
+    padding-right: 0.5rem;
+    text-align: center;
+  }
+
+  th, td {
+    padding: 0.6rem 0.4rem;
+    font-size: 0.9rem;
+  }
+
+  .acciones {
+    flex-direction: column;
+    margin-top: 1.5rem;
+  }
+
+  .acciones a.boton,
+  .acciones button,
+  .acciones a.boton.grande,
+  a.boton.grande,
+  button.boton.grande {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .acciones form {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .enlaces {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .enlaces a {
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+  }
+
+  ul.detalle {
+    padding: 1rem;
+    word-break: break-word;
+  }
+
+  .login {
+    margin: 1rem auto;
+    padding: 1.25rem;
+  }
+
+  .login input {
+    padding: 0.8rem;
+  }
+
+  .login .boton {
+    width: 100%;
+  }
+
+  .tarjeta {
+    padding: 1rem;
+  }
+
+  .opcion {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .bancos {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.2rem;
+  }
+
+  .logo {
+    height: 34px;
+  }
+
+  .logo-link {
+    gap: 8px;
+  }
+
+  #logoutForm p.usuario {
+    display: none;
+  }
+
+  .salir {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .checkboxes {
+    gap: 0.5rem;
+  }
+
+  form input,
+  form select,
+  form textarea {
+    font-size: 16px;
+  }
+
+  .total strong {
+    font-size: 1.25rem;
+  }
+
+  #chatToggle {
+    right: 12px;
+    bottom: 12px;
+    width: 52px;
+    height: 52px;
+  }
+
+  #chatBox {
+    right: 8px;
+    left: 8px;
+    bottom: 72px;
+    width: auto;
+    max-width: none;
+    height: calc(100vh - 90px);
+    height: calc(100dvh - 90px);
+    max-height: 600px;
+  }
+
+  #chatBox #chatForm input {
+    font-size: 16px;
+  }
+}
+
+.salir {
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  margin: 0;
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  color: #fff;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.salir:hover {
+  background-color: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.salir i {
+  font-size: 0.9rem;
+}
+
+@media (max-width: 700px) {
+  #logoutForm {
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  #logoutForm p.usuario {
+    display: flex;
+    margin: 0;
+    min-width: 0;
+    max-width: 9rem;
+    font-size: 0.85rem;
+  }
+
+  .salir {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #logoutForm p.usuario {
+    display: flex;
+    max-width: 7rem;
+    font-size: 0.8rem;
+  }
+
+  .salir-texto {
+    display: none;
+  }
+
+  .salir {
+    width: 2.2rem;
+    height: 2.2rem;
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+  }
+}
+
+#logoutForm p.usuario,
+.usuario {
+  width: auto;
+  max-width: none;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+header h1 {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+#logoutForm,
+form.logout {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+  margin-left: auto;
+  justify-content: flex-end;
+}
+
+#logoutForm p.usuario,
+.usuario {
+  flex: 0 1 auto;
+  min-width: 0;
+  width: auto;
+  max-width: none;
+  white-space: nowrap;
+}
+
+#logoutForm p.usuario i {
+  flex-shrink: 0;
+}
+
+.usuario-nombre {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.salir {
+  flex-shrink: 0;
+}
+
+.tabla-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 1rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabla-wrap .tabla-datos {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  table-layout: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.92rem;
+}
+
+.tabla-wrap .tabla-datos th {
+  position: sticky;
+  top: 0;
+  padding: 0.85rem 0.75rem;
+  text-align: left;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tabla-wrap .tabla-datos td {
+  padding: 0.7rem 0.75rem;
+  text-align: left;
+  vertical-align: middle;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  border-bottom: 1px solid #e8ecef;
+}
+
+.tabla-wrap .tabla-datos tbody tr:nth-child(even) {
+  background-color: #f8fafb;
+}
+
+.tabla-wrap .tabla-datos tbody tr:hover {
+  background-color: #eef3f7;
+}
+
+.tabla-wrap .tabla-datos tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-datos .col-nowrap {
+  white-space: nowrap;
+}
+
+.tabla-datos .col-nombre {
+  min-width: 8rem;
+}
+
+.tabla-datos .col-email {
+  min-width: 10rem;
+  overflow-wrap: anywhere;
+}
+
+.tabla-wrap .tabla-datos td.col-acciones {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.celda-acciones {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}
+
+.tabla-wrap .tabla-datos td a.boton {
+  margin: 0;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 700px) {
+  .tabla-wrap {
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .tabla-wrap .tabla-datos,
+  .tabla-wrap .tabla-datos tbody,
+  .tabla-wrap .tabla-datos tr,
+  .tabla-wrap .tabla-datos td {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .tabla-wrap .tabla-datos thead {
+    display: none;
+  }
+
+  .tabla-wrap .tabla-datos tbody tr {
+    margin-bottom: 0.9rem;
+    padding: 0.4rem 0.9rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .tabla-wrap .tabla-datos tbody tr:nth-child(even),
+  .tabla-wrap .tabla-datos tbody tr:hover {
+    background: #fff;
+  }
+
+  .tabla-wrap .tabla-datos td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 0;
+    text-align: right;
+    border-bottom: 1px solid #eef1f3;
+  }
+
+  .tabla-wrap .tabla-datos td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #5d6d7e;
+  }
+
+  .tabla-wrap .tabla-datos td.col-nombre {
+    font-size: 1.05rem;
+  }
+
+  .tabla-wrap .tabla-datos td.col-acciones {
+    border-bottom: none;
+    padding-bottom: 0.4rem;
+  }
+
+  .tabla-wrap .tabla-datos td.col-acciones::before {
+    display: none;
+  }
+
+  .celda-acciones {
+    width: 100%;
+  }
+
+  .tabla-wrap .tabla-datos td a.boton {
+    flex: 1;
+    max-width: none;
+    text-align: center;
+    padding: 0.55rem 0.8rem;
+  }
+
+  main:has(.tabla-datos) {
+    overflow-x: visible;
+  }
+}
+
+.tabla-wrap .tabla-datos th,
+.tabla-wrap .tabla-datos td {
+  width: auto;
+}
+
+.celda-acciones form {
+  display: inline-block;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.celda-acciones button {
+  margin: 0;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.tabla-datos small {
+  display: block;
+  color: #7f8c8d;
+}
+
+.tabla-datos .col-destacada {
+  font-weight: bold;
+  color: #2c3e50;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .celda-acciones form {
+    flex: 1;
+  }
+
+  .celda-acciones form button {
+    width: 100%;
+    padding: 0.55rem 0.8rem;
+  }
 }
