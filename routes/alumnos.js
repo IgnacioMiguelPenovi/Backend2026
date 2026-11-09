@@ -33,6 +33,66 @@ router.get('/nuevo', permiteInvitadoORoles('empleado', 'administrador'), async (
   }
 });
 
+// GET /alumnos/mi-perfil -> Muestra el formulario con los datos del alumno logueado
+router.get('/mi-perfil', requiereRoles('alumno'), async (req, res, next) => {
+  try {
+    const alumno = await alumnoRepository.obtenerPorId(req.session.usuario.id);
+    if (!alumno) {
+      return res.status(404).render('404');
+    }
+    res.render('alumnos/miPerfil', {
+      titulo: 'Mi Perfil',
+      alumno,
+      error: null,
+      mensaje: req.query.mensaje === 'actualizado' ? '¡Tus datos fueron actualizados exitosamente!' : null
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// POST /alumnos/mi-perfil -> Procesa la actualización de datos personales del alumno
+router.post('/mi-perfil', requiereRoles('alumno'), async (req, res, next) => {
+  try {
+    const alumnoId = req.session.usuario.id;
+    const anterior = await alumnoRepository.obtenerPorId(alumnoId);
+    if (!anterior) return res.status(404).render('404');
+
+    // Mantenemos la sucursal asignada originalmente por la administración
+    const datosActualizados = {
+      ...req.body,
+      sucursal: anterior.sucursal
+    };
+
+    const alumno = await alumnoRepository.actualizar(alumnoId, datosActualizados);
+
+    // Actualizamos la sesión si el alumno modificó su nombre o apellido
+    req.session.usuario.nombre = alumno.nombre;
+    req.session.usuario.apellido = alumno.apellido;
+
+    await registrarActividad(req, {
+      accion: 'ALUMNO_PERFIL_ACTUALIZADO',
+      entidad: 'Usuario',
+      entidadId: alumno._id,
+      cambios: obtenerCambios(anterior, alumno)
+    });
+
+    res.render('alumnos/miPerfil', {
+      titulo: 'Mi Perfil',
+      alumno,
+      error: null,
+      mensaje: '¡Tus datos fueron actualizados exitosamente!'
+    });
+  } catch (error) {
+    const alumno = await alumnoRepository.obtenerPorId(req.session.usuario.id);
+    res.status(400).render('alumnos/miPerfil', {
+      titulo: 'Mi Perfil',
+      alumno: { ...(alumno || {}), ...req.body },
+      error: error.message || 'Error al actualizar los datos.'
+    });
+  }
+});
+
 router.post('/', permiteInvitadoORoles('empleado', 'administrador'), async (req, res, next) => {
   try {
     const alumno = await alumnoRepository.crear(req.body);
