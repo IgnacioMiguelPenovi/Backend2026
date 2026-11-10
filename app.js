@@ -15,8 +15,9 @@ const alumnosApiRouter = require('./routes/api/alumnos');
 //const profesoresApiRouter = require('./routes/api/profesores');
 const loginRouter = require('./routes/login');
 const registerRouter = require('./routes/register');
-const UNA_HORA_MS = 60 * 60 * 100;
+const UNA_HORA_MS = 60 * 60 * 1000;
 const recuperacionRouter = require('./routes/recuperacion');
+const { MongoStore } = require('connect-mongo');
 
 
 const app = express();
@@ -30,11 +31,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+app.set('trust proxy', 1);
+
 app.use(session({
   secret: process.env.SESSION_SECRET || 'cambiar-este-secreto',
   resave: false,
   saveUninitialized: false,
   rolling: true,
+  store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
   cookie: {
     maxAge: UNA_HORA_MS,
     httpOnly: true,
@@ -45,6 +49,18 @@ app.use(session({
 app.use((req, res, next) => {
   res.locals.usuario = req.session.usuario || null;
   next();
+});
+
+let dbPromise;
+app.use(async (req, res, next) => {
+  try {
+    dbPromise = dbPromise || conectarDB();
+    await dbPromise;
+    next();
+  } catch (err) {
+    dbPromise = null;
+    next(err);
+  }
 });
 
 app.use('/', indexRouter);
@@ -79,8 +95,10 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 
-conectarDB().then(() => {
+if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Servidor funcionando en http://localhost:${PORT}`);
   });
-});
+}
+
+module.exports = app;
