@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 
 async function conectarDB() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGODB_URI, {
+      dbName: process.env.DB_NAME || 'turnoflex'
+    });
     console.log('MongoDB conectado:', mongoose.connection.name);
   } catch (error) {
     console.error('Error al conectar con MongoDB:', error.message);

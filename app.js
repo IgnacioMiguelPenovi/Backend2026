@@ -38,7 +38,10 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   rolling: true,
-  store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI,
+    dbName: process.env.DB_NAME || 'turnoflex'
+  }),
   cookie: {
     maxAge: UNA_HORA_MS,
     httpOnly: true,
