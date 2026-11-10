@@ -6,36 +6,39 @@ block content
   if alumnos.length === 0
     p No hay alumnos inscriptos.
   else
-    table.tabla-alumnos
-      thead
-        tr
-          th Nombre
-          th Apellido
-          th DNI
-          th Email
-          th Teléfono
-          th Fecha de Nacimiento
-          th Sucursal
-          th Estado
-          th Acciones
-      tbody
-        each alumno in alumnos
+    .tabla-wrap
+      table.tabla-datos
+        thead
           tr
-            td= alumno.nombre
-            td= alumno.apellido
-            td= alumno.dni || '-' 
-            td= alumno.email || '-'
-            td= alumno.telefono || '-'
-            td= alumno.fechaNacimiento ? alumno.fechaNacimiento.toISOString().split('T')[0] : '-'
-            td= alumno.sucursal
-            td
-              - const estadoAlumno = alumno.estado === 'licencia' ? 'licencia' : alumno.estado === 'inactivo' ? 'inactivo' : 'activo'
-              - const textoAlumno = alumno.estado === 'licencia' ? 'De licencia' : alumno.estado === 'inactivo' ? 'Inactivo' : 'Activo'
-              span(class=`estado-badge estado-${estadoAlumno}`)= textoAlumno
-            td
-              a.boton(href=`/alumnos/${alumno._id}`) Ver              
-              if puedeEditar
-                a.boton(href=`/alumnos/${alumno._id}/editar`) Editar
+            th Nombre
+            th DNI
+            th Email
+            th Teléfono
+            th Nacimiento
+            th Sucursal
+            th Estado
+            th Acciones
+        tbody
+          each alumno in alumnos
+            tr
+              td.col-nombre(data-label="Nombre")
+                strong= alumno.nombre
+                |  
+                = alumno.apellido
+              td.col-nowrap(data-label="DNI")= alumno.dni || '-'
+              td.col-email(data-label="Email")= alumno.email || '-'
+              td.col-nowrap(data-label="Teléfono")= alumno.telefono || '-'
+              td.col-nowrap(data-label="Nacimiento")= alumno.fechaNacimiento ? alumno.fechaNacimiento.toISOString().split('T')[0].split('-').reverse().join('/') : '-'
+              td(data-label="Sucursal")= alumno.sucursal
+              td(data-label="Estado")
+                - const estadoAlumno = alumno.estado === 'licencia' ? 'licencia' : alumno.estado === 'inactivo' ? 'inactivo' : 'activo'
+                - const textoAlumno = alumno.estado === 'licencia' ? 'De licencia' : alumno.estado === 'inactivo' ? 'Inactivo' : 'Activo'
+                span(class=`estado-badge estado-${estadoAlumno}`)= textoAlumno
+              td.col-acciones(data-label="Acciones")
+                .celda-acciones
+                  a.boton(href=`/alumnos/${alumno._id}`) Ver
+                  if puedeEditar
+                    a.boton(href=`/alumnos/${alumno._id}/editar`) Editar
 
   .enlaces
     if puedeInscribir
