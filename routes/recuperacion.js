@@ -3,14 +3,19 @@ const router = express.Router();
 const crypto = require('crypto');
 const Usuario = require('../models/UsuarioModel');
 const { hashearContrasena, esContrasenaReutilizada } = require('../utils/contrasenas');
+const { registrarActividad } = require('../utils/auditoria');
 const nodemailer = require('nodemailer');
 const path = require('path');
 const MAX_HISTORIAL = 5; // Número de claves anteriores a recordar
 
-// Configuración del servicio de correo con Gmail
+function escaparRegex(texto) {
+  return texto.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Configuración del servicio de correo
 function crearTransportador() {
   return nodemailer.createTransport({
-    service: 'gmail',
+    service: process.env.EMAIL_SERVICE || 'gmail',
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
@@ -25,7 +30,7 @@ router.get('/', (req, res) => {
 
 // 2. POST /recuperacion -> Recibe el mail y envía el correo con el token de un solo uso
 router.post('/', async (req, res, next) => {
-  const { email } = req.body;
+  const { email, usuario } = req.body;
   
   if (!email) {
     return res.render('passwords/recuperacion', {
@@ -35,24 +40,46 @@ router.post('/', async (req, res, next) => {
 
   try {
     const emailLimpio = email.trim();
+    const usuarioLimpio = typeof usuario === 'string' ? usuario.trim().toLowerCase() : '';
+    const filtro = {
+      email: { $regex: new RegExp(`^${escaparRegex(emailLimpio)}$`, 'i') },
+      estado: 'activo',
+      ...(usuarioLimpio ? { usuario: usuarioLimpio } : {})
+    };
 
-    // Verificamos si existe un usuario activo con ese email
-    const usuarioDB = await Usuario.findOne({ 
-      email: { $regex: new RegExp(`^${emailLimpio}$`, 'i') }, 
-      estado: 'activo' 
-    });
+    const coincidencias = await Usuario.find(filtro);
 
-    if (!usuarioDB) {
+    if (coincidencias.length === 0) {
       return res.render('passwords/recuperacion', {
-        error: 'No se encontró un usuario activo con ese correo electrónico.'
+        email: emailLimpio,
+        pedirUsuario: Boolean(usuarioLimpio),
+        error: usuarioLimpio
+          ? 'No se encontró un usuario activo con ese correo y nombre de usuario.'
+          : 'No se encontró un usuario activo con ese correo electrónico.'
       });
     }
 
+    if (coincidencias.length > 1) {
+      return res.render('passwords/recuperacion', {
+        email: emailLimpio,
+        pedirUsuario: true,
+        error: 'Hay más de una cuenta asociada a ese correo. Ingresá también tu nombre de usuario.'
+      });
+    }
+
+    const usuarioDB = coincidencias[0];
+
     // 1. Generar token aleatorio y fecha de expiración (15 minutos)
     const token = crypto.randomBytes(32).toString('hex');
-    usuarioDB.resetToken = token;
-    usuarioDB.resetTokenExpira = Date.now() + 15 * 60 * 1000; // Vence en 15 minutos
-    await usuarioDB.save();
+    await Usuario.updateOne(
+      { _id: usuarioDB._id },
+      {
+        $set: {
+          resetToken: token,
+          resetTokenExpira: new Date(Date.now() + 15 * 60 * 1000) // Vence en 15 minutos
+        }
+      }
+    );
 
     // 2. Armar la URL dinámica incluyendo el token de un solo uso
     const host = req.get('host');
@@ -239,23 +266,49 @@ router.post('/cambio-password', async (req, res, next) => {
     }
 
     // Actualizar historial
-    const historialActual = usuarioDB.historialContrasenas || [];
+    const historialActual = Array.isArray(usuarioDB.historialContrasenas)
+      ? [...usuarioDB.historialContrasenas]
+      : [];
     if (usuarioDB.contrasena) {
       historialActual.unshift(usuarioDB.contrasena);
     }
-    usuarioDB.historialContrasenas = historialActual.slice(0, MAX_HISTORIAL);
 
-    // Asignar nueva clave
-    usuarioDB.contrasena = await hashearContrasena(newPassword);
+    const nuevaContrasenaHash = await hashearContrasena(newPassword);
 
-    // BLANQUEAR / INVALIDAR TOKEN (Garantiza el UN SOLO USO)
-    usuarioDB.resetToken = undefined;
-    usuarioDB.resetTokenExpira = undefined;
+    // Actualizar solo contraseña, historial y limpiar token (evita fallar por validaciones de otros campos)
+    await Usuario.updateOne(
+      { _id: usuarioDB._id },
+      {
+        $set: {
+          contrasena: nuevaContrasenaHash,
+          historialContrasenas: historialActual.slice(0, MAX_HISTORIAL)
+        },
+        $unset: {
+          resetToken: 1,
+          resetTokenExpira: 1
+        }
+      }
+    );
 
-    await usuarioDB.save();
+    await registrarActividad(req, {
+      accion: 'CONTRASENA_ACTUALIZADA',
+      entidad: 'Usuario',
+      entidadId: usuarioDB._id,
+      cambios: {
+        contrasena: { anterior: '[PROTEGIDA]', nuevo: '[ACTUALIZADA]' }
+      },
+      ...(req.session?.usuario ? {} : {
+        actorAlternativo: {
+          id: usuarioDB._id,
+          usuario: usuarioDB.usuario,
+          nombre: usuarioDB.nombre,
+          rol: usuarioDB.rol
+        }
+      })
+    });
 
     console.log(`✅ Contraseña e historial actualizados exitosamente para: ${usuarioDB.usuario}`);
-    res.redirect('/login?mensaje=Contraseña actualizada con éxito');
+    res.redirect(`/login?mensaje=${encodeURIComponent('Contraseña actualizada con éxito')}`);
   } catch (error) {
     next(error);
   }
