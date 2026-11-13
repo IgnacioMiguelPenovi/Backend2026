@@ -17,9 +17,19 @@ block content
           input#email(
               type="email" 
               name="email" 
+              value=email || ""
               required 
               placeholder="usuario@ejemplo.com"
           )
+
+          if pedirUsuario
+            label(for="usuario") Usuario
+            input#usuario(
+                type="text"
+                name="usuario"
+                required
+                placeholder="Ingresá tu nombre de usuario"
+            )
           
           button.boton(type="submit") Enviar
           button.boton.cancelar(type="button" onclick="window.location.href='/login'") Cancelar
