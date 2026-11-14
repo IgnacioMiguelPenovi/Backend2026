@@ -53,7 +53,7 @@ block content
         option(value="inactivo" selected=(sucursal.estado === 'inactivo')) Inactivo
 
     .acciones
-      button(type="submit")= sucursal ? 'Guardar Cambios' : 'Dar de Alta'
+      button.boton.grande(type="submit")= sucursal ? 'Guardar Cambios' : 'Dar de Alta'
       a.boton.grande.cancelar(href="/sucursales") Cancelar
 
   script(src="/js/validaciones.js")

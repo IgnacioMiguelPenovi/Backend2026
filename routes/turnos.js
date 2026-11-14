@@ -40,6 +40,11 @@ function esEquipo(rol) {
   return ['empleado', 'administrador'].includes(rol);
 }
 
+function nombreAuditable(usuario) {
+  if (!usuario) return null;
+  return [usuario.apellido, usuario.nombre].filter(Boolean).join(', ');
+}
+
 async function renderFormulario(req, res, opciones = {}) {
   const equipo = esEquipo(req.session.usuario.rol);
   const sucursalesActivas = equipo ? await obtenerNombresSucursalesActivas() : [];
@@ -329,6 +334,9 @@ router.post('/turnos/:id/editar', requiereRoles('administrador'), async (req, re
     }
 
     const anterior = turno.toObject();
+    const alumnoAnterior = await Usuario.findById(turno.usuario)
+      .select('nombre apellido')
+      .lean();
     turno.set({
       usuario: alumno._id,
       sucursal: req.body.sucursal,
@@ -339,11 +347,25 @@ router.post('/turnos/:id/editar', requiereRoles('administrador'), async (req, re
     });
     await turno.save();
 
+    const cambios = obtenerCambios(anterior, turno.toObject());
+    const nombreAnterior = nombreAuditable(alumnoAnterior);
+    const nombreNuevo = nombreAuditable(alumno);
+    const usuarioIdAnterior = String(anterior.usuario);
+    const usuarioIdNuevo = String(turno.usuario);
+    cambios.usuario = {
+      anterior: nombreAnterior || usuarioIdAnterior,
+      nuevo: nombreNuevo || usuarioIdNuevo
+    };
+    cambios.usuarioId = {
+      anterior: usuarioIdAnterior,
+      nuevo: usuarioIdNuevo
+    };
+
     await registrarActividad(req, {
       accion: 'TURNO_ACTUALIZADO',
       entidad: 'Turno',
       entidadId: turno._id,
-      cambios: obtenerCambios(anterior, turno.toObject())
+      cambios
     });
 
     res.redirect('/turnos');
@@ -532,11 +554,21 @@ router.post('/pagarTurno', requiereRoles(...rolesQueAgendan), async (req, res, n
       pagado: true
     });
 
+    const cambios = obtenerCamposCreados(nuevoTurno);
+    cambios.usuario = {
+      anterior: null,
+      nuevo: nombreAuditable(pendiente.alumno) || String(pendiente.alumno._id)
+    };
+    cambios.usuarioId = {
+      anterior: null,
+      nuevo: String(pendiente.alumno._id)
+    };
+
     await registrarActividad(req, {
       accion: 'TURNO_CREADO',
       entidad: 'Turno',
       entidadId: nuevoTurno._id,
-      cambios: obtenerCamposCreados(nuevoTurno)
+      cambios
     });
 
     delete req.session.turnoPendiente;

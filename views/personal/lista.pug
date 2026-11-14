@@ -6,6 +6,10 @@ block content
   if personas.length === 0
     p No hay personas registradas en esta lista.
   else
+    .buscador-personal
+      label(for="buscar-personal") Buscar personal
+      input#buscar-personal(type="search" placeholder="Nombre, apellido, usuario, rol o sucursal" autocomplete="off")
+
     .tabla-wrap
       table.tabla-datos
         thead
@@ -19,7 +23,7 @@ block content
             th Acciones
         tbody
           each persona in personas
-            tr
+            tr(data-personal-row data-search=[persona.nombre, persona.apellido, persona.usuario, persona.rol, persona.sucursal, persona.dni, persona.email, persona.telefono, persona.estado].filter(Boolean).join(' '))
               td.col-nombre(data-label="Nombre")
                 strong= persona.nombre
                 |  
@@ -37,6 +41,29 @@ block content
                   a.boton(href=`/personal/${persona._id}`) Ver
                   if puedeEditar
                     a.boton(href=`/personal/${persona._id}/editar`) Editar
+      p#sin-resultados(hidden) No se encontraron personas que coincidan con la búsqueda.
+
+    script.
+      const buscadorPersonal = document.getElementById('buscar-personal');
+      const filasPersonal = [...document.querySelectorAll('[data-personal-row]')];
+      const mensajeSinResultados = document.getElementById('sin-resultados');
+      const normalizarBusqueda = texto => texto
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLocaleLowerCase();
+
+      buscadorPersonal.addEventListener('input', () => {
+        const consulta = normalizarBusqueda(buscadorPersonal.value.trim());
+        let visibles = 0;
+
+        filasPersonal.forEach(fila => {
+          const coincide = normalizarBusqueda(fila.dataset.search || '').includes(consulta);
+          fila.hidden = !coincide;
+          if (coincide) visibles += 1;
+        });
+
+        mensajeSinResultados.hidden = visibles > 0;
+      });
 
   .enlaces
     if puedeEditar

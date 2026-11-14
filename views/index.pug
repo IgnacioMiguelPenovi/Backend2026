@@ -10,9 +10,11 @@ block content
       a.boton.grande(href="/nuevoTurno") Agendar turno
       a.boton.grande(href="/misTurnos") Mis turnos
       a.boton.grande(href="/alumnos/mi-perfil") Mi perfil
+
   else if usuario.rol === 'profesor'
     .acciones
       a.boton.grande(href="/agenda") Ver mis clases y alumnos
+      
   else if usuario.rol === 'empleado'
     .acciones
       a.boton.grande(href="/alumnos/nuevo") Inscribir alumno
@@ -22,15 +24,21 @@ block content
       a(href="/personal/profesores") Ver profesores
       a(href="/sucursales") Ver sucursales
       a(href="/turnos") Ver turnos
+
   else if usuario.rol === 'gerencia'
     .enlaces
       a(href="/alumnos") Ver alumnos
       a(href="/personal") Ver personal
       a(href="/personal/profesores") Ver profesores
+      a(href="/sucursales") Ver sucursales 
+      a(href="/turnos") Ver turnos
+
   else if usuario.rol === 'administrador'
     .acciones
       a.boton.grande(href="/alumnos/nuevo") Inscribir alumno
-      a.boton.grande(href="/nuevoTurno") Agendar turno       
+      a.boton.grande(href="/personal/nuevo") Inscribir personal
+      a.boton.grande(href="/nuevoTurno") Agendar turno  
+      a.boton.grande(href="/sucursales/nuevo") Registrar sucursal    
     .enlaces
       a(href="/alumnos") Ver alumnos
       a(href="/personal") Ver personal

@@ -17,7 +17,7 @@ const loginRouter = require('./routes/login');
 const registerRouter = require('./routes/register');
 const UNA_HORA_MS = 60 * 60 * 1000;
 const recuperacionRouter = require('./routes/recuperacion');
-const { MongoStore } = require('connect-mongo');
+const { MongoStore } = require('connect-mongo'); // Almacén para guardar las contraseñas
 
 
 const app = express();
@@ -68,10 +68,8 @@ app.use(async (req, res, next) => {
 
 app.use('/', indexRouter);
 app.use('/alumnos', alumnosRouter);
-//app.use('/profesores', profesoresRouter);
 app.use('/api/alumnos', alumnosApiRouter);
 app.use('/api/chat', require('./routes/chatbot'));
-//app.use('/api/profesores', profesoresApiRouter);
 app.use('/login', loginRouter);
 app.use('/register', registerRouter);
 app.use('/personal', personalRouter);
