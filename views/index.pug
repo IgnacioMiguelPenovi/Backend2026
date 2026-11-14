@@ -9,7 +9,7 @@ block content
     .acciones
       a.boton.grande(href="/nuevoTurno") Agendar turno
       a.boton.grande(href="/misTurnos") Mis turnos
-      a.boton.grande(href="/alumnos/mi-perfil") Mi perfil
+      a.boton.grande(href="/alumnos/mi-perfil") Editar mi perfil
 
   else if usuario.rol === 'profesor'
     .acciones
@@ -41,7 +41,6 @@ block content
       a.boton.grande(href="/sucursales/nuevo") Registrar sucursal    
     .enlaces
       a(href="/alumnos") Ver alumnos
-      a(href="/personal") Ver personal
-      a(href="/personal/profesores") Ver profesores
-      a(href="/sucursales") Ver sucursales
+      a(href="/personal") Ver personal         
       a(href="/turnos") Ver turnos
+      a(href="/sucursales") Ver sucursales

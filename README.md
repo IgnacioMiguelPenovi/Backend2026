@@ -136,10 +136,6 @@ Backend2026/
 └── vercel.json
 ``
 
-Las rutas y módulos de profesores están presentes en el repositorio, pero sus `app.use` correspondientes están comentados en `app.js`; por eso no forman parte de las rutas activas de la aplicación.
-
-
-La carpeta `.vercel` contiene los metadatos que vinculan esta copia local con el proyecto y equipo de Vercel. `.gitignore` la excluye del repositorio.
 
 ## Instalación y ejecución local
 
@@ -182,10 +178,10 @@ El comando `npm start` inicia la aplicación con Node.js sin Nodemon.
 | `MONGODB_URI` | URI de conexión a MongoDB; también se usa para el almacén de sesiones | Sí |
 | `DB_NAME` | Nombre de la base de datos; valor predeterminado: `turnoflex` | No |
 | `PORT` | Puerto local; valor predeterminado: `3000` | No |
-| `SESSION_SECRET` | Secreto de firma de sesiones | Recomendado; en el código existe un valor predeterminado que debe reemplazarse en despliegues reales |
-| `EMAIL_SERVICE` | Servicio de correo usado por Nodemailer | Para recuperación por correo |
-| `EMAIL_USER` | Usuario de la cuenta de correo | Para recuperación por correo |
-| `EMAIL_PASS` | Contraseña o clave de aplicación del correo | Para recuperación por correo |
+| `SESSION_SECRET` | Secreto de firma de sesiones; el código tiene un valor de respaldo inseguro | Obligatorio en producción; recomendado en local |
+| `EMAIL_SERVICE` | Servicio de correo de Nodemailer; si no se configura, usa `gmail` | No; solo se usa para recuperación por correo |
+| `EMAIL_USER` | Usuario de la cuenta de correo de Nodemailer | Necesario para habilitar recuperación por correo |
+| `EMAIL_PASS` | Contraseña o clave de aplicación del correo | Necesaria para habilitar recuperación por correo |
 | `GROQ_API_KEY` | Clave para llamar al chatbot de Groq | Para habilitar el chatbot |
 | `GROQ_MODEL` | Modelo de Groq; valor predeterminado: `openai/gpt-oss-120b` | No |
 
@@ -259,4 +255,4 @@ Integrantes del equipo Código Base:
 
 - [Repositorio en GitHub](https://github.com/IgnacioMiguelPenovi/Backend2026)
 - [Carpeta de Google Drive](https://drive.google.com/drive/folders/1ssO7dckoUUDJs87NzrH7b0CRgLEA_MRF?usp=drive_link)
-- Video de defensa / coloquio: pendiente de agregar.
+- Video de defensa / 

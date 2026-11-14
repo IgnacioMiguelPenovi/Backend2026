@@ -7,6 +7,10 @@ const turnoSchema = new mongoose.Schema({
     ref: 'Usuario',
     required: [true, 'El usuario es obligatorio']
   },
+  creadoPor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Usuario'
+  },
   sucursal: {
     type: String,
     required: [true, 'La sucursal es obligatoria']

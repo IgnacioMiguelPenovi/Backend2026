@@ -18,6 +18,7 @@ const registerRouter = require('./routes/register');
 const UNA_HORA_MS = 60 * 60 * 1000;
 const recuperacionRouter = require('./routes/recuperacion');
 const { MongoStore } = require('connect-mongo'); // Almacén para guardar las contraseñas
+const { registrarActividad } = require('./utils/auditoria');
 
 
 const app = express();
@@ -78,8 +79,19 @@ app.use('/', turnosRouter);
 app.use('/recuperacion', recuperacionRouter);
 
 
-app.post('/logout', (req, res) => {
-  console.log('Entro a /logout');
+app.post('/logout', async (req, res) => {
+  if (req.session?.usuario) {
+    try {
+      await registrarActividad(req, {
+        accion: 'CIERRE_SESION',
+        entidad: 'Sesion',
+        cambios: { estado: { anterior: 'activa', nuevo: 'cerrada' } }
+      });
+    } catch (error) {
+      console.error('No se pudo registrar el cierre de sesión:', error);
+    }
+  }
+
   req.session.destroy(() => {
     res.redirect('/login');
   });

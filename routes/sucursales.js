@@ -3,6 +3,7 @@ const router = express.Router();
 const SucursalRepository = require('../models/SucursalRepository');
 const sucursalRepository = new SucursalRepository(); 
 const { requiereRoles } = require('../middlewares/autorizacion');
+const { registrarActividad, obtenerCambios, obtenerCamposCreados } = require('../utils/auditoria');
 
 const rolesLectura = ['empleado', 'administrador', 'gerencia'];
 
@@ -51,7 +52,13 @@ router.get('/:id', requiereRoles(...rolesLectura), async (req, res, next) => {
 // POST /sucursales - Guardar sucursal nueva manteniendo los datos si hay error
 router.post('/', requiereRoles('administrador'), async (req, res, next) => {
   try {
-    await sucursalRepository.crear(req.body);
+    const sucursal = await sucursalRepository.crear(req.body);
+    await registrarActividad(req, {
+      accion: 'SUCURSAL_CREADA',
+      entidad: 'Sucursal',
+      entidadId: sucursal._id,
+      cambios: obtenerCamposCreados(sucursal)
+    });
     res.redirect('/sucursales');
   } catch (error) {
     if (error.code === 11000) {
@@ -88,7 +95,18 @@ router.get('/:id/editar', requiereRoles('administrador'), async (req, res, next)
 router.post('/:id', requiereRoles('administrador'), async (req, res, next) => {
   try {
     const id = req.params.id;
-    await sucursalRepository.actualizar(id, req.body);
+    const anterior = await sucursalRepository.obtenerPorId(id);
+    if (!anterior) return res.status(404).render('404');
+
+    const sucursal = await sucursalRepository.actualizar(id, req.body);
+    if (!sucursal) return res.status(404).render('404');
+
+    await registrarActividad(req, {
+      accion: 'SUCURSAL_ACTUALIZADA',
+      entidad: 'Sucursal',
+      entidadId: sucursal._id,
+      cambios: obtenerCambios(anterior, sucursal)
+    });
     res.redirect('/sucursales');
   } catch (error) {
     if (error.code === 11000) {
@@ -106,8 +124,17 @@ router.post('/:id', requiereRoles('administrador'), async (req, res, next) => {
 
 router.post('/:id/desactivar', requiereRoles('administrador'), async (req, res, next) => {
   try {
+    const anterior = await sucursalRepository.obtenerPorId(req.params.id);
+    if (!anterior) return res.status(404).render('404');
+
     const sucursal = await sucursalRepository.actualizar(req.params.id, { estado: 'inactivo' });
     if (!sucursal) return res.status(404).render('404');
+    await registrarActividad(req, {
+      accion: 'SUCURSAL_ESTADO_CAMBIADO',
+      entidad: 'Sucursal',
+      entidadId: sucursal._id,
+      cambios: obtenerCambios(anterior, sucursal)
+    });
     res.redirect('/sucursales');
   } catch (error) {
     next(error);
@@ -116,8 +143,17 @@ router.post('/:id/desactivar', requiereRoles('administrador'), async (req, res, 
 
 router.post('/:id/activar', requiereRoles('administrador'), async (req, res, next) => {
   try {
+    const anterior = await sucursalRepository.obtenerPorId(req.params.id);
+    if (!anterior) return res.status(404).render('404');
+
     const sucursal = await sucursalRepository.actualizar(req.params.id, { estado: 'activo' });
     if (!sucursal) return res.status(404).render('404');
+    await registrarActividad(req, {
+      accion: 'SUCURSAL_ESTADO_CAMBIADO',
+      entidad: 'Sucursal',
+      entidadId: sucursal._id,
+      cambios: obtenerCambios(anterior, sucursal)
+    });
     res.redirect('/sucursales');
   } catch (error) {
     next(error);
