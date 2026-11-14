@@ -11,6 +11,7 @@ const CAMPOS_AUDITABLES = [
   'rol',
   'estado',
   'sucursal',
+  'direccion',
   'dias',
   'horarios',
   'fecha',

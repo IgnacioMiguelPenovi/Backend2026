@@ -50,7 +50,6 @@ async function renderFormulario(req, res, opciones = {}) {
   const sucursalesActivas = equipo ? await obtenerNombresSucursalesActivas() : [];
   const sucursalSeleccionada = opciones.valores?.sucursal
     || opciones.turno?.sucursal
-    || (req.session.usuario.rol === 'empleado' ? req.session.usuario.sucursal : '')
     || '';
   const sucursales = equipo ? sucursalesActivas : [];
   const alumnos = equipo && sucursales.length
@@ -545,6 +544,7 @@ router.post('/pagarTurno', requiereRoles(...rolesQueAgendan), async (req, res, n
 
     const nuevoTurno = await Turno.create({
       usuario: pendiente.alumno._id,
+      creadoPor: req.session.usuario.id,
       sucursal: pendiente.sucursal,
       fecha: fechaYDia.fecha,
       dia: fechaYDia.dia,
@@ -585,7 +585,13 @@ router.get('/turnos/:id/comprobante', requiereRoles(...rolesQueAgendan), async (
     const rol = req.session.usuario.rol;
     const filtro = { _id: req.params.id, estado: 'confirmado' };
     if (rol === 'alumno') filtro.usuario = req.session.usuario.id;
-    if (rol === 'empleado') filtro.sucursal = req.session.usuario.sucursal;
+    if (rol === 'empleado') {
+      const condicionesEmpleado = [{ creadoPor: req.session.usuario.id }];
+      if (req.session.usuario.sucursal) {
+        condicionesEmpleado.push({ sucursal: req.session.usuario.sucursal });
+      }
+      filtro.$or = condicionesEmpleado;
+    }
 
     const turno = await Turno.findOne(filtro)
       .populate('usuario', 'nombre apellido')

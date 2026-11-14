@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Usuario = require('../models/UsuarioModel');
 const { verificarContrasena } = require('../utils/contrasenas');
+const { registrarActividad } = require('../utils/auditoria');
 
 const MIN_USER = 3;
 const MAX_USER = 30;
@@ -133,6 +134,16 @@ router.post('/',async (req, res, next) => {
     rol: usuarioDB.rol,
     sucursal: usuarioDB.sucursal
   };
+
+  try {
+    await registrarActividad(req, {
+      accion: 'INICIO_SESION',
+      entidad: 'Sesion',
+      cambios: { estado: { anterior: null, nuevo: 'iniciada' } }
+    });
+  } catch (error) {
+    console.error('No se pudo registrar el inicio de sesión:', error);
+  }
 
   res.redirect('/index');
 });
