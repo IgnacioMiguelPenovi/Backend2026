@@ -45,6 +45,13 @@ function nombreAuditable(usuario) {
   return [usuario.apellido, usuario.nombre].filter(Boolean).join(', ');
 }
 
+function puedeGestionarTurno(usuario, turno) {
+  if (usuario.rol === 'administrador') return true;
+  if (usuario.rol !== 'empleado') return false;
+  return turno.sucursal === usuario.sucursal
+    || String(turno.creadoPor || '') === String(usuario.id);
+}
+
 async function renderFormulario(req, res, opciones = {}) {
   const equipo = esEquipo(req.session.usuario.rol);
   const sucursalesActivas = equipo ? await obtenerNombresSucursalesActivas() : [];
@@ -225,11 +232,13 @@ router.get('/turnos', requiereRoles(...rolesQueConsultan), async (req, res, next
   try {
     const esEmpleado = req.session.usuario.rol === 'empleado';
     const sucursal = req.session.usuario.sucursal;
-    if (esEmpleado && !sucursal) {
-      return res.status(403).send('El empleado no tiene una sucursal asignada.');
+    const filtro = {};
+    if (esEmpleado) {
+      const accesosEmpleado = [{ creadoPor: req.session.usuario.id }];
+      if (sucursal) accesosEmpleado.push({ sucursal });
+      filtro.$or = accesosEmpleado;
     }
 
-    const filtro = esEmpleado ? { sucursal } : {};
     const turnos = await Turno.find(filtro)
       .populate('usuario', 'nombre apellido usuario sucursal')
       .sort({ fecha: 1, horario: 1 })
@@ -237,18 +246,21 @@ router.get('/turnos', requiereRoles(...rolesQueConsultan), async (req, res, next
     res.render('turnos/lista', {
       titulo: 'Turnos agendados',
       turnos,
-      puedeCancelar: req.session.usuario.rol === 'administrador',
-      puedeEditar: req.session.usuario.rol === 'administrador'
+      puedeCancelar: ['empleado', 'administrador'].includes(req.session.usuario.rol),
+      puedeEditar: ['empleado', 'administrador'].includes(req.session.usuario.rol)
     });
   } catch (error) {
     next(error);
   }
 });
 
-router.get('/turnos/:id/editar', requiereRoles('administrador'), async (req, res, next) => {
+router.get('/turnos/:id/editar', requiereRoles('administrador', 'empleado'), async (req, res, next) => {
   try {
     const turno = await Turno.findById(req.params.id).lean();
     if (!turno) return res.status(404).render('404');
+    if (!puedeGestionarTurno(req.session.usuario, turno)) {
+      return res.status(403).send('No tenés permisos para modificar este turno.');
+    }
     await renderFormulario(req, res, {
       turno,
       valores: {
@@ -264,10 +276,13 @@ router.get('/turnos/:id/editar', requiereRoles('administrador'), async (req, res
   }
 });
 
-router.post('/turnos/:id/editar', requiereRoles('administrador'), async (req, res, next) => {
+router.post('/turnos/:id/editar', requiereRoles('administrador', 'empleado'), async (req, res, next) => {
   try {
     const turno = await Turno.findById(req.params.id);
     if (!turno) return res.status(404).render('404');
+    if (!puedeGestionarTurno(req.session.usuario, turno)) {
+      return res.status(403).send('No tenés permisos para modificar este turno.');
+    }
 
     const alumno = mongoose.isValidObjectId(req.body.alumno)
       ? await Usuario.findOne({
@@ -384,10 +399,16 @@ router.get('/misTurnos', requiereRoles('alumno'), async (req, res, next) => {
   }
 });
 
-router.post('/turnos/:id/cancelar', requiereRoles('administrador'), async (req, res, next) => {
+router.post('/turnos/:id/cancelar', requiereRoles('administrador', 'empleado'), async (req, res, next) => {
   try {
     const anterior = await Turno.findById(req.params.id);
     if (!anterior) return res.status(404).render('404');
+    if (!puedeGestionarTurno(req.session.usuario, anterior)) {
+      return res.status(403).send('No tenés permisos para cancelar este turno.');
+    }
+    if (anterior.estado !== 'confirmado') {
+      return res.status(400).send('Solo se pueden cancelar turnos confirmados.');
+    }
 
     const turno = await Turno.findByIdAndUpdate(
       req.params.id,

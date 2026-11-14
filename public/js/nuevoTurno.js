@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    actualizarAlumnos(true);
+    actualizarAlumnos(false);
   } else if (sucursalSelect) {
     sucursalSelect.addEventListener('change', () => {
       actualizarDisponibilidadHorarios();
