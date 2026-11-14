@@ -1245,3 +1245,22 @@ form input:disabled {
   cursor: not-allowed;
   border-color: #ced4da;
 }
+
+.buscador-personal {
+  margin: 1rem 0;
+}
+
+.buscador-personal label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: bold;
+}
+
+.buscador-personal input {
+  width: 100%;
+  padding: 0.65rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 1rem;
+}
